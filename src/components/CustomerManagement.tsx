@@ -10,6 +10,7 @@ import { Switch } from '@/components/ui/switch';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Search, Filter, MoreHorizontal, UserPlus, Download, Upload } from 'lucide-react';
 import { Customer, Partner, Product } from '../types';
+import CustomerEditDialog from './CustomerEditDialog';
 
 interface CustomerManagementProps {
   customers: Customer[];
@@ -32,6 +33,8 @@ const CustomerManagement = ({
   const [partnerFilter, setPartnerFilter] = useState('all');
   const [zoneFilter, setZoneFilter] = useState('all');
   const [selectedCustomers, setSelectedCustomers] = useState<string[]>([]);
+  const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   const filteredCustomers = useMemo(() => {
     return customers.filter(customer => {
@@ -129,6 +132,17 @@ const CustomerManagement = ({
     negotiating: customers.filter(c => c.process === 'negotiating').length,
     won: customers.filter(c => c.process === 'won').length,
     deployment: customers.filter(c => c.process === 'deployment').length
+  };
+
+  const handleEditCustomer = (customer: Customer) => {
+    setEditingCustomer(customer);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleSaveCustomer = (customerId: string, updates: Partial<Customer>) => {
+    onCustomerUpdate?.(customerId, updates);
+    setIsEditDialogOpen(false);
+    setEditingCustomer(null);
   };
 
   return (
@@ -417,7 +431,9 @@ const CustomerManagement = ({
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
-                          <DropdownMenuItem>Edit Customer</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleEditCustomer(customer)}>
+                            Edit Customer
+                          </DropdownMenuItem>
                           <DropdownMenuItem>View Details</DropdownMenuItem>
                           <DropdownMenuItem>Assign Partner</DropdownMenuItem>
                           <DropdownMenuItem className="text-red-600">
@@ -433,6 +449,18 @@ const CustomerManagement = ({
           </Table>
         </CardContent>
       </Card>
+
+      <CustomerEditDialog
+        customer={editingCustomer}
+        partners={partners}
+        products={products}
+        isOpen={isEditDialogOpen}
+        onClose={() => {
+          setIsEditDialogOpen(false);
+          setEditingCustomer(null);
+        }}
+        onSave={handleSaveCustomer}
+      />
     </div>
   );
 };
