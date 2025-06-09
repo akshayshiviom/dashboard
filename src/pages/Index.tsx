@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import Sidebar from '../components/Sidebar';
 import DashboardStats from '../components/DashboardStats';
@@ -9,6 +10,7 @@ import ProductTable from '../components/ProductTable';
 import UserHierarchyTable from '../components/UserHierarchyTable';
 import Reports from '../components/Reports';
 import Renewals from '../components/Renewals';
+import Settings from '../components/Settings';
 import { mockCustomers, mockPartners, mockProducts } from '../utils/mockData';
 import { mockUsers } from '../utils/mockUsers';
 import { mockRenewals } from '../utils/mockRenewals';
@@ -64,6 +66,8 @@ const Index = () => {
         return <Reports customers={customers} partners={partners} products={products} users={users} />;
       case 'add-customer':
         return <CustomerForm partners={partners} products={products} onCustomerAdd={handleCustomerAdd} />;
+      case 'settings':
+        return <Settings />;
       default:
         return <div>Page not found</div>;
     }
@@ -87,6 +91,7 @@ const Index = () => {
               {activeTab === 'user-hierarchy' && 'Manage user roles and organizational hierarchy'}
               {activeTab === 'reports' && 'Generate and download business reports'}
               {activeTab === 'add-customer' && 'Add new customers to your database'}
+              {activeTab === 'settings' && 'Configure application settings and email templates'}
             </p>
           </div>
           {renderContent()}
