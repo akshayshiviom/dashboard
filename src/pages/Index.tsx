@@ -53,6 +53,7 @@ const Index = () => {
           <div className="space-y-6">
             <DashboardStats stats={stats} />
             <CustomerChart customers={customers} partners={partners} />
+            <Renewals renewals={renewals} customers={customers} partners={partners} products={products} />
           </div>
         );
       case 'customers':
