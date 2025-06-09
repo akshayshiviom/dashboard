@@ -1,4 +1,3 @@
-
 export interface Customer {
   id: string;
   name: string;
@@ -81,4 +80,26 @@ export interface Renewal {
   notificationSent: boolean;
   lastContactDate?: Date;
   notes?: string;
+}
+
+export interface Dashboard {
+  id: string;
+  name: string;
+  description?: string;
+  timeframe: 'monthly' | 'yearly' | 'custom';
+  customDateRange?: {
+    from: Date;
+    to: Date;
+  };
+  widgets: {
+    showStats: boolean;
+    showChart: boolean;
+    showRenewals: boolean;
+    showCustomerTable: boolean;
+  };
+  filters: {
+    customerStatus?: string[];
+    partnerIds?: string[];
+    productIds?: string[];
+  };
 }

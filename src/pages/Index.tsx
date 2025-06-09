@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -11,6 +12,7 @@ import MobileLayout from '@/components/MobileLayout';
 import MobileNavigation from '@/components/MobileNavigation';
 import MobileDashboardStats from '@/components/MobileDashboardStats';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 
 const Index = () => {
   const [searchParams, setSearchParams] = useSearchParams();

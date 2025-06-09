@@ -1,7 +1,6 @@
-
 import { useState } from 'react';
 
-interface Dashboard {
+export interface Dashboard {
   id: string;
   name: string;
   description?: string;
@@ -22,6 +21,59 @@ interface Dashboard {
     productIds?: string[];
   };
 }
+
+export const defaultDashboards: Dashboard[] = [
+  { 
+    id: 'default', 
+    name: 'Main Dashboard', 
+    description: 'Default dashboard view',
+    timeframe: 'monthly',
+    widgets: {
+      showStats: true,
+      showChart: true,
+      showRenewals: true,
+      showCustomerTable: false
+    },
+    filters: {}
+  }
+];
+
+export const DashboardManager = {
+  createDashboard: (name: string, setDashboards: React.Dispatch<React.SetStateAction<Dashboard[]>>, description?: string) => {
+    const newDashboard: Dashboard = {
+      id: `dashboard-${Date.now()}`,
+      name,
+      description,
+      timeframe: 'monthly',
+      widgets: {
+        showStats: true,
+        showChart: true,
+        showRenewals: true,
+        showCustomerTable: false
+      },
+      filters: {}
+    };
+    setDashboards(prev => [...prev, newDashboard]);
+  },
+
+  updateDashboard: (dashboardId: string, updates: Partial<Dashboard>, setDashboards: React.Dispatch<React.SetStateAction<Dashboard[]>>) => {
+    setDashboards(prev => prev.map(dashboard => 
+      dashboard.id === dashboardId 
+        ? { ...dashboard, ...updates }
+        : dashboard
+    ));
+  },
+
+  deleteDashboard: (dashboardId: string, setDashboards: React.Dispatch<React.SetStateAction<Dashboard[]>>, setActiveDashboard: React.Dispatch<React.SetStateAction<string>>, dashboards: Dashboard[]) => {
+    if (dashboards.length <= 1) return;
+    
+    setDashboards(prev => prev.filter(d => d.id !== dashboardId));
+    const remainingDashboard = dashboards.find(d => d.id !== dashboardId);
+    if (remainingDashboard) {
+      setActiveDashboard(remainingDashboard.id);
+    }
+  }
+};
 
 interface DashboardManagerProps {
   onDashboardChange: (dashboardId: string) => void;
