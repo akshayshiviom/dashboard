@@ -5,10 +5,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger } from '@/components/ui/dropdown-menu';
 import { Users, Eye, Edit, Trash2, MoreVertical, UserPlus, Download, Filter, Settings2 } from 'lucide-react';
 import { User } from '../types';
-import UserFilters from './UserFilters';
 
 interface UserHierarchyTableProps {
   users: User[];
@@ -20,6 +19,9 @@ const UserHierarchyTable = ({ users }: UserHierarchyTableProps) => {
   const [showInactive, setShowInactive] = useState(true);
   const [compactView, setCompactView] = useState(false);
   const [showHierarchy, setShowHierarchy] = useState(true);
+
+  const roles = ['admin', 'manager', 'assistant-manager', 'team-leader', 'fsr', 'bde'];
+  const departments = ['Administration', 'Sales', 'Field Sales', 'Business Development', 'Marketing', 'Operations'];
 
   const getRoleColor = (role: string) => {
     const colors = {
@@ -105,12 +107,6 @@ const UserHierarchyTable = ({ users }: UserHierarchyTableProps) => {
 
   return (
     <div className="space-y-6">
-      <UserFilters
-        onRoleFilter={handleRoleFilter}
-        onStatusFilter={handleStatusFilter}
-        onDepartmentFilter={handleDepartmentFilter}
-      />
-      
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -119,6 +115,68 @@ const UserHierarchyTable = ({ users }: UserHierarchyTableProps) => {
               User Hierarchy ({displayUsers.length} users)
             </CardTitle>
             <div className="flex items-center gap-2">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <Filter size={16} className="mr-2" />
+                    Filters
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56">
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                      Filter by Role
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent>
+                      <DropdownMenuItem onClick={() => handleRoleFilter('all')}>
+                        All roles
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      {roles.map((role) => (
+                        <DropdownMenuItem key={role} onClick={() => handleRoleFilter(role)}>
+                          {getRoleDisplayName(role)}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
+                  
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                      Filter by Status
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent>
+                      <DropdownMenuItem onClick={() => handleStatusFilter('all')}>
+                        All statuses
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => handleStatusFilter('active')}>
+                        Active
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleStatusFilter('inactive')}>
+                        Inactive
+                      </DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
+                  
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                      Filter by Department
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent>
+                      <DropdownMenuItem onClick={() => handleDepartmentFilter('all')}>
+                        All departments
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      {departments.map((department) => (
+                        <DropdownMenuItem key={department} onClick={() => handleDepartmentFilter(department)}>
+                          {department}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm">
