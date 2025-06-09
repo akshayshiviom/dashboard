@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, Tag, Plus, Package, UserCheck, FileText, RefreshCw, Settings, Mail, ChevronDown } from 'lucide-react';
+import { LayoutDashboard, Users, Tag, Plus, Package, UserCheck, FileText, RefreshCw, Settings, Mail, ChevronDown, Upload } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   DropdownMenu,
@@ -47,6 +47,7 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
       subItems: [
         { id: 'user-hierarchy', label: 'User Hierarchy', icon: UserCheck },
         { id: 'email-templates', label: 'Email Templates', icon: Mail },
+        { id: 'import-data', label: 'Import Data', icon: Upload },
       ]
     },
   ];

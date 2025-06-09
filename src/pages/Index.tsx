@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 import DashboardStats from '@/components/DashboardStats';
@@ -12,6 +11,7 @@ import Renewals from '@/components/Renewals';
 import UserHierarchyTable from '@/components/UserHierarchyTable';
 import Reports from '@/components/Reports';
 import Settings from '@/components/Settings';
+import ImportData from '@/components/ImportData';
 import { mockCustomers, mockPartners, mockProducts } from '@/utils/mockData';
 import { mockUsers } from '@/utils/mockUsers';
 import { mockRenewals } from '@/utils/mockRenewals';
@@ -43,9 +43,17 @@ const Index = () => {
     setCustomers([...customers, customer]);
   };
 
+  const handleCustomerImport = (importedCustomers: Customer[]) => {
+    setCustomers([...customers, ...importedCustomers]);
+  };
+
   // Callback functions for product management
   const handleProductAdd = (product: Product) => {
     setProducts([...products, product]);
+  };
+
+  const handleProductImport = (importedProducts: Product[]) => {
+    setProducts([...products, ...importedProducts]);
   };
 
   const handleProductPriceUpdate = (productId: string, newPrice: number) => {
@@ -108,6 +116,13 @@ const Index = () => {
         );
       case 'email-templates':
         return <Settings />;
+      case 'import-data':
+        return (
+          <ImportData 
+            onCustomerImport={handleCustomerImport}
+            onProductImport={handleProductImport}
+          />
+        );
       default:
         return (
           <div className="space-y-6">
