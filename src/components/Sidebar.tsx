@@ -1,4 +1,3 @@
-
 import { LayoutDashboard, Users, Tag, Plus, Package, UserCheck, FileText, RefreshCw, Settings, Mail, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
@@ -14,6 +13,10 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
+  // Mock user role - in a real app, this would come from authentication context
+  const userRole = 'admin'; // Change this to 'user' to test non-admin access
+  const isAdmin = userRole === 'admin';
+
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { 
@@ -32,7 +35,7 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
       icon: Package,
       subItems: [
         { id: 'products', label: 'View Products' },
-        { id: 'add-product', label: 'Add Product', icon: Plus },
+        ...(isAdmin ? [{ id: 'add-product', label: 'Add Product', icon: Plus }] : []),
       ]
     },
     { id: 'renewals', label: 'Renewals', icon: RefreshCw },
