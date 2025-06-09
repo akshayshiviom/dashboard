@@ -171,7 +171,6 @@ const PartnerOnboarding = ({ partners }: PartnerOnboardingProps) => {
               <TableRow>
                 <TableHead>Partner</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Progress</TableHead>
                 <TableHead>Assigned To</TableHead>
                 <TableHead>Last Activity</TableHead>
                 <TableHead>Actions</TableHead>
@@ -195,14 +194,6 @@ const PartnerOnboarding = ({ partners }: PartnerOnboardingProps) => {
                       >
                         {partner.onboardingStatus.replace('-', ' ')}
                       </Badge>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="space-y-1">
-                      <Progress value={partner.onboardingProgress} className="w-[80px]" />
-                      <div className="text-xs text-muted-foreground">
-                        {partner.onboardingProgress}%
-                      </div>
                     </div>
                   </TableCell>
                   <TableCell>{partner.assignedTo}</TableCell>
