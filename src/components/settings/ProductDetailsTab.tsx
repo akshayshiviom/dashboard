@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -31,9 +30,10 @@ interface ProductDetailsTabProps {
   products: ProductDetails[];
   setProducts: (products: ProductDetails[]) => void;
   categories: ProductCategory[];
+  isAdmin?: boolean;
 }
 
-const ProductDetailsTab = ({ products, setProducts, categories }: ProductDetailsTabProps) => {
+const ProductDetailsTab = ({ products, setProducts, categories, isAdmin = false }: ProductDetailsTabProps) => {
   const [editingProduct, setEditingProduct] = useState<ProductDetails | null>(null);
   const [isCreatingProduct, setIsCreatingProduct] = useState(false);
   const [productFormData, setProductFormData] = useState({
@@ -142,8 +142,8 @@ const ProductDetailsTab = ({ products, setProducts, categories }: ProductDetails
 
   return (
     <div className="space-y-6">
-      {/* Product Form */}
-      {(isCreatingProduct || editingProduct) && (
+      {/* Product Form - Only show for admins */}
+      {isAdmin && (isCreatingProduct || editingProduct) && (
         <Card>
           <CardHeader>
             <CardTitle>{editingProduct ? 'Edit Product' : 'Create New Product'}</CardTitle>
@@ -224,8 +224,8 @@ const ProductDetailsTab = ({ products, setProducts, categories }: ProductDetails
         </Card>
       )}
 
-      {/* Add New Product Button */}
-      {!isCreatingProduct && !editingProduct && (
+      {/* Add New Product Button - Only show for admins */}
+      {isAdmin && !isCreatingProduct && !editingProduct && (
         <Button onClick={() => setIsCreatingProduct(true)} className="gap-2">
           <Package size={16} />
           Add New Product
@@ -256,33 +256,36 @@ const ProductDetailsTab = ({ products, setProducts, categories }: ProductDetails
                     {product.website}
                   </a>
                 </div>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => startEditingProduct(product)}
-                    className="gap-1"
-                  >
-                    <Edit2 size={14} />
-                    Edit
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleToggleProductStatus(product.id)}
-                  >
-                    {product.status === 'active' ? 'Deactivate' : 'Activate'}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleDeleteProduct(product.id)}
-                    className="gap-1 text-destructive hover:text-destructive"
-                  >
-                    <Trash2 size={14} />
-                    Delete
-                  </Button>
-                </div>
+                {/* Admin Controls - Only show for admins */}
+                {isAdmin && (
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => startEditingProduct(product)}
+                      className="gap-1"
+                    >
+                      <Edit2 size={14} />
+                      Edit
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleToggleProductStatus(product.id)}
+                    >
+                      {product.status === 'active' ? 'Deactivate' : 'Activate'}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleDeleteProduct(product.id)}
+                      className="gap-1 text-destructive hover:text-destructive"
+                    >
+                      <Trash2 size={14} />
+                      Delete
+                    </Button>
+                  </div>
+                )}
               </div>
             </CardHeader>
           </Card>

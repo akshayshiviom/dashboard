@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import EmailTemplatesTab from './settings/EmailTemplatesTab';
@@ -31,6 +30,9 @@ interface ProductDetails {
 }
 
 const Settings = () => {
+  // Simulate admin role - in a real app, this would come from authentication context
+  const [isAdmin] = useState(true); // Set to true for demo purposes
+  
   const [templates, setTemplates] = useState<EmailTemplate[]>([
     {
       id: '1',
@@ -80,6 +82,9 @@ Best regards,
       <div>
         <h3 className="text-2xl font-semibold">Settings</h3>
         <p className="text-muted-foreground">Manage your application settings and configurations</p>
+        {isAdmin && (
+          <p className="text-sm text-green-600 mt-1">Admin Mode: You have full editing rights</p>
+        )}
       </div>
 
       <Tabs defaultValue="email-templates" className="w-full">
@@ -98,7 +103,12 @@ Best regards,
         </TabsContent>
 
         <TabsContent value="product-details" className="space-y-6">
-          <ProductDetailsTab products={products} setProducts={setProducts} categories={categories} />
+          <ProductDetailsTab 
+            products={products} 
+            setProducts={setProducts} 
+            categories={categories}
+            isAdmin={isAdmin}
+          />
         </TabsContent>
       </Tabs>
     </div>
