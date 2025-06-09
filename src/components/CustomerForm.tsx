@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -23,8 +24,16 @@ const CustomerForm = ({ partners, products, onCustomerAdd }: CustomerFormProps) 
     company: '',
     partnerId: '',
     value: '',
+    zone: '',
   });
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
+
+  const zones = [
+    { value: 'north', label: 'North' },
+    { value: 'east', label: 'East' },
+    { value: 'west', label: 'West' },
+    { value: 'south', label: 'South' },
+  ];
 
   const handleProductChange = (productId: string, checked: boolean) => {
     setSelectedProducts(prev => 
@@ -57,6 +66,7 @@ const CustomerForm = ({ partners, products, onCustomerAdd }: CustomerFormProps) 
       productIds: selectedProducts.length > 0 ? selectedProducts : undefined,
       createdAt: new Date(),
       value: parseInt(formData.value) || 0,
+      zone: formData.zone as 'north' | 'east' | 'west' | 'south' || undefined,
     };
 
     onCustomerAdd(newCustomer);
@@ -68,6 +78,7 @@ const CustomerForm = ({ partners, products, onCustomerAdd }: CustomerFormProps) 
       company: '',
       partnerId: '',
       value: '',
+      zone: '',
     });
     setSelectedProducts([]);
 
@@ -132,7 +143,7 @@ const CustomerForm = ({ partners, products, onCustomerAdd }: CustomerFormProps) 
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label htmlFor="partner">Assign Partner</Label>
               <Select value={formData.partnerId} onValueChange={(value) => setFormData({ ...formData, partnerId: value })}>
@@ -143,6 +154,22 @@ const CustomerForm = ({ partners, products, onCustomerAdd }: CustomerFormProps) 
                   {partners.map((partner) => (
                     <SelectItem key={partner.id} value={partner.id}>
                       {partner.name} - {partner.company}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="zone">Zone</Label>
+              <Select value={formData.zone} onValueChange={(value) => setFormData({ ...formData, zone: value })}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select zone" />
+                </SelectTrigger>
+                <SelectContent>
+                  {zones.map((zone) => (
+                    <SelectItem key={zone.value} value={zone.value}>
+                      {zone.label}
                     </SelectItem>
                   ))}
                 </SelectContent>

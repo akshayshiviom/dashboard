@@ -18,6 +18,7 @@ const CustomerTable = ({ customers, partners, products }: CustomerTableProps) =>
   const [statusFilter, setStatusFilter] = useState('all');
   const [partnerFilter, setPartnerFilter] = useState('all');
   const [valueFilter, setValueFilter] = useState(0);
+  const [zoneFilter, setZoneFilter] = useState('all');
 
   const filteredCustomers = useMemo(() => {
     return customers.filter((customer) => {
@@ -27,10 +28,11 @@ const CustomerTable = ({ customers, partners, products }: CustomerTableProps) =>
         (partnerFilter === 'unassigned' && !customer.partnerId) ||
         customer.partnerId === partnerFilter;
       const valueMatch = customer.value >= valueFilter;
+      const zoneMatch = zoneFilter === 'all' || customer.zone === zoneFilter;
       
-      return statusMatch && partnerMatch && valueMatch;
+      return statusMatch && partnerMatch && valueMatch && zoneMatch;
     });
-  }, [customers, statusFilter, partnerFilter, valueFilter]);
+  }, [customers, statusFilter, partnerFilter, valueFilter, zoneFilter]);
 
   const getPartnerName = (partnerId?: string) => {
     const partner = partners.find(p => p.id === partnerId);
@@ -50,6 +52,16 @@ const CustomerTable = ({ customers, partners, products }: CustomerTableProps) =>
       case 'active': return 'bg-green-100 text-green-800';
       case 'pending': return 'bg-yellow-100 text-yellow-800';
       case 'inactive': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getZoneColor = (zone?: string) => {
+    switch (zone) {
+      case 'north': return 'bg-blue-100 text-blue-800';
+      case 'east': return 'bg-green-100 text-green-800';
+      case 'west': return 'bg-orange-100 text-orange-800';
+      case 'south': return 'bg-purple-100 text-purple-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -111,6 +123,30 @@ const CustomerTable = ({ customers, partners, products }: CustomerTableProps) =>
                       ))}
                     </DropdownMenuSubContent>
                   </DropdownMenuSub>
+
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                      Filter by Zone
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent>
+                      <DropdownMenuItem onClick={() => setZoneFilter('all')}>
+                        All zones
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => setZoneFilter('north')}>
+                        North
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setZoneFilter('east')}>
+                        East
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setZoneFilter('west')}>
+                        West
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setZoneFilter('south')}>
+                        South
+                      </DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -124,6 +160,7 @@ const CustomerTable = ({ customers, partners, products }: CustomerTableProps) =>
                 <TableHead>Company</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Partner</TableHead>
+                <TableHead>Zone</TableHead>
                 <TableHead>Products</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Value</TableHead>
@@ -137,6 +174,15 @@ const CustomerTable = ({ customers, partners, products }: CustomerTableProps) =>
                   <TableCell>{customer.company}</TableCell>
                   <TableCell>{customer.email}</TableCell>
                   <TableCell>{getPartnerName(customer.partnerId)}</TableCell>
+                  <TableCell>
+                    {customer.zone ? (
+                      <Badge className={getZoneColor(customer.zone)}>
+                        {customer.zone.charAt(0).toUpperCase() + customer.zone.slice(1)}
+                      </Badge>
+                    ) : (
+                      <span className="text-muted-foreground">Not set</span>
+                    )}
+                  </TableCell>
                   <TableCell className="max-w-xs truncate">
                     {getProductNames(customer.productIds)}
                   </TableCell>

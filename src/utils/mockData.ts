@@ -1,3 +1,4 @@
+
 import { Customer, Partner, Product } from '../types';
 
 export const mockProducts: Product[] = [
@@ -85,6 +86,7 @@ export const mockPartners: Partner[] = [
     productTypes: ['Identity Management', 'Productivity Suite'],
     paymentTerms: 'net-30',
     assignedEmployeeId: '1',
+    zone: 'north',
   },
   {
     id: '2',
@@ -101,6 +103,7 @@ export const mockPartners: Partner[] = [
     productTypes: ['Communication', 'Mobile Device Management'],
     paymentTerms: 'net-60',
     assignedEmployeeId: '2',
+    zone: 'east',
   },
   {
     id: '3',
@@ -116,6 +119,7 @@ export const mockPartners: Partner[] = [
     productTypes: ['Productivity Suite', 'Identity Management'],
     paymentTerms: 'monthly',
     assignedEmployeeId: '3',
+    zone: 'west',
   },
 ];
 
@@ -131,6 +135,7 @@ export const mockCustomers: Customer[] = [
     productIds: ['1', '3', '4'],
     createdAt: new Date('2024-04-01'),
     value: 25000,
+    zone: 'north',
   },
   {
     id: '2',
@@ -143,6 +148,7 @@ export const mockCustomers: Customer[] = [
     productIds: ['2', '6'],
     createdAt: new Date('2024-05-15'),
     value: 15000,
+    zone: 'south',
   },
   {
     id: '3',
@@ -155,6 +161,7 @@ export const mockCustomers: Customer[] = [
     productIds: ['1', '4', '5'],
     createdAt: new Date('2024-05-20'),
     value: 45000,
+    zone: 'east',
   },
   {
     id: '4',
@@ -167,5 +174,6 @@ export const mockCustomers: Customer[] = [
     productIds: ['3', '6'],
     createdAt: new Date('2024-06-01'),
     value: 8000,
+    zone: 'west',
   },
 ];

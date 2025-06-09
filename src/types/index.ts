@@ -9,6 +9,7 @@ export interface Customer {
   productIds?: string[];
   createdAt: Date;
   value: number;
+  zone?: 'north' | 'east' | 'west' | 'south';
 }
 
 export interface Partner {
@@ -26,6 +27,7 @@ export interface Partner {
   productTypes: string[];
   paymentTerms: 'net-30' | 'net-60' | 'net-90' | 'prepaid' | 'monthly';
   assignedEmployeeId?: string;
+  zone?: 'north' | 'east' | 'west' | 'south';
 }
 
 export interface Product {

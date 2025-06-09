@@ -21,6 +21,7 @@ const PartnerTable = ({ partners, customers, products, users }: PartnerTableProp
   const [customersFilter, setCustomersFilter] = useState(0);
   const [revenueFilter, setRevenueFilter] = useState(0);
   const [specializationFilter, setSpecializationFilter] = useState('all');
+  const [zoneFilter, setZoneFilter] = useState('all');
   const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null);
 
   const specializations = ['Enterprise Software', 'Digital Marketing', 'Cloud Services', 'Consulting', 'E-commerce'];
@@ -31,10 +32,11 @@ const PartnerTable = ({ partners, customers, products, users }: PartnerTableProp
       const customersMatch = partner.customersCount >= customersFilter;
       const revenueMatch = partner.totalValue >= revenueFilter;
       const specializationMatch = specializationFilter === 'all' || partner.specialization === specializationFilter;
+      const zoneMatch = zoneFilter === 'all' || partner.zone === zoneFilter;
       
-      return statusMatch && customersMatch && revenueMatch && specializationMatch;
+      return statusMatch && customersMatch && revenueMatch && specializationMatch && zoneMatch;
     });
-  }, [partners, statusFilter, customersFilter, revenueFilter, specializationFilter]);
+  }, [partners, statusFilter, customersFilter, revenueFilter, specializationFilter, zoneFilter]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -51,6 +53,16 @@ const PartnerTable = ({ partners, customers, products, users }: PartnerTableProp
       case 'net-30': return 'bg-yellow-100 text-yellow-800';
       case 'net-60': return 'bg-orange-100 text-orange-800';
       case 'net-90': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getZoneColor = (zone?: string) => {
+    switch (zone) {
+      case 'north': return 'bg-blue-100 text-blue-800';
+      case 'east': return 'bg-green-100 text-green-800';
+      case 'west': return 'bg-orange-100 text-orange-800';
+      case 'south': return 'bg-purple-100 text-purple-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -123,6 +135,30 @@ const PartnerTable = ({ partners, customers, products, users }: PartnerTableProp
                       ))}
                     </DropdownMenuSubContent>
                   </DropdownMenuSub>
+
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                      Filter by Zone
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent>
+                      <DropdownMenuItem onClick={() => setZoneFilter('all')}>
+                        All zones
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => setZoneFilter('north')}>
+                        North
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setZoneFilter('east')}>
+                        East
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setZoneFilter('west')}>
+                        West
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setZoneFilter('south')}>
+                        South
+                      </DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -134,6 +170,7 @@ const PartnerTable = ({ partners, customers, products, users }: PartnerTableProp
               <TableRow>
                 <TableHead>Name</TableHead>
                 <TableHead>Company</TableHead>
+                <TableHead>Zone</TableHead>
                 <TableHead>Agreement</TableHead>
                 <TableHead>Payment Terms</TableHead>
                 <TableHead>Product Types</TableHead>
@@ -149,6 +186,15 @@ const PartnerTable = ({ partners, customers, products, users }: PartnerTableProp
                 <TableRow key={partner.id} className="hover:bg-muted/50">
                   <TableCell className="font-medium">{partner.name}</TableCell>
                   <TableCell>{partner.company}</TableCell>
+                  <TableCell>
+                    {partner.zone ? (
+                      <Badge className={getZoneColor(partner.zone)}>
+                        {partner.zone.charAt(0).toUpperCase() + partner.zone.slice(1)}
+                      </Badge>
+                    ) : (
+                      <span className="text-muted-foreground">Not set</span>
+                    )}
+                  </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
                       {partner.agreementSigned ? (
