@@ -1,3 +1,4 @@
+
 export interface Customer {
   id: string;
   name: string;
@@ -5,6 +6,7 @@ export interface Customer {
   phone: string;
   company: string;
   status: 'active' | 'inactive' | 'pending';
+  process?: 'prospect' | 'demo' | 'poc' | 'negotiating' | 'lost' | 'won' | 'deployment';
   partnerId?: string;
   productIds?: string[];
   createdAt: Date;

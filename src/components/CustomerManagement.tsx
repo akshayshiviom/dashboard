@@ -1,4 +1,3 @@
-
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -29,6 +28,7 @@ const CustomerManagement = ({
 }: CustomerManagementProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [processFilter, setProcessFilter] = useState('all');
   const [partnerFilter, setPartnerFilter] = useState('all');
   const [zoneFilter, setZoneFilter] = useState('all');
   const [selectedCustomers, setSelectedCustomers] = useState<string[]>([]);
@@ -40,14 +40,15 @@ const CustomerManagement = ({
                            customer.company.toLowerCase().includes(searchTerm.toLowerCase());
       
       const matchesStatus = statusFilter === 'all' || customer.status === statusFilter;
+      const matchesProcess = processFilter === 'all' || customer.process === processFilter;
       const matchesPartner = partnerFilter === 'all' || 
                             (partnerFilter === 'unassigned' && !customer.partnerId) ||
                             customer.partnerId === partnerFilter;
       const matchesZone = zoneFilter === 'all' || customer.zone === zoneFilter;
 
-      return matchesSearch && matchesStatus && matchesPartner && matchesZone;
+      return matchesSearch && matchesStatus && matchesProcess && matchesPartner && matchesZone;
     });
-  }, [customers, searchTerm, statusFilter, partnerFilter, zoneFilter]);
+  }, [customers, searchTerm, statusFilter, processFilter, partnerFilter, zoneFilter]);
 
   const handleSelectCustomer = (customerId: string) => {
     setSelectedCustomers(prev => 
@@ -103,12 +104,31 @@ const CustomerManagement = ({
     }
   };
 
+  const getProcessColor = (process?: string) => {
+    switch (process) {
+      case 'prospect': return 'bg-gray-100 text-gray-800';
+      case 'demo': return 'bg-blue-100 text-blue-800';
+      case 'poc': return 'bg-cyan-100 text-cyan-800';
+      case 'negotiating': return 'bg-yellow-100 text-yellow-800';
+      case 'won': return 'bg-green-100 text-green-800';
+      case 'lost': return 'bg-red-100 text-red-800';
+      case 'deployment': return 'bg-purple-100 text-purple-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
   const stats = {
     total: customers.length,
     active: customers.filter(c => c.status === 'active').length,
     pending: customers.filter(c => c.status === 'pending').length,
     inactive: customers.filter(c => c.status === 'inactive').length,
-    totalValue: customers.reduce((sum, customer) => sum + customer.value, 0)
+    totalValue: customers.reduce((sum, customer) => sum + customer.value, 0),
+    prospect: customers.filter(c => c.process === 'prospect').length,
+    demo: customers.filter(c => c.process === 'demo').length,
+    poc: customers.filter(c => c.process === 'poc').length,
+    negotiating: customers.filter(c => c.process === 'negotiating').length,
+    won: customers.filter(c => c.process === 'won').length,
+    deployment: customers.filter(c => c.process === 'deployment').length
   };
 
   return (
@@ -169,6 +189,46 @@ const CustomerManagement = ({
         </Card>
       </div>
 
+      {/* Process Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+        <Card>
+          <CardContent className="p-3">
+            <div className="text-lg font-bold text-gray-600">{stats.prospect}</div>
+            <p className="text-xs text-muted-foreground">Prospect</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-3">
+            <div className="text-lg font-bold text-blue-600">{stats.demo}</div>
+            <p className="text-xs text-muted-foreground">Demo</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-3">
+            <div className="text-lg font-bold text-cyan-600">{stats.poc}</div>
+            <p className="text-xs text-muted-foreground">POC</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-3">
+            <div className="text-lg font-bold text-yellow-600">{stats.negotiating}</div>
+            <p className="text-xs text-muted-foreground">Negotiating</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-3">
+            <div className="text-lg font-bold text-green-600">{stats.won}</div>
+            <p className="text-xs text-muted-foreground">Won</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-3">
+            <div className="text-lg font-bold text-purple-600">{stats.deployment}</div>
+            <p className="text-xs text-muted-foreground">Deployment</p>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Filters */}
       <Card>
         <CardContent className="p-4">
@@ -194,6 +254,21 @@ const CustomerManagement = ({
                   <SelectItem value="active">Active</SelectItem>
                   <SelectItem value="pending">Pending</SelectItem>
                   <SelectItem value="inactive">Inactive</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={processFilter} onValueChange={setProcessFilter}>
+                <SelectTrigger className="w-32">
+                  <SelectValue placeholder="Process" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Process</SelectItem>
+                  <SelectItem value="prospect">Prospect</SelectItem>
+                  <SelectItem value="demo">Demo</SelectItem>
+                  <SelectItem value="poc">POC</SelectItem>
+                  <SelectItem value="negotiating">Negotiating</SelectItem>
+                  <SelectItem value="won">Won</SelectItem>
+                  <SelectItem value="lost">Lost</SelectItem>
+                  <SelectItem value="deployment">Deployment</SelectItem>
                 </SelectContent>
               </Select>
               <Select value={partnerFilter} onValueChange={setPartnerFilter}>
@@ -276,6 +351,7 @@ const CustomerManagement = ({
                 <TableHead>Partner</TableHead>
                 <TableHead>Zone</TableHead>
                 <TableHead>Products</TableHead>
+                <TableHead>Process</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Value</TableHead>
                 <TableHead>Actions</TableHead>
@@ -309,6 +385,15 @@ const CustomerManagement = ({
                   </TableCell>
                   <TableCell className="max-w-xs truncate">
                     {getProductNames(customer.productIds)}
+                  </TableCell>
+                  <TableCell>
+                    {customer.process ? (
+                      <Badge className={getProcessColor(customer.process)}>
+                        {customer.process.charAt(0).toUpperCase() + customer.process.slice(1)}
+                      </Badge>
+                    ) : (
+                      <span className="text-muted-foreground">Not set</span>
+                    )}
                   </TableCell>
                   <TableCell>
                     <Badge className={getStatusColor(customer.status)}>
