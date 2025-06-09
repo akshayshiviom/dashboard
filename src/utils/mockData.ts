@@ -1,5 +1,68 @@
 
-import { Customer, Partner } from '../types';
+import { Customer, Partner, Product } from '../types';
+
+export const mockProducts: Product[] = [
+  {
+    id: '1',
+    name: 'JumpCloud',
+    website: 'jumpcloud.com',
+    category: 'Identity Management',
+    description: 'Cloud-based directory service and identity management platform',
+    status: 'active',
+    customersCount: 8,
+    createdAt: new Date('2024-01-01'),
+  },
+  {
+    id: '2',
+    name: 'Scalefusion',
+    website: 'scalefusion.com',
+    category: 'Mobile Device Management',
+    description: 'Unified endpoint management and mobile device management solution',
+    status: 'active',
+    customersCount: 5,
+    createdAt: new Date('2024-01-15'),
+  },
+  {
+    id: '3',
+    name: 'Google Workspace',
+    website: 'workspace.google.com',
+    category: 'Productivity Suite',
+    description: 'Cloud-based productivity and collaboration tools',
+    status: 'active',
+    customersCount: 12,
+    createdAt: new Date('2024-02-01'),
+  },
+  {
+    id: '4',
+    name: 'Microsoft 365',
+    website: 'microsoft.com/microsoft-365',
+    category: 'Productivity Suite',
+    description: 'Integrated cloud-based productivity and business applications',
+    status: 'active',
+    customersCount: 15,
+    createdAt: new Date('2024-02-15'),
+  },
+  {
+    id: '5',
+    name: 'Okta',
+    website: 'okta.com',
+    category: 'Identity Management',
+    description: 'Enterprise identity and access management platform',
+    status: 'active',
+    customersCount: 6,
+    createdAt: new Date('2024-03-01'),
+  },
+  {
+    id: '6',
+    name: 'Slack',
+    website: 'slack.com',
+    category: 'Communication',
+    description: 'Business communication and collaboration platform',
+    status: 'active',
+    customersCount: 10,
+    createdAt: new Date('2024-03-15'),
+  },
+];
 
 export const mockPartners: Partner[] = [
   {
@@ -46,6 +109,7 @@ export const mockCustomers: Customer[] = [
     company: 'Acme Corp',
     status: 'active',
     partnerId: '1',
+    productIds: ['1', '3', '4'],
     createdAt: new Date('2024-04-01'),
     value: 25000,
   },
@@ -57,6 +121,7 @@ export const mockCustomers: Customer[] = [
     company: 'Startup Inc',
     status: 'pending',
     partnerId: '2',
+    productIds: ['2', '6'],
     createdAt: new Date('2024-05-15'),
     value: 15000,
   },
@@ -68,6 +133,7 @@ export const mockCustomers: Customer[] = [
     company: 'Enterprise Ltd',
     status: 'active',
     partnerId: '1',
+    productIds: ['1', '4', '5'],
     createdAt: new Date('2024-05-20'),
     value: 45000,
   },
@@ -79,6 +145,7 @@ export const mockCustomers: Customer[] = [
     company: 'Tech Innovations',
     status: 'inactive',
     partnerId: '3',
+    productIds: ['3', '6'],
     createdAt: new Date('2024-06-01'),
     value: 8000,
   },

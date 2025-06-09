@@ -6,13 +6,15 @@ import CustomerChart from '../components/CustomerChart';
 import CustomerTable from '../components/CustomerTable';
 import CustomerForm from '../components/CustomerForm';
 import PartnerTable from '../components/PartnerTable';
-import { mockCustomers, mockPartners } from '../utils/mockData';
-import { Customer, Partner, DashboardStats as StatsType } from '../types';
+import ProductTable from '../components/ProductTable';
+import { mockCustomers, mockPartners, mockProducts } from '../utils/mockData';
+import { Customer, Partner, Product, DashboardStats as StatsType } from '../types';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [customers, setCustomers] = useState<Customer[]>(mockCustomers);
   const [partners] = useState<Partner[]>(mockPartners);
+  const [products] = useState<Product[]>(mockProducts);
 
   const handleCustomerAdd = (newCustomer: Customer) => {
     setCustomers([...customers, newCustomer]);
@@ -21,6 +23,7 @@ const Index = () => {
   const stats: StatsType = {
     totalCustomers: customers.length,
     totalPartners: partners.length,
+    totalProducts: products.length,
     totalValue: customers.reduce((sum, customer) => sum + customer.value, 0),
     activeCustomers: customers.filter(c => c.status === 'active').length,
   };
@@ -32,15 +35,17 @@ const Index = () => {
           <div className="space-y-6">
             <DashboardStats stats={stats} />
             <CustomerChart customers={customers} partners={partners} />
-            <CustomerTable customers={customers} partners={partners} />
+            <CustomerTable customers={customers} partners={partners} products={products} />
           </div>
         );
       case 'customers':
-        return <CustomerTable customers={customers} partners={partners} />;
+        return <CustomerTable customers={customers} partners={partners} products={products} />;
       case 'partners':
         return <PartnerTable partners={partners} />;
+      case 'products':
+        return <ProductTable products={products} />;
       case 'add-customer':
-        return <CustomerForm partners={partners} onCustomerAdd={handleCustomerAdd} />;
+        return <CustomerForm partners={partners} products={products} onCustomerAdd={handleCustomerAdd} />;
       default:
         return <div>Page not found</div>;
     }
@@ -56,9 +61,10 @@ const Index = () => {
               {activeTab.replace('-', ' ')}
             </h2>
             <p className="text-muted-foreground mt-2">
-              {activeTab === 'dashboard' && 'Overview of your customer and partner data'}
+              {activeTab === 'dashboard' && 'Overview of your customer, partner, and product data'}
               {activeTab === 'customers' && 'Manage and view all customer information'}
               {activeTab === 'partners' && 'Overview of all partners and their performance'}
+              {activeTab === 'products' && 'Manage and view all product information'}
               {activeTab === 'add-customer' && 'Add new customers to your database'}
             </p>
           </div>

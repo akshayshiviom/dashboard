@@ -1,17 +1,17 @@
-
 import { useState, useMemo } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Customer, Partner } from '../types';
+import { Customer, Partner, Product } from '../types';
 import CustomerFilters from './CustomerFilters';
 
 interface CustomerTableProps {
   customers: Customer[];
   partners: Partner[];
+  products: Product[];
 }
 
-const CustomerTable = ({ customers, partners }: CustomerTableProps) => {
+const CustomerTable = ({ customers, partners, products }: CustomerTableProps) => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [partnerFilter, setPartnerFilter] = useState('all');
   const [valueFilter, setValueFilter] = useState(0);
@@ -32,6 +32,14 @@ const CustomerTable = ({ customers, partners }: CustomerTableProps) => {
   const getPartnerName = (partnerId?: string) => {
     const partner = partners.find(p => p.id === partnerId);
     return partner ? partner.name : 'Unassigned';
+  };
+
+  const getProductNames = (productIds?: string[]) => {
+    if (!productIds || productIds.length === 0) return 'None';
+    return productIds
+      .map(id => products.find(p => p.id === id)?.name)
+      .filter(Boolean)
+      .join(', ');
   };
 
   const getStatusColor = (status: string) => {
@@ -65,6 +73,7 @@ const CustomerTable = ({ customers, partners }: CustomerTableProps) => {
                 <TableHead>Company</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Partner</TableHead>
+                <TableHead>Products</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Value</TableHead>
                 <TableHead>Created</TableHead>
@@ -77,6 +86,9 @@ const CustomerTable = ({ customers, partners }: CustomerTableProps) => {
                   <TableCell>{customer.company}</TableCell>
                   <TableCell>{customer.email}</TableCell>
                   <TableCell>{getPartnerName(customer.partnerId)}</TableCell>
+                  <TableCell className="max-w-xs truncate">
+                    {getProductNames(customer.productIds)}
+                  </TableCell>
                   <TableCell>
                     <Badge className={getStatusColor(customer.status)}>
                       {customer.status}
