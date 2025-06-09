@@ -5,9 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Edit2, Check, X } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger } from '@/components/ui/dropdown-menu';
+import { Edit2, Check, X, Filter } from 'lucide-react';
 import { Product } from '../types';
-import ProductFilters from './ProductFilters';
 
 interface ProductTableProps {
   products: Product[];
@@ -23,6 +23,8 @@ const ProductTable = ({ products, onPriceUpdate }: ProductTableProps) => {
 
   // Simulate current user role - in a real app, this would come from auth context
   const currentUserRole = 'admin'; // Change this to test different roles
+
+  const categories = ['Identity Management', 'Mobile Device Management', 'Productivity Suite', 'Communication', 'Security'];
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
@@ -62,16 +64,59 @@ const ProductTable = ({ products, onPriceUpdate }: ProductTableProps) => {
 
   return (
     <div>
-      <ProductFilters
-        onStatusFilter={setStatusFilter}
-        onCategoryFilter={setCategoryFilter}
-        onCustomersFilter={setCustomersFilter}
-      />
       <Card>
         <CardHeader>
-          <CardTitle>
-            Products Overview ({filteredProducts.length} of {products.length})
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle>
+              Products Overview ({filteredProducts.length} of {products.length})
+            </CardTitle>
+            <div className="flex items-center gap-2">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <Filter size={16} className="mr-2" />
+                    Filters
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56">
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                      Filter by Status
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent>
+                      <DropdownMenuItem onClick={() => setStatusFilter('all')}>
+                        All statuses
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => setStatusFilter('active')}>
+                        Active
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setStatusFilter('inactive')}>
+                        Inactive
+                      </DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
+                  
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                      Filter by Category
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent>
+                      <DropdownMenuItem onClick={() => setCategoryFilter('all')}>
+                        All categories
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      {categories.map((category) => (
+                        <DropdownMenuItem key={category} onClick={() => setCategoryFilter(category)}>
+                          {category}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
           <Table>

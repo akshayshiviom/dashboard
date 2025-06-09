@@ -1,9 +1,12 @@
+
 import { useState, useMemo } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger } from '@/components/ui/dropdown-menu';
+import { Filter } from 'lucide-react';
 import { Customer, Partner, Product } from '../types';
-import CustomerFilters from './CustomerFilters';
 
 interface CustomerTableProps {
   customers: Customer[];
@@ -53,17 +56,65 @@ const CustomerTable = ({ customers, partners, products }: CustomerTableProps) =>
 
   return (
     <div>
-      <CustomerFilters
-        onStatusFilter={setStatusFilter}
-        onPartnerFilter={setPartnerFilter}
-        onValueFilter={setValueFilter}
-        partners={partners}
-      />
       <Card>
         <CardHeader>
-          <CardTitle>
-            Customers ({filteredCustomers.length} of {customers.length})
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle>
+              Customers ({filteredCustomers.length} of {customers.length})
+            </CardTitle>
+            <div className="flex items-center gap-2">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <Filter size={16} className="mr-2" />
+                    Filters
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56">
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                      Filter by Status
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent>
+                      <DropdownMenuItem onClick={() => setStatusFilter('all')}>
+                        All statuses
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => setStatusFilter('active')}>
+                        Active
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setStatusFilter('pending')}>
+                        Pending
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setStatusFilter('inactive')}>
+                        Inactive
+                      </DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
+                  
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                      Filter by Partner
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent>
+                      <DropdownMenuItem onClick={() => setPartnerFilter('all')}>
+                        All partners
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setPartnerFilter('unassigned')}>
+                        Unassigned
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      {partners.map((partner) => (
+                        <DropdownMenuItem key={partner.id} onClick={() => setPartnerFilter(partner.id)}>
+                          {partner.name}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
           <Table>

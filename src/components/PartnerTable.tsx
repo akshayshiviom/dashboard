@@ -4,9 +4,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Eye, CheckCircle, XCircle } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger } from '@/components/ui/dropdown-menu';
+import { Eye, CheckCircle, XCircle, Filter } from 'lucide-react';
 import { Partner, Customer, Product, User } from '../types';
-import PartnerFilters from './PartnerFilters';
 import PartnerDetails from './PartnerDetails';
 
 interface PartnerTableProps {
@@ -22,6 +22,8 @@ const PartnerTable = ({ partners, customers, products, users }: PartnerTableProp
   const [revenueFilter, setRevenueFilter] = useState(0);
   const [specializationFilter, setSpecializationFilter] = useState('all');
   const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null);
+
+  const specializations = ['Enterprise Software', 'Digital Marketing', 'Cloud Services', 'Consulting', 'E-commerce'];
 
   const filteredPartners = useMemo(() => {
     return partners.filter((partner) => {
@@ -72,17 +74,59 @@ const PartnerTable = ({ partners, customers, products, users }: PartnerTableProp
 
   return (
     <div>
-      <PartnerFilters
-        onStatusFilter={setStatusFilter}
-        onCustomersFilter={setCustomersFilter}
-        onRevenueFilter={setRevenueFilter}
-        onSpecializationFilter={setSpecializationFilter}
-      />
       <Card>
         <CardHeader>
-          <CardTitle>
-            Partners Overview ({filteredPartners.length} of {partners.length})
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle>
+              Partners Overview ({filteredPartners.length} of {partners.length})
+            </CardTitle>
+            <div className="flex items-center gap-2">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <Filter size={16} className="mr-2" />
+                    Filters
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56">
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                      Filter by Status
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent>
+                      <DropdownMenuItem onClick={() => setStatusFilter('all')}>
+                        All statuses
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => setStatusFilter('active')}>
+                        Active
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setStatusFilter('inactive')}>
+                        Inactive
+                      </DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
+                  
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                      Filter by Partner Program
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent>
+                      <DropdownMenuItem onClick={() => setSpecializationFilter('all')}>
+                        All programs
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      {specializations.map((spec) => (
+                        <DropdownMenuItem key={spec} onClick={() => setSpecializationFilter(spec)}>
+                          {spec}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
           <Table>
