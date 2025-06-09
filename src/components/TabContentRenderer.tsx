@@ -1,3 +1,4 @@
+
 import DashboardStats from '@/components/DashboardStats';
 import DashboardFilters from '@/components/DashboardFilters';
 import CustomerChart from '@/components/CustomerChart';
@@ -11,6 +12,8 @@ import UserHierarchyTable from '@/components/UserHierarchyTable';
 import Reports from '@/components/Reports';
 import Settings from '@/components/Settings';
 import ImportData from '@/components/ImportData';
+import CustomerManagement from '@/components/CustomerManagement';
+import PartnerOnboarding from '@/components/PartnerOnboarding';
 import { Customer, Partner, Product, User, Renewal, DashboardStats as StatsType } from '@/types';
 import { Dashboard } from './DashboardManager';
 
@@ -98,6 +101,10 @@ const TabContentRenderer = ({
           )}
         </div>
       );
+    case 'customer-management':
+      return <CustomerManagement customers={customers} partners={partners} products={products} />;
+    case 'partner-onboarding':
+      return <PartnerOnboarding partners={partners} />;
     case 'customers':
       return (
         <div className="space-y-6">

@@ -15,7 +15,8 @@ import {
   FileBarChart,
   Settings,
   Upload,
-  Mail
+  Mail,
+  Building
 } from 'lucide-react';
 
 interface MobileNavigationProps {
@@ -27,6 +28,8 @@ interface MobileNavigationProps {
 const MobileNavigation = ({ activeTab, onTabChange, onClose }: MobileNavigationProps) => {
   const navigationItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'customer-management', label: 'Customer Management', icon: Building },
+    { id: 'partner-onboarding', label: 'Partner Onboarding', icon: UserPlus },
     { id: 'customers', label: 'Customers', icon: Users },
     { id: 'add-customer', label: 'Add Customer', icon: UserPlus },
     { id: 'partners', label: 'Partners', icon: Building2 },
@@ -56,7 +59,7 @@ const MobileNavigation = ({ activeTab, onTabChange, onClose }: MobileNavigationP
           
           return (
             <div key={item.id}>
-              {(index === 3 || index === 7 || index === 9) && (
+              {(index === 1 || index === 5 || index === 9 || index === 11) && (
                 <Separator className="my-2" />
               )}
               <Button

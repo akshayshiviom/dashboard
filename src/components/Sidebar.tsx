@@ -1,4 +1,5 @@
-import { LayoutDashboard, Users, Tag, Plus, Package, UserCheck, FileText, RefreshCw, Settings, Mail, ChevronDown, Upload } from 'lucide-react';
+
+import { LayoutDashboard, Users, Tag, Plus, Package, UserCheck, FileText, RefreshCw, Settings, Mail, ChevronDown, Upload, Building, UserPlus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   DropdownMenu,
@@ -19,6 +20,15 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { 
+      id: 'crm', 
+      label: 'CRM', 
+      icon: Building,
+      subItems: [
+        { id: 'customer-management', label: 'Customer Management', icon: Users },
+        { id: 'partner-onboarding', label: 'Partner Onboarding', icon: UserPlus },
+      ]
+    },
     { 
       id: 'customers', 
       label: 'Customers', 
