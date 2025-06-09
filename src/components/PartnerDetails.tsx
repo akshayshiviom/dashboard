@@ -1,10 +1,9 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ArrowLeft, CheckCircle, XCircle, User, Calendar, CreditCard, Package } from 'lucide-react';
+import { ArrowLeft, CheckCircle, XCircle, User, Calendar, CreditCard, Package, Building } from 'lucide-react';
 import { Partner, Customer, Product, User as UserType } from '../types';
 
 interface PartnerDetailsProps {
@@ -43,6 +42,26 @@ const PartnerDetails = ({ partner, customers, products, users, onBack }: Partner
     }
   };
 
+  const getIdentityLabel = (identity: string) => {
+    switch (identity) {
+      case 'web-app-developer': return 'Web/App Developer';
+      case 'system-integrator': return 'System Integrator';
+      case 'managed-service-provider': return 'Managed Service Provider';
+      case 'digital-marketer': return 'Digital Marketer';
+      default: return identity;
+    }
+  };
+
+  const getIdentityColor = (identity: string) => {
+    switch (identity) {
+      case 'web-app-developer': return 'bg-blue-100 text-blue-800';
+      case 'system-integrator': return 'bg-green-100 text-green-800';
+      case 'managed-service-provider': return 'bg-purple-100 text-purple-800';
+      case 'digital-marketer': return 'bg-orange-100 text-orange-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -54,11 +73,26 @@ const PartnerDetails = ({ partner, customers, products, users, onBack }: Partner
         <div>
           <h2 className="text-2xl font-bold">{partner.name}</h2>
           <p className="text-muted-foreground">{partner.company}</p>
+          <Badge className={getIdentityColor(partner.identity)} variant="secondary">
+            {getIdentityLabel(partner.identity)}
+          </Badge>
         </div>
       </div>
 
       {/* Partner Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2">
+              <Building size={20} className="text-indigo-600" />
+              <div>
+                <p className="text-sm text-muted-foreground">Partner Identity</p>
+                <p className="font-medium">{getIdentityLabel(partner.identity)}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-2">

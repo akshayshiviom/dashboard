@@ -1,4 +1,3 @@
-
 import { useState, useMemo } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,6 +21,7 @@ const PartnerTable = ({ partners, customers, products, users }: PartnerTableProp
   const [revenueFilter, setRevenueFilter] = useState(0);
   const [specializationFilter, setSpecializationFilter] = useState('all');
   const [zoneFilter, setZoneFilter] = useState('all');
+  const [identityFilter, setIdentityFilter] = useState('all');
   const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null);
 
   const specializations = ['Enterprise Software', 'Digital Marketing', 'Cloud Services', 'Consulting', 'E-commerce'];
@@ -33,10 +33,11 @@ const PartnerTable = ({ partners, customers, products, users }: PartnerTableProp
       const revenueMatch = partner.totalValue >= revenueFilter;
       const specializationMatch = specializationFilter === 'all' || partner.specialization === specializationFilter;
       const zoneMatch = zoneFilter === 'all' || partner.zone === zoneFilter;
+      const identityMatch = identityFilter === 'all' || partner.identity === identityFilter;
       
-      return statusMatch && customersMatch && revenueMatch && specializationMatch && zoneMatch;
+      return statusMatch && customersMatch && revenueMatch && specializationMatch && zoneMatch && identityMatch;
     });
-  }, [partners, statusFilter, customersFilter, revenueFilter, specializationFilter, zoneFilter]);
+  }, [partners, statusFilter, customersFilter, revenueFilter, specializationFilter, zoneFilter, identityFilter]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -70,6 +71,26 @@ const PartnerTable = ({ partners, customers, products, users }: PartnerTableProp
   const getEmployeeName = (employeeId?: string) => {
     const employee = users.find(u => u.id === employeeId);
     return employee ? employee.name : 'Unassigned';
+  };
+
+  const getIdentityColor = (identity: string) => {
+    switch (identity) {
+      case 'web-app-developer': return 'bg-blue-100 text-blue-800';
+      case 'system-integrator': return 'bg-green-100 text-green-800';
+      case 'managed-service-provider': return 'bg-purple-100 text-purple-800';
+      case 'digital-marketer': return 'bg-orange-100 text-orange-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getIdentityLabel = (identity: string) => {
+    switch (identity) {
+      case 'web-app-developer': return 'Web/App Developer';
+      case 'system-integrator': return 'System Integrator';
+      case 'managed-service-provider': return 'MSP';
+      case 'digital-marketer': return 'Digital Marketer';
+      default: return identity;
+    }
   };
 
   if (selectedPartner) {
@@ -115,6 +136,30 @@ const PartnerTable = ({ partners, customers, products, users }: PartnerTableProp
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => setStatusFilter('inactive')}>
                         Inactive
+                      </DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
+
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                      Filter by Identity
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent>
+                      <DropdownMenuItem onClick={() => setIdentityFilter('all')}>
+                        All identities
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => setIdentityFilter('web-app-developer')}>
+                        Web/App Developer
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setIdentityFilter('system-integrator')}>
+                        System Integrator
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setIdentityFilter('managed-service-provider')}>
+                        Managed Service Provider
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setIdentityFilter('digital-marketer')}>
+                        Digital Marketer
                       </DropdownMenuItem>
                     </DropdownMenuSubContent>
                   </DropdownMenuSub>
@@ -170,6 +215,7 @@ const PartnerTable = ({ partners, customers, products, users }: PartnerTableProp
               <TableRow>
                 <TableHead>Name</TableHead>
                 <TableHead>Company</TableHead>
+                <TableHead>Identity</TableHead>
                 <TableHead>Zone</TableHead>
                 <TableHead>Agreement</TableHead>
                 <TableHead>Payment Terms</TableHead>
@@ -186,6 +232,11 @@ const PartnerTable = ({ partners, customers, products, users }: PartnerTableProp
                 <TableRow key={partner.id} className="hover:bg-muted/50">
                   <TableCell className="font-medium">{partner.name}</TableCell>
                   <TableCell>{partner.company}</TableCell>
+                  <TableCell>
+                    <Badge className={getIdentityColor(partner.identity)}>
+                      {getIdentityLabel(partner.identity)}
+                    </Badge>
+                  </TableCell>
                   <TableCell>
                     {partner.zone ? (
                       <Badge className={getZoneColor(partner.zone)}>

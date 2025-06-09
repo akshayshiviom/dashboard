@@ -1,3 +1,4 @@
+
 export interface Customer {
   id: string;
   name: string;
@@ -18,6 +19,7 @@ export interface Partner {
   email: string;
   company: string;
   specialization: string;
+  identity: 'web-app-developer' | 'system-integrator' | 'managed-service-provider' | 'digital-marketer';
   customersCount: number;
   totalValue: number;
   status: 'active' | 'inactive';
