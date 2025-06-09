@@ -1,10 +1,11 @@
-
 import { useState, useMemo } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
+import { Checkbox } from '@/components/ui/checkbox';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger } from '@/components/ui/dropdown-menu';
 import { Edit2, Check, X, Filter } from 'lucide-react';
 import { Product } from '../types';
@@ -12,14 +13,17 @@ import { Product } from '../types';
 interface ProductTableProps {
   products: Product[];
   onPriceUpdate?: (productId: string, newPrice: number) => void;
+  onStatusChange?: (productId: string, newStatus: 'active' | 'inactive') => void;
+  onBulkStatusChange?: (productIds: string[], newStatus: 'active' | 'inactive') => void;
 }
 
-const ProductTable = ({ products, onPriceUpdate }: ProductTableProps) => {
+const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusChange }: ProductTableProps) => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [customersFilter, setCustomersFilter] = useState(0);
   const [editingPrice, setEditingPrice] = useState<string | null>(null);
   const [editPrice, setEditPrice] = useState<number>(0);
+  const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
 
   // Simulate current user role - in a real app, this would come from auth context
   const currentUserRole = 'admin'; // Change this to test different roles
@@ -62,6 +66,41 @@ const ProductTable = ({ products, onPriceUpdate }: ProductTableProps) => {
     setEditPrice(0);
   };
 
+  const handleStatusToggle = (productId: string, currentStatus: string) => {
+    const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+    onStatusChange?.(productId, newStatus as 'active' | 'inactive');
+  };
+
+  const handleSelectProduct = (productId: string) => {
+    setSelectedProducts(prev => 
+      prev.includes(productId) 
+        ? prev.filter(id => id !== productId)
+        : [...prev, productId]
+    );
+  };
+
+  const handleSelectAll = () => {
+    if (selectedProducts.length === filteredProducts.length) {
+      setSelectedProducts([]);
+    } else {
+      setSelectedProducts(filteredProducts.map(product => product.id));
+    }
+  };
+
+  const handleBulkAction = (action: string) => {
+    if (selectedProducts.length === 0) return;
+    
+    switch (action) {
+      case 'activate':
+        onBulkStatusChange?.(selectedProducts, 'active');
+        break;
+      case 'deactivate':
+        onBulkStatusChange?.(selectedProducts, 'inactive');
+        break;
+    }
+    setSelectedProducts([]);
+  };
+
   return (
     <div>
       <Card>
@@ -71,6 +110,24 @@ const ProductTable = ({ products, onPriceUpdate }: ProductTableProps) => {
               Products Overview ({filteredProducts.length} of {products.length})
             </CardTitle>
             <div className="flex items-center gap-2">
+              {selectedProducts.length > 0 && currentUserRole === 'admin' && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      Bulk Actions ({selectedProducts.length})
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem onClick={() => handleBulkAction('activate')}>
+                      Set Active
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleBulkAction('deactivate')}>
+                      Set Inactive
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+              
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm">
@@ -122,6 +179,14 @@ const ProductTable = ({ products, onPriceUpdate }: ProductTableProps) => {
           <Table>
             <TableHeader>
               <TableRow>
+                {currentUserRole === 'admin' && (
+                  <TableHead className="w-12">
+                    <Checkbox 
+                      checked={selectedProducts.length === filteredProducts.length && filteredProducts.length > 0}
+                      onCheckedChange={handleSelectAll}
+                    />
+                  </TableHead>
+                )}
                 <TableHead>Product Name</TableHead>
                 <TableHead>Website</TableHead>
                 <TableHead>Category</TableHead>
@@ -136,6 +201,14 @@ const ProductTable = ({ products, onPriceUpdate }: ProductTableProps) => {
             <TableBody>
               {filteredProducts.map((product) => (
                 <TableRow key={product.id} className="hover:bg-muted/50">
+                  {currentUserRole === 'admin' && (
+                    <TableCell>
+                      <Checkbox 
+                        checked={selectedProducts.includes(product.id)}
+                        onCheckedChange={() => handleSelectProduct(product.id)}
+                      />
+                    </TableCell>
+                  )}
                   <TableCell className="font-medium">{product.name}</TableCell>
                   <TableCell>
                     <a 
@@ -191,16 +264,22 @@ const ProductTable = ({ products, onPriceUpdate }: ProductTableProps) => {
                   <TableCell>{product.createdAt.toLocaleDateString()}</TableCell>
                   {currentUserRole === 'admin' && (
                     <TableCell>
-                      {editingPrice !== product.id && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => startPriceEdit(product.id, product.price)}
-                        >
-                          <Edit2 size={14} className="mr-1" />
-                          Edit Price
-                        </Button>
-                      )}
+                      <div className="flex items-center gap-2">
+                        <Switch
+                          checked={product.status === 'active'}
+                          onCheckedChange={() => handleStatusToggle(product.id, product.status)}
+                        />
+                        {editingPrice !== product.id && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => startPriceEdit(product.id, product.price)}
+                          >
+                            <Edit2 size={14} className="mr-1" />
+                            Edit Price
+                          </Button>
+                        )}
+                      </div>
                     </TableCell>
                   )}
                 </TableRow>

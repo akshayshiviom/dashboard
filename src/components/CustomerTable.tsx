@@ -1,9 +1,10 @@
-
 import { useState, useMemo } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { Checkbox } from '@/components/ui/checkbox';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger } from '@/components/ui/dropdown-menu';
 import { Filter } from 'lucide-react';
 import { Customer, Partner, Product } from '../types';
@@ -12,13 +13,16 @@ interface CustomerTableProps {
   customers: Customer[];
   partners: Partner[];
   products: Product[];
+  onStatusChange?: (customerId: string, newStatus: 'active' | 'inactive' | 'pending') => void;
+  onBulkStatusChange?: (customerIds: string[], newStatus: 'active' | 'inactive' | 'pending') => void;
 }
 
-const CustomerTable = ({ customers, partners, products }: CustomerTableProps) => {
+const CustomerTable = ({ customers, partners, products, onStatusChange, onBulkStatusChange }: CustomerTableProps) => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [partnerFilter, setPartnerFilter] = useState('all');
   const [valueFilter, setValueFilter] = useState(0);
   const [zoneFilter, setZoneFilter] = useState('all');
+  const [selectedCustomers, setSelectedCustomers] = useState<string[]>([]);
 
   const filteredCustomers = useMemo(() => {
     return customers.filter((customer) => {
@@ -66,6 +70,44 @@ const CustomerTable = ({ customers, partners, products }: CustomerTableProps) =>
     }
   };
 
+  const handleStatusToggle = (customerId: string, currentStatus: string) => {
+    const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+    onStatusChange?.(customerId, newStatus as 'active' | 'inactive' | 'pending');
+  };
+
+  const handleSelectCustomer = (customerId: string) => {
+    setSelectedCustomers(prev => 
+      prev.includes(customerId) 
+        ? prev.filter(id => id !== customerId)
+        : [...prev, customerId]
+    );
+  };
+
+  const handleSelectAll = () => {
+    if (selectedCustomers.length === filteredCustomers.length) {
+      setSelectedCustomers([]);
+    } else {
+      setSelectedCustomers(filteredCustomers.map(customer => customer.id));
+    }
+  };
+
+  const handleBulkAction = (action: string) => {
+    if (selectedCustomers.length === 0) return;
+    
+    switch (action) {
+      case 'activate':
+        onBulkStatusChange?.(selectedCustomers, 'active');
+        break;
+      case 'deactivate':
+        onBulkStatusChange?.(selectedCustomers, 'inactive');
+        break;
+      case 'pending':
+        onBulkStatusChange?.(selectedCustomers, 'pending');
+        break;
+    }
+    setSelectedCustomers([]);
+  };
+
   return (
     <div>
       <Card>
@@ -75,6 +117,27 @@ const CustomerTable = ({ customers, partners, products }: CustomerTableProps) =>
               Customers ({filteredCustomers.length} of {customers.length})
             </CardTitle>
             <div className="flex items-center gap-2">
+              {selectedCustomers.length > 0 && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      Bulk Actions ({selectedCustomers.length})
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem onClick={() => handleBulkAction('activate')}>
+                      Set Active
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleBulkAction('deactivate')}>
+                      Set Inactive
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleBulkAction('pending')}>
+                      Set Pending
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+              
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm">
@@ -156,6 +219,12 @@ const CustomerTable = ({ customers, partners, products }: CustomerTableProps) =>
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-12">
+                  <Checkbox 
+                    checked={selectedCustomers.length === filteredCustomers.length && filteredCustomers.length > 0}
+                    onCheckedChange={handleSelectAll}
+                  />
+                </TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Company</TableHead>
                 <TableHead>Email</TableHead>
@@ -165,11 +234,18 @@ const CustomerTable = ({ customers, partners, products }: CustomerTableProps) =>
                 <TableHead>Status</TableHead>
                 <TableHead>Value</TableHead>
                 <TableHead>Created</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredCustomers.map((customer) => (
                 <TableRow key={customer.id} className="hover:bg-muted/50">
+                  <TableCell>
+                    <Checkbox 
+                      checked={selectedCustomers.includes(customer.id)}
+                      onCheckedChange={() => handleSelectCustomer(customer.id)}
+                    />
+                  </TableCell>
                   <TableCell className="font-medium">{customer.name}</TableCell>
                   <TableCell>{customer.company}</TableCell>
                   <TableCell>{customer.email}</TableCell>
@@ -193,6 +269,18 @@ const CustomerTable = ({ customers, partners, products }: CustomerTableProps) =>
                   </TableCell>
                   <TableCell>${customer.value.toLocaleString()}</TableCell>
                   <TableCell>{customer.createdAt.toLocaleDateString()}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <Switch
+                        checked={customer.status === 'active'}
+                        onCheckedChange={() => handleStatusToggle(customer.id, customer.status)}
+                        disabled={customer.status === 'pending'}
+                      />
+                      <span className="text-xs text-muted-foreground">
+                        {customer.status === 'active' ? 'Active' : 'Inactive'}
+                      </span>
+                    </div>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

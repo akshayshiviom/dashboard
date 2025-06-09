@@ -3,6 +3,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { Checkbox } from '@/components/ui/checkbox';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger } from '@/components/ui/dropdown-menu';
 import { Eye, CheckCircle, XCircle, Filter } from 'lucide-react';
 import { Partner, Customer, Product, User } from '../types';
@@ -13,9 +15,11 @@ interface PartnerTableProps {
   customers: Customer[];
   products: Product[];
   users: User[];
+  onStatusChange?: (partnerId: string, newStatus: 'active' | 'inactive') => void;
+  onBulkStatusChange?: (partnerIds: string[], newStatus: 'active' | 'inactive') => void;
 }
 
-const PartnerTable = ({ partners, customers, products, users }: PartnerTableProps) => {
+const PartnerTable = ({ partners, customers, products, users, onStatusChange, onBulkStatusChange }: PartnerTableProps) => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [customersFilter, setCustomersFilter] = useState(0);
   const [revenueFilter, setRevenueFilter] = useState(0);
@@ -23,6 +27,7 @@ const PartnerTable = ({ partners, customers, products, users }: PartnerTableProp
   const [zoneFilter, setZoneFilter] = useState('all');
   const [identityFilter, setIdentityFilter] = useState('all');
   const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null);
+  const [selectedPartners, setSelectedPartners] = useState<string[]>([]);
 
   const specializations = ['Enterprise Software', 'Digital Marketing', 'Cloud Services', 'Consulting', 'E-commerce'];
 
@@ -93,6 +98,41 @@ const PartnerTable = ({ partners, customers, products, users }: PartnerTableProp
     }
   };
 
+  const handleStatusToggle = (partnerId: string, currentStatus: string) => {
+    const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+    onStatusChange?.(partnerId, newStatus as 'active' | 'inactive');
+  };
+
+  const handleSelectPartner = (partnerId: string) => {
+    setSelectedPartners(prev => 
+      prev.includes(partnerId) 
+        ? prev.filter(id => id !== partnerId)
+        : [...prev, partnerId]
+    );
+  };
+
+  const handleSelectAll = () => {
+    if (selectedPartners.length === filteredPartners.length) {
+      setSelectedPartners([]);
+    } else {
+      setSelectedPartners(filteredPartners.map(partner => partner.id));
+    }
+  };
+
+  const handleBulkAction = (action: string) => {
+    if (selectedPartners.length === 0) return;
+    
+    switch (action) {
+      case 'activate':
+        onBulkStatusChange?.(selectedPartners, 'active');
+        break;
+      case 'deactivate':
+        onBulkStatusChange?.(selectedPartners, 'inactive');
+        break;
+    }
+    setSelectedPartners([]);
+  };
+
   if (selectedPartner) {
     return (
       <PartnerDetails
@@ -114,6 +154,24 @@ const PartnerTable = ({ partners, customers, products, users }: PartnerTableProp
               Partners Overview ({filteredPartners.length} of {partners.length})
             </CardTitle>
             <div className="flex items-center gap-2">
+              {selectedPartners.length > 0 && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      Bulk Actions ({selectedPartners.length})
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem onClick={() => handleBulkAction('activate')}>
+                      Set Active
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleBulkAction('deactivate')}>
+                      Set Inactive
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+              
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm">
@@ -213,6 +271,12 @@ const PartnerTable = ({ partners, customers, products, users }: PartnerTableProp
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-12">
+                  <Checkbox 
+                    checked={selectedPartners.length === filteredPartners.length && filteredPartners.length > 0}
+                    onCheckedChange={handleSelectAll}
+                  />
+                </TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Company</TableHead>
                 <TableHead>Identity</TableHead>
@@ -230,6 +294,12 @@ const PartnerTable = ({ partners, customers, products, users }: PartnerTableProp
             <TableBody>
               {filteredPartners.map((partner) => (
                 <TableRow key={partner.id} className="hover:bg-muted/50">
+                  <TableCell>
+                    <Checkbox 
+                      checked={selectedPartners.includes(partner.id)}
+                      onCheckedChange={() => handleSelectPartner(partner.id)}
+                    />
+                  </TableCell>
                   <TableCell className="font-medium">{partner.name}</TableCell>
                   <TableCell>{partner.company}</TableCell>
                   <TableCell>
@@ -288,15 +358,21 @@ const PartnerTable = ({ partners, customers, products, users }: PartnerTableProp
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setSelectedPartner(partner)}
-                      className="gap-2"
-                    >
-                      <Eye size={14} />
-                      View Details
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Switch
+                        checked={partner.status === 'active'}
+                        onCheckedChange={() => handleStatusToggle(partner.id, partner.status)}
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSelectedPartner(partner)}
+                        className="gap-2"
+                      >
+                        <Eye size={14} />
+                        View Details
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}

@@ -1,9 +1,9 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger } from '@/components/ui/dropdown-menu';
 import { Users, Eye, Edit, Trash2, MoreVertical, UserPlus, Download, Filter, Settings2 } from 'lucide-react';
@@ -11,9 +11,11 @@ import { User } from '../types';
 
 interface UserHierarchyTableProps {
   users: User[];
+  onStatusChange?: (userId: string, newStatus: 'active' | 'inactive') => void;
+  onBulkStatusChange?: (userIds: string[], newStatus: 'active' | 'inactive') => void;
 }
 
-const UserHierarchyTable = ({ users }: UserHierarchyTableProps) => {
+const UserHierarchyTable = ({ users, onStatusChange, onBulkStatusChange }: UserHierarchyTableProps) => {
   const [filteredUsers, setFilteredUsers] = useState<User[]>(users);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [showInactive, setShowInactive] = useState(true);
@@ -86,16 +88,36 @@ const UserHierarchyTable = ({ users }: UserHierarchyTableProps) => {
   };
 
   const handleSelectAll = () => {
-    if (selectedUsers.length === filteredUsers.length) {
+    if (selectedUsers.length === displayUsers.length) {
       setSelectedUsers([]);
     } else {
-      setSelectedUsers(filteredUsers.map(user => user.id));
+      setSelectedUsers(displayUsers.map(user => user.id));
     }
   };
 
+  const handleStatusToggle = (userId: string, currentStatus: string) => {
+    const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+    onStatusChange?.(userId, newStatus as 'active' | 'inactive');
+  };
+
   const handleBulkAction = (action: string) => {
-    console.log(`Performing ${action} on users:`, selectedUsers);
-    // Here you would implement the actual bulk action logic
+    if (selectedUsers.length === 0) return;
+
+    switch (action) {
+      case 'activate':
+        onBulkStatusChange?.(selectedUsers, 'active');
+        break;
+      case 'deactivate':
+        onBulkStatusChange?.(selectedUsers, 'inactive');
+        break;
+      case 'export':
+        console.log('Exporting users:', selectedUsers);
+        break;
+      case 'delete':
+        console.log('Deleting users:', selectedUsers);
+        break;
+    }
+    setSelectedUsers([]);
   };
 
   const exportUsers = () => {
@@ -283,7 +305,11 @@ const UserHierarchyTable = ({ users }: UserHierarchyTableProps) => {
                     </TableCell>
                   )}
                   <TableCell>
-                    <div className="flex space-x-2">
+                    <div className="flex items-center gap-2">
+                      <Switch
+                        checked={user.status === 'active'}
+                        onCheckedChange={() => handleStatusToggle(user.id, user.status)}
+                      />
                       <Button variant="outline" size="sm">
                         <Eye size={16} />
                       </Button>
