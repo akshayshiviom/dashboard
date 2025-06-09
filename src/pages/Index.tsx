@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 import DashboardStats from '@/components/DashboardStats';
@@ -18,9 +19,24 @@ import { mockUsers } from '@/utils/mockUsers';
 import { mockRenewals } from '@/utils/mockRenewals';
 import { Customer, Partner, Product, User, Renewal, DashboardStats as StatsType } from '@/types';
 
+interface Dashboard {
+  id: string;
+  name: string;
+  timeframe: 'monthly' | 'yearly' | 'custom';
+  customDateRange?: {
+    from: Date;
+    to: Date;
+  };
+}
+
 const Index = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [timeframe, setTimeframe] = useState<'monthly' | 'yearly'>('monthly');
+  const [dashboards, setDashboards] = useState<Dashboard[]>([
+    { id: 'default', name: 'Main Dashboard', timeframe: 'monthly' }
+  ]);
+  const [activeDashboard, setActiveDashboard] = useState('default');
+  const [timeframe, setTimeframe] = useState<'monthly' | 'yearly' | 'custom'>('monthly');
+  const [customDateRange, setCustomDateRange] = useState<{ from: Date; to: Date } | undefined>();
   const [customers, setCustomers] = useState<Customer[]>(mockCustomers);
   const [partners] = useState<Partner[]>(mockPartners);
   const [products, setProducts] = useState<Product[]>(mockProducts);
@@ -31,28 +47,85 @@ const Index = () => {
     setActiveTab(tab);
   };
 
-  const handleTimeframeChange = (newTimeframe: 'monthly' | 'yearly') => {
+  const handleTimeframeChange = (newTimeframe: 'monthly' | 'yearly' | 'custom') => {
     setTimeframe(newTimeframe);
+    // Update current dashboard
+    setDashboards(prev => prev.map(dashboard => 
+      dashboard.id === activeDashboard 
+        ? { ...dashboard, timeframe: newTimeframe }
+        : dashboard
+    ));
   };
 
-  // Filter data based on timeframe
+  const handleCustomDateChange = (dateRange: { from: Date; to: Date }) => {
+    setCustomDateRange(dateRange);
+    // Update current dashboard
+    setDashboards(prev => prev.map(dashboard => 
+      dashboard.id === activeDashboard 
+        ? { ...dashboard, customDateRange: dateRange }
+        : dashboard
+    ));
+  };
+
+  const handleDashboardChange = (dashboardId: string) => {
+    setActiveDashboard(dashboardId);
+    const dashboard = dashboards.find(d => d.id === dashboardId);
+    if (dashboard) {
+      setTimeframe(dashboard.timeframe);
+      setCustomDateRange(dashboard.customDateRange);
+    }
+  };
+
+  const handleCreateDashboard = (name: string) => {
+    const newDashboard: Dashboard = {
+      id: `dashboard-${Date.now()}`,
+      name,
+      timeframe: 'monthly'
+    };
+    setDashboards(prev => [...prev, newDashboard]);
+    setActiveDashboard(newDashboard.id);
+    setTimeframe('monthly');
+    setCustomDateRange(undefined);
+  };
+
+  const handleDeleteDashboard = (dashboardId: string) => {
+    if (dashboards.length <= 1) return;
+    
+    setDashboards(prev => prev.filter(d => d.id !== dashboardId));
+    if (activeDashboard === dashboardId) {
+      const remainingDashboard = dashboards.find(d => d.id !== dashboardId);
+      if (remainingDashboard) {
+        setActiveDashboard(remainingDashboard.id);
+        setTimeframe(remainingDashboard.timeframe);
+        setCustomDateRange(remainingDashboard.customDateRange);
+      }
+    }
+  };
+
+  // Filter data based on timeframe and custom date range
   const getFilteredData = () => {
     const now = new Date();
     let cutoffDate: Date;
+    let endDate: Date = now;
 
-    if (timeframe === 'monthly') {
+    if (timeframe === 'custom' && customDateRange) {
+      cutoffDate = customDateRange.from;
+      endDate = customDateRange.to;
+    } else if (timeframe === 'monthly') {
       cutoffDate = new Date(now.getFullYear(), now.getMonth(), 1);
     } else {
       cutoffDate = new Date(now.getFullYear(), 0, 1);
     }
 
-    const filteredCustomers = customers.filter(customer => 
-      new Date(customer.createdAt) >= cutoffDate
-    );
+    const filteredCustomers = customers.filter(customer => {
+      const customerDate = new Date(customer.createdAt);
+      return customerDate >= cutoffDate && customerDate <= endDate;
+    });
 
-    const filteredRenewals = renewals.filter(renewal => 
-      new Date(renewal.renewalDate) >= cutoffDate
-    );
+    const filteredRenewals = renewals.filter(renewal => {
+      const renewalDate = new Date(renewal.renewalDate);
+      return renewalDate >= cutoffDate && renewalDate <= endDate;
+    });
 
     return { filteredCustomers, filteredRenewals };
   };
@@ -97,7 +170,14 @@ const Index = () => {
           <div className="space-y-6">
             <DashboardFilters 
               timeframe={timeframe} 
-              onTimeframeChange={handleTimeframeChange} 
+              onTimeframeChange={handleTimeframeChange}
+              customDateRange={customDateRange}
+              onCustomDateChange={handleCustomDateChange}
+              dashboards={dashboards}
+              activeDashboard={activeDashboard}
+              onDashboardChange={handleDashboardChange}
+              onCreateDashboard={handleCreateDashboard}
+              onDeleteDashboard={handleDeleteDashboard}
             />
             <DashboardStats stats={stats} />
             <CustomerChart customers={filteredCustomers} partners={partners} />
