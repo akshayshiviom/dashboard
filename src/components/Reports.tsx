@@ -85,61 +85,61 @@ const Reports = ({ customers, partners, products, users }: ReportsProps) => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       {/* Header Actions */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
           <h3 className="text-lg font-semibold">Available Reports</h3>
-          <p className="text-muted-foreground">Generate and download business reports</p>
+          <p className="text-muted-foreground text-sm">Generate and download business reports</p>
         </div>
-        <Button onClick={() => setIsCustomReportOpen(true)} className="gap-2">
+        <Button onClick={() => setIsCustomReportOpen(true)} className="gap-2 w-full sm:w-auto">
           <Plus size={16} />
           Create Custom Report
         </Button>
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         <Card>
-          <CardContent className="p-4">
+          <CardContent className="p-3 md:p-4">
             <div className="flex items-center gap-2">
-              <Users size={20} className="text-blue-600" />
-              <div>
-                <p className="text-sm text-muted-foreground">Total Customers</p>
-                <p className="text-2xl font-bold">{customers.length}</p>
+              <Users size={16} className="text-blue-600 md:w-5 md:h-5" />
+              <div className="min-w-0 flex-1">
+                <p className="text-xs md:text-sm text-muted-foreground truncate">Customers</p>
+                <p className="text-lg md:text-2xl font-bold">{customers.length}</p>
               </div>
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4">
+          <CardContent className="p-3 md:p-4">
             <div className="flex items-center gap-2">
-              <Tag size={20} className="text-green-600" />
-              <div>
-                <p className="text-sm text-muted-foreground">Active Partners</p>
-                <p className="text-2xl font-bold">{partners.filter(p => p.status === 'active').length}</p>
+              <Tag size={16} className="text-green-600 md:w-5 md:h-5" />
+              <div className="min-w-0 flex-1">
+                <p className="text-xs md:text-sm text-muted-foreground truncate">Partners</p>
+                <p className="text-lg md:text-2xl font-bold">{partners.filter(p => p.status === 'active').length}</p>
               </div>
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4">
+          <CardContent className="p-3 md:p-4">
             <div className="flex items-center gap-2">
-              <Package size={20} className="text-purple-600" />
-              <div>
-                <p className="text-sm text-muted-foreground">Active Products</p>
-                <p className="text-2xl font-bold">{products.filter(p => p.status === 'active').length}</p>
+              <Package size={16} className="text-purple-600 md:w-5 md:h-5" />
+              <div className="min-w-0 flex-1">
+                <p className="text-xs md:text-sm text-muted-foreground truncate">Products</p>
+                <p className="text-lg md:text-2xl font-bold">{products.filter(p => p.status === 'active').length}</p>
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="p-4">
+        <Card className="col-span-2 lg:col-span-1">
+          <CardContent className="p-3 md:p-4">
             <div className="flex items-center gap-2">
-              <BarChart3 size={20} className="text-orange-600" />
-              <div>
-                <p className="text-sm text-muted-foreground">Total Revenue</p>
-                <p className="text-2xl font-bold">₹{customers.reduce((sum, c) => sum + c.value, 0).toLocaleString('en-IN')}</p>
+              <BarChart3 size={16} className="text-orange-600 md:w-5 md:h-5" />
+              <div className="min-w-0 flex-1">
+                <p className="text-xs md:text-sm text-muted-foreground truncate">Revenue</p>
+                <p className="text-lg md:text-2xl font-bold">₹{customers.reduce((sum, c) => sum + c.value, 0).toLocaleString('en-IN')}</p>
               </div>
             </div>
           </CardContent>
@@ -148,34 +148,35 @@ const Reports = ({ customers, partners, products, users }: ReportsProps) => {
 
       {/* Predefined Reports */}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileText size={20} />
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-base md:text-lg">
+            <FileText size={18} />
             Predefined Reports
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4">
+          <div className="space-y-3 md:space-y-4">
             {predefinedReports.map((report) => (
-              <div key={report.id} className="flex items-center justify-between p-4 border rounded-lg">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h4 className="font-medium">{report.title}</h4>
+              <div key={report.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 md:p-4 border rounded-lg gap-3">
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
+                    <h4 className="font-medium text-sm md:text-base truncate">{report.title}</h4>
                     <Badge className={getCategoryColor(report.category)}>
                       {report.category}
                     </Badge>
                   </div>
-                  <p className="text-sm text-muted-foreground mb-2">{report.description}</p>
+                  <p className="text-xs md:text-sm text-muted-foreground mb-2 line-clamp-2">{report.description}</p>
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <Calendar size={12} />
                     Last generated: {report.lastGenerated.toLocaleDateString()}
                   </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 sm:flex-col lg:flex-row">
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => handleGenerateReport(report.id)}
+                    className="flex-1 sm:flex-none text-xs"
                   >
                     Generate
                   </Button>
@@ -183,9 +184,9 @@ const Reports = ({ customers, partners, products, users }: ReportsProps) => {
                     variant="outline"
                     size="sm"
                     onClick={() => handleDownloadReport(report.id)}
-                    className="gap-1"
+                    className="gap-1 flex-1 sm:flex-none text-xs"
                   >
-                    <Download size={14} />
+                    <Download size={12} />
                     Download
                   </Button>
                 </div>

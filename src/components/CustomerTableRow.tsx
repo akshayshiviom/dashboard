@@ -56,17 +56,20 @@ const CustomerTableRow = ({
 
   return (
     <TableRow className="hover:bg-muted/50">
-      <TableCell>
+      <TableCell className="w-8">
         <Checkbox 
           checked={isSelected}
           onCheckedChange={() => onSelect(customer.id)}
         />
       </TableCell>
-      <TableCell className="font-medium">{customer.name}</TableCell>
-      <TableCell>{customer.company}</TableCell>
-      <TableCell>{customer.email}</TableCell>
-      <TableCell>{getPartnerName(customer.partnerId)}</TableCell>
-      <TableCell>
+      <TableCell className="font-medium min-w-32">
+        <div className="truncate">{customer.name}</div>
+        <div className="text-xs text-muted-foreground md:hidden truncate">{customer.email}</div>
+      </TableCell>
+      <TableCell className="hidden md:table-cell">{customer.company}</TableCell>
+      <TableCell className="hidden lg:table-cell">{customer.email}</TableCell>
+      <TableCell className="hidden md:table-cell">{getPartnerName(customer.partnerId)}</TableCell>
+      <TableCell className="hidden lg:table-cell">
         {customer.zone ? (
           <Badge className={getZoneColor(customer.zone)}>
             {customer.zone.charAt(0).toUpperCase() + customer.zone.slice(1)}
@@ -75,7 +78,7 @@ const CustomerTableRow = ({
           <span className="text-muted-foreground">Not set</span>
         )}
       </TableCell>
-      <TableCell className="max-w-xs truncate">
+      <TableCell className="hidden xl:table-cell max-w-xs truncate">
         {getProductNames(customer.productIds)}
       </TableCell>
       <TableCell>
@@ -83,16 +86,16 @@ const CustomerTableRow = ({
           {customer.status}
         </Badge>
       </TableCell>
-      <TableCell>₹{customer.value.toLocaleString('en-IN')}</TableCell>
-      <TableCell>{customer.createdAt.toLocaleDateString()}</TableCell>
-      <TableCell>
+      <TableCell className="text-right font-medium">₹{customer.value.toLocaleString('en-IN')}</TableCell>
+      <TableCell className="hidden lg:table-cell">{customer.createdAt.toLocaleDateString()}</TableCell>
+      <TableCell className="hidden md:table-cell">
         <div className="flex items-center gap-2">
           <Switch
             checked={customer.status === 'active'}
             onCheckedChange={() => onStatusToggle(customer.id, customer.status)}
             disabled={customer.status === 'pending'}
           />
-          <span className="text-xs text-muted-foreground">
+          <span className="text-xs text-muted-foreground hidden lg:inline">
             {customer.status === 'active' ? 'Active' : 'Inactive'}
           </span>
         </div>

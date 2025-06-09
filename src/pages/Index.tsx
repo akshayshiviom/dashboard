@@ -1,31 +1,26 @@
-
-import { useState } from 'react';
-import Sidebar from '@/components/Sidebar';
-import TabContentRenderer from '@/components/TabContentRenderer';
-import { useDashboardManager } from '@/components/DashboardManager';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { getDashboardStats } from '@/utils/api';
 import { useDataManager } from '@/components/DataManager';
-import { DashboardStats as StatsType } from '@/types';
+import SidebarComponent from '@/components/Sidebar';
+import TabContentRenderer from '@/components/TabContentRenderer';
+import { DashboardManager, defaultDashboards } from '@/components/DashboardManager';
+import { Customer, Partner, Product, User, Renewal, DashboardStats as StatsType, Dashboard } from '@/types';
+import MobileLayout from '@/components/MobileLayout';
+import MobileNavigation from '@/components/MobileNavigation';
+import MobileDashboardStats from '@/components/MobileDashboardStats';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Index = () => {
-  const [activeTab, setActiveTab] = useState('dashboard');
-  
-  const {
-    dashboards,
-    activeDashboard,
-    timeframe,
-    customDateRange,
-    handleDashboardChange,
-    handleTimeframeChange,
-    handleCustomDateChange,
-    handleCreateDashboard,
-    handleUpdateDashboard,
-    handleDeleteDashboard,
-    getCurrentDashboard
-  } = useDashboardManager({
-    onDashboardChange: () => {},
-    onTimeframeChange: () => {},
-    onCustomDateChange: () => {}
-  });
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialTab = searchParams.get('tab') || 'dashboard';
+  const [activeTab, setActiveTab] = useState(initialTab);
+  const [timeframe, setTimeframe] = useState<'monthly' | 'yearly' | 'custom'>('monthly');
+  const [customDateRange, setCustomDateRange] = useState<{ from: Date; to: Date } | undefined>(undefined);
+  const [dashboards, setDashboards] = useState<Dashboard[]>(defaultDashboards);
+  const [activeDashboard, setActiveDashboard] = useState(dashboards[0].id);
+  const isMobile = useIsMobile();
 
   const {
     customers,
@@ -40,53 +35,125 @@ const Index = () => {
     handleProductPriceUpdate
   } = useDataManager();
 
-  const handleTabChange = (tab: string) => {
-    setActiveTab(tab);
-  };
+  useEffect(() => {
+    setSearchParams({ tab: activeTab });
+  }, [activeTab, setSearchParams]);
 
-  const getFilteredData = () => {
-    const now = new Date();
-    let cutoffDate: Date;
-    let endDate: Date = now;
+  const { data: stats, isLoading, isError } = useQuery<StatsType>({
+    queryKey: ['dashboardStats', timeframe, customDateRange],
+    queryFn: () => getDashboardStats(timeframe, customDateRange),
+  });
 
-    if (timeframe === 'custom' && customDateRange) {
-      cutoffDate = customDateRange.from;
-      endDate = customDateRange.to;
-    } else if (timeframe === 'monthly') {
-      cutoffDate = new Date(now.getFullYear(), now.getMonth(), 1);
-    } else {
-      cutoffDate = new Date(now.getFullYear(), 0, 1);
+  const currentDashboard = dashboards.find(dashboard => dashboard.id === activeDashboard) || dashboards[0];
+
+  const filteredCustomers = customers.filter(customer => {
+    if (!currentDashboard.filters) return true;
+
+    if (currentDashboard.filters.partnerIds && currentDashboard.filters.partnerIds.length > 0) {
+      const partnerIds = currentDashboard.filters.partnerIds;
+      if (!customer.partnerId || !partnerIds.includes(customer.partnerId)) {
+        return false;
+      }
     }
 
-    const filteredCustomers = customers.filter(customer => {
-      const customerDate = new Date(customer.createdAt);
-      return customerDate >= cutoffDate && customerDate <= endDate;
-    });
+    if (currentDashboard.filters.productIds && currentDashboard.filters.productIds.length > 0) {
+      const productIds = currentDashboard.filters.productIds;
+      if (!customer.productIds || customer.productIds.length === 0) {
+        return false;
+      }
 
-    const filteredRenewals = renewals.filter(renewal => {
-      const renewalDate = new Date(renewal.renewalDate);
-      return renewalDate >= cutoffDate && renewalDate <= endDate;
-    });
+      const hasAnyProduct = customer.productIds.some(productId => productIds.includes(productId));
+      if (!hasAnyProduct) {
+        return false;
+      }
+    }
 
-    return { filteredCustomers, filteredRenewals };
+    return true;
+  });
+
+  const filteredRenewals = renewals.filter(renewal => {
+    if (!currentDashboard.filters) return true;
+
+    if (currentDashboard.filters.partnerIds && currentDashboard.filters.partnerIds.length > 0) {
+      const partnerIds = currentDashboard.filters.partnerIds;
+      if (!renewal.partnerId || !partnerIds.includes(renewal.partnerId)) {
+        return false;
+      }
+    }
+
+    if (currentDashboard.filters.productIds && currentDashboard.filters.productIds.length > 0) {
+      const productIds = currentDashboard.filters.productIds;
+      if (!renewal.productId || !productIds.includes(renewal.productId)) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+
+  const handleCreateDashboard = (name: string, description?: string) => {
+    DashboardManager.createDashboard(name, setDashboards, description);
   };
 
-  const { filteredCustomers, filteredRenewals } = getFilteredData();
-
-  const stats: StatsType = {
-    totalCustomers: filteredCustomers.length,
-    totalPartners: partners.length,
-    totalProducts: products.length,
-    totalValue: filteredCustomers.reduce((sum, customer) => sum + customer.value, 0),
-    activeCustomers: filteredCustomers.filter(c => c.status === 'active').length,
+  const handleUpdateDashboard = (dashboardId: string, updates: Partial<Dashboard>) => {
+    DashboardManager.updateDashboard(dashboardId, updates, setDashboards);
   };
 
-  const currentDashboard = getCurrentDashboard();
+  const handleDeleteDashboard = (dashboardId: string) => {
+    DashboardManager.deleteDashboard(dashboardId, setDashboards, setActiveDashboard, dashboards);
+  };
 
-  return (
-    <div className="flex h-screen bg-background">
-      <Sidebar activeTab={activeTab} onTabChange={handleTabChange} />
-      <main className="flex-1 p-8">
+  const sidebarContent = (
+    <MobileNavigation 
+      activeTab={activeTab} 
+      onTabChange={setActiveTab}
+    />
+  );
+
+  const renderMobileContent = () => {
+    if (activeTab === 'dashboard') {
+      return (
+        <div className="space-y-4">
+          <div className="px-4 pt-4">
+            <h2 className="text-xl font-bold">Dashboard</h2>
+            <p className="text-sm text-muted-foreground">Overview of your business metrics</p>
+          </div>
+          <MobileDashboardStats stats={stats} />
+          <div className="px-4">
+            <TabContentRenderer
+              activeTab={activeTab}
+              currentDashboard={currentDashboard}
+              timeframe={timeframe}
+              customDateRange={customDateRange}
+              dashboards={dashboards}
+              activeDashboard={activeDashboard}
+              filteredCustomers={filteredCustomers}
+              filteredRenewals={filteredRenewals}
+              stats={stats}
+              customers={customers}
+              partners={partners}
+              products={products}
+              users={users}
+              renewals={renewals}
+              onTimeframeChange={setTimeframe}
+              onCustomDateChange={setCustomDateRange}
+              onDashboardChange={setActiveDashboard}
+              onCreateDashboard={handleCreateDashboard}
+              onUpdateDashboard={handleUpdateDashboard}
+              onDeleteDashboard={handleDeleteDashboard}
+              onCustomerAdd={handleCustomerAdd}
+              onCustomerImport={handleCustomerImport}
+              onProductAdd={handleProductAdd}
+              onProductImport={handleProductImport}
+              onProductPriceUpdate={handleProductPriceUpdate}
+            />
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="p-4">
         <TabContentRenderer
           activeTab={activeTab}
           currentDashboard={currentDashboard}
@@ -102,9 +169,9 @@ const Index = () => {
           products={products}
           users={users}
           renewals={renewals}
-          onTimeframeChange={handleTimeframeChange}
-          onCustomDateChange={handleCustomDateChange}
-          onDashboardChange={handleDashboardChange}
+          onTimeframeChange={setTimeframe}
+          onCustomDateChange={setCustomDateRange}
+          onDashboardChange={setActiveDashboard}
           onCreateDashboard={handleCreateDashboard}
           onUpdateDashboard={handleUpdateDashboard}
           onDeleteDashboard={handleDeleteDashboard}
@@ -114,8 +181,55 @@ const Index = () => {
           onProductImport={handleProductImport}
           onProductPriceUpdate={handleProductPriceUpdate}
         />
-      </main>
-    </div>
+      </div>
+    );
+  };
+
+  if (isMobile) {
+    return (
+      <MobileLayout sidebar={sidebarContent}>
+        {renderMobileContent()}
+      </MobileLayout>
+    );
+  }
+
+  return (
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full">
+        <SidebarComponent activeTab={activeTab} onTabChange={setActiveTab} />
+        <SidebarInset className="flex-1">
+          <main className="p-6">
+            <TabContentRenderer
+              activeTab={activeTab}
+              currentDashboard={currentDashboard}
+              timeframe={timeframe}
+              customDateRange={customDateRange}
+              dashboards={dashboards}
+              activeDashboard={activeDashboard}
+              filteredCustomers={filteredCustomers}
+              filteredRenewals={filteredRenewals}
+              stats={stats}
+              customers={customers}
+              partners={partners}
+              products={products}
+              users={users}
+              renewals={renewals}
+              onTimeframeChange={setTimeframe}
+              onCustomDateChange={setCustomDateRange}
+              onDashboardChange={setActiveDashboard}
+              onCreateDashboard={handleCreateDashboard}
+              onUpdateDashboard={handleUpdateDashboard}
+              onDeleteDashboard={handleDeleteDashboard}
+              onCustomerAdd={handleCustomerAdd}
+              onCustomerImport={handleCustomerImport}
+              onProductAdd={handleProductAdd}
+              onProductImport={handleProductImport}
+              onProductPriceUpdate={handleProductPriceUpdate}
+            />
+          </main>
+        </SidebarInset>
+      </div>
+    </SidebarProvider>
   );
 };
 
