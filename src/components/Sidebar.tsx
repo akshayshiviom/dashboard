@@ -51,7 +51,7 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
   return (
     <div className="w-64 bg-card border-r border-border h-screen p-6">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-foreground">CRM Dashboard</h1>
+        <h1 className="text-2xl font-bold text-foreground">Shiviom Dashboard</h1>
         <p className="text-sm text-muted-foreground">Customer & Partner Management</p>
       </div>
       
