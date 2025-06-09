@@ -26,7 +26,15 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
       ]
     },
     { id: 'partners', label: 'Partners', icon: Tag },
-    { id: 'products', label: 'Products', icon: Package },
+    { 
+      id: 'products', 
+      label: 'Products', 
+      icon: Package,
+      subItems: [
+        { id: 'products', label: 'View Products' },
+        { id: 'add-product', label: 'Add Product', icon: Plus },
+      ]
+    },
     { id: 'renewals', label: 'Renewals', icon: RefreshCw },
     { id: 'reports', label: 'Reports', icon: FileText },
     { 

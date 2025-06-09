@@ -7,6 +7,7 @@ import CustomerTable from '@/components/CustomerTable';
 import CustomerForm from '@/components/CustomerForm';
 import PartnerTable from '@/components/PartnerTable';
 import ProductTable from '@/components/ProductTable';
+import ProductForm from '@/components/ProductForm';
 import Renewals from '@/components/Renewals';
 import UserHierarchyTable from '@/components/UserHierarchyTable';
 import Reports from '@/components/Reports';
@@ -20,7 +21,7 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [customers, setCustomers] = useState<Customer[]>(mockCustomers);
   const [partners] = useState<Partner[]>(mockPartners);
-  const [products] = useState<Product[]>(mockProducts);
+  const [products, setProducts] = useState<Product[]>(mockProducts);
   const [users] = useState<User[]>(mockUsers);
   const [renewals] = useState<Renewal[]>(mockRenewals);
 
@@ -40,6 +41,11 @@ const Index = () => {
   // Callback functions for customer management
   const handleCustomerAdd = (customer: Customer) => {
     setCustomers([...customers, customer]);
+  };
+
+  // Callback functions for product management
+  const handleProductAdd = (product: Product) => {
+    setProducts([...products, product]);
   };
 
   const handleProductPriceUpdate = (productId: string, newPrice: number) => {
@@ -76,6 +82,8 @@ const Index = () => {
             <ProductTable products={products} onPriceUpdate={handleProductPriceUpdate} />
           </div>
         );
+      case 'add-product':
+        return <ProductForm onProductAdd={handleProductAdd} />;
       case 'renewals':
         return <Renewals renewals={renewals} customers={customers} partners={partners} products={products} />;
       case 'user-hierarchy':
