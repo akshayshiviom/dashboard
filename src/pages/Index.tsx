@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 import DashboardStats from '@/components/DashboardStats';
@@ -22,17 +21,41 @@ import { Customer, Partner, Product, User, Renewal, DashboardStats as StatsType 
 interface Dashboard {
   id: string;
   name: string;
+  description?: string;
   timeframe: 'monthly' | 'yearly' | 'custom';
   customDateRange?: {
     from: Date;
     to: Date;
+  };
+  widgets: {
+    showStats: boolean;
+    showChart: boolean;
+    showRenewals: boolean;
+    showCustomerTable: boolean;
+  };
+  filters: {
+    customerStatus?: string[];
+    partnerIds?: string[];
+    productIds?: string[];
   };
 }
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [dashboards, setDashboards] = useState<Dashboard[]>([
-    { id: 'default', name: 'Main Dashboard', timeframe: 'monthly' }
+    { 
+      id: 'default', 
+      name: 'Main Dashboard', 
+      description: 'Default dashboard view',
+      timeframe: 'monthly',
+      widgets: {
+        showStats: true,
+        showChart: true,
+        showRenewals: true,
+        showCustomerTable: false
+      },
+      filters: {}
+    }
   ]);
   const [activeDashboard, setActiveDashboard] = useState('default');
   const [timeframe, setTimeframe] = useState<'monthly' | 'yearly' | 'custom'>('monthly');
@@ -76,16 +99,32 @@ const Index = () => {
     }
   };
 
-  const handleCreateDashboard = (name: string) => {
+  const handleCreateDashboard = (name: string, description?: string) => {
     const newDashboard: Dashboard = {
       id: `dashboard-${Date.now()}`,
       name,
-      timeframe: 'monthly'
+      description,
+      timeframe: 'monthly',
+      widgets: {
+        showStats: true,
+        showChart: true,
+        showRenewals: true,
+        showCustomerTable: false
+      },
+      filters: {}
     };
     setDashboards(prev => [...prev, newDashboard]);
     setActiveDashboard(newDashboard.id);
     setTimeframe('monthly');
     setCustomDateRange(undefined);
+  };
+
+  const handleUpdateDashboard = (dashboardId: string, updates: Partial<Dashboard>) => {
+    setDashboards(prev => prev.map(dashboard => 
+      dashboard.id === dashboardId 
+        ? { ...dashboard, ...updates }
+        : dashboard
+    ));
   };
 
   const handleDeleteDashboard = (dashboardId: string) => {
@@ -102,7 +141,6 @@ const Index = () => {
     }
   };
 
-  // Filter data based on timeframe and custom date range
   const getFilteredData = () => {
     const now = new Date();
     let cutoffDate: Date;
@@ -132,7 +170,6 @@ const Index = () => {
 
   const { filteredCustomers, filteredRenewals } = getFilteredData();
 
-  // Calculate dashboard stats based on filtered data
   const stats: StatsType = {
     totalCustomers: filteredCustomers.length,
     totalPartners: partners.length,
@@ -141,7 +178,6 @@ const Index = () => {
     activeCustomers: filteredCustomers.filter(c => c.status === 'active').length,
   };
 
-  // Callback functions for customer management
   const handleCustomerAdd = (customer: Customer) => {
     setCustomers([...customers, customer]);
   };
@@ -150,7 +186,6 @@ const Index = () => {
     setCustomers([...customers, ...importedCustomers]);
   };
 
-  // Callback functions for product management
   const handleProductAdd = (product: Product) => {
     setProducts([...products, product]);
   };
@@ -163,9 +198,14 @@ const Index = () => {
     console.log('Update product price:', productId, newPrice);
   };
 
+  const getCurrentDashboard = () => {
+    return dashboards.find(d => d.id === activeDashboard) || dashboards[0];
+  };
+
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
+        const currentDashboard = getCurrentDashboard();
         return (
           <div className="space-y-6">
             <DashboardFilters 
@@ -177,11 +217,20 @@ const Index = () => {
               activeDashboard={activeDashboard}
               onDashboardChange={handleDashboardChange}
               onCreateDashboard={handleCreateDashboard}
+              onUpdateDashboard={handleUpdateDashboard}
               onDeleteDashboard={handleDeleteDashboard}
+              customers={customers}
+              partners={partners}
+              products={products}
             />
-            <DashboardStats stats={stats} />
-            <CustomerChart customers={filteredCustomers} partners={partners} />
-            <Renewals renewals={filteredRenewals} customers={customers} partners={partners} products={products} />
+            {currentDashboard.widgets.showStats && <DashboardStats stats={stats} />}
+            {currentDashboard.widgets.showChart && <CustomerChart customers={filteredCustomers} partners={partners} />}
+            {currentDashboard.widgets.showRenewals && <Renewals renewals={filteredRenewals} customers={customers} partners={partners} products={products} />}
+            {currentDashboard.widgets.showCustomerTable && (
+              <div className="space-y-6">
+                <CustomerTable customers={customers} partners={partners} products={products} />
+              </div>
+            )}
           </div>
         );
       case 'customers':
