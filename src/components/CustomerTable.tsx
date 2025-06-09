@@ -8,6 +8,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger } from '@/components/ui/dropdown-menu';
 import { Filter } from 'lucide-react';
 import { Customer, Partner, Product } from '../types';
+import BulkImportDialog from './BulkImportDialog';
 
 interface CustomerTableProps {
   customers: Customer[];
@@ -15,9 +16,10 @@ interface CustomerTableProps {
   products: Product[];
   onStatusChange?: (customerId: string, newStatus: 'active' | 'inactive' | 'pending') => void;
   onBulkStatusChange?: (customerIds: string[], newStatus: 'active' | 'inactive' | 'pending') => void;
+  onBulkImport?: (customers: Customer[]) => void;
 }
 
-const CustomerTable = ({ customers, partners, products, onStatusChange, onBulkStatusChange }: CustomerTableProps) => {
+const CustomerTable = ({ customers, partners, products, onStatusChange, onBulkStatusChange, onBulkImport }: CustomerTableProps) => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [partnerFilter, setPartnerFilter] = useState('all');
   const [valueFilter, setValueFilter] = useState(0);
@@ -117,6 +119,13 @@ const CustomerTable = ({ customers, partners, products, onStatusChange, onBulkSt
               Customers ({filteredCustomers.length} of {customers.length})
             </CardTitle>
             <div className="flex items-center gap-2">
+              {onBulkImport && (
+                <BulkImportDialog
+                  type="customers"
+                  onImport={onBulkImport}
+                />
+              )}
+              
               {selectedCustomers.length > 0 && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>

@@ -9,15 +9,17 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger } from '@/components/ui/dropdown-menu';
 import { Edit2, Check, X, Filter } from 'lucide-react';
 import { Product } from '../types';
+import BulkImportDialog from './BulkImportDialog';
 
 interface ProductTableProps {
   products: Product[];
   onPriceUpdate?: (productId: string, newPrice: number) => void;
   onStatusChange?: (productId: string, newStatus: 'active' | 'inactive') => void;
   onBulkStatusChange?: (productIds: string[], newStatus: 'active' | 'inactive') => void;
+  onBulkImport?: (products: Product[]) => void;
 }
 
-const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusChange }: ProductTableProps) => {
+const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusChange, onBulkImport }: ProductTableProps) => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [customersFilter, setCustomersFilter] = useState(0);
@@ -110,6 +112,13 @@ const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusCha
               Products Overview ({filteredProducts.length} of {products.length})
             </CardTitle>
             <div className="flex items-center gap-2">
+              {currentUserRole === 'admin' && onBulkImport && (
+                <BulkImportDialog
+                  type="products"
+                  onImport={onBulkImport}
+                />
+              )}
+              
               {selectedProducts.length > 0 && currentUserRole === 'admin' && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>

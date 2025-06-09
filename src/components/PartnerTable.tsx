@@ -9,6 +9,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { Eye, CheckCircle, XCircle, Filter } from 'lucide-react';
 import { Partner, Customer, Product, User } from '../types';
 import PartnerDetails from './PartnerDetails';
+import BulkImportDialog from './BulkImportDialog';
 
 interface PartnerTableProps {
   partners: Partner[];
@@ -17,9 +18,10 @@ interface PartnerTableProps {
   users: User[];
   onStatusChange?: (partnerId: string, newStatus: 'active' | 'inactive') => void;
   onBulkStatusChange?: (partnerIds: string[], newStatus: 'active' | 'inactive') => void;
+  onBulkImport?: (partners: Partner[]) => void;
 }
 
-const PartnerTable = ({ partners, customers, products, users, onStatusChange, onBulkStatusChange }: PartnerTableProps) => {
+const PartnerTable = ({ partners, customers, products, users, onStatusChange, onBulkStatusChange, onBulkImport }: PartnerTableProps) => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [customersFilter, setCustomersFilter] = useState(0);
   const [revenueFilter, setRevenueFilter] = useState(0);
@@ -154,6 +156,13 @@ const PartnerTable = ({ partners, customers, products, users, onStatusChange, on
               Partners Overview ({filteredPartners.length} of {partners.length})
             </CardTitle>
             <div className="flex items-center gap-2">
+              {onBulkImport && (
+                <BulkImportDialog
+                  type="partners"
+                  onImport={onBulkImport}
+                />
+              )}
+              
               {selectedPartners.length > 0 && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
