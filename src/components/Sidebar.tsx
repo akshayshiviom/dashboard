@@ -1,5 +1,5 @@
 
-import { LayoutDashboard, Users, Tag, Plus, Package, UserCheck, FileText, RefreshCw, Settings } from 'lucide-react';
+import { LayoutDashboard, Users, Tag, Plus, Package, UserCheck, FileText, RefreshCw, Settings, Mail } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface SidebarProps {
@@ -24,7 +24,14 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
     { id: 'renewals', label: 'Renewals', icon: RefreshCw },
     { id: 'user-hierarchy', label: 'User Hierarchy', icon: UserCheck },
     { id: 'reports', label: 'Reports', icon: FileText },
-    { id: 'settings', label: 'Settings', icon: Settings },
+    { 
+      id: 'settings', 
+      label: 'Settings', 
+      icon: Settings,
+      subItems: [
+        { id: 'email-templates', label: 'Email Templates', icon: Mail },
+      ]
+    },
   ];
 
   return (
@@ -39,6 +46,7 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
           const Icon = item.icon;
           const hasSubItems = item.subItems && item.subItems.length > 0;
           const isCustomersSection = item.id === 'customers';
+          const isSettingsSection = item.id === 'settings';
           const isActiveOrSubActive = activeTab === item.id || (hasSubItems && item.subItems?.some(sub => sub.id === activeTab));
           
           return (
@@ -56,8 +64,8 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
                 <span className="font-medium">{item.label}</span>
               </button>
               
-              {/* Sub-items for customers */}
-              {isCustomersSection && hasSubItems && (
+              {/* Sub-items for customers and settings */}
+              {(isCustomersSection || isSettingsSection) && hasSubItems && (
                 <div className="ml-4 mt-1 space-y-1">
                   {item.subItems.map((subItem) => {
                     const SubIcon = subItem.icon;
