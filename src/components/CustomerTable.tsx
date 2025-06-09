@@ -1,8 +1,10 @@
 
+import { useState, useMemo } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Customer, Partner } from '../types';
+import CustomerFilters from './CustomerFilters';
 
 interface CustomerTableProps {
   customers: Customer[];
@@ -10,6 +12,23 @@ interface CustomerTableProps {
 }
 
 const CustomerTable = ({ customers, partners }: CustomerTableProps) => {
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [partnerFilter, setPartnerFilter] = useState('all');
+  const [valueFilter, setValueFilter] = useState(0);
+
+  const filteredCustomers = useMemo(() => {
+    return customers.filter((customer) => {
+      const statusMatch = statusFilter === 'all' || customer.status === statusFilter;
+      const partnerMatch = 
+        partnerFilter === 'all' || 
+        (partnerFilter === 'unassigned' && !customer.partnerId) ||
+        customer.partnerId === partnerFilter;
+      const valueMatch = customer.value >= valueFilter;
+      
+      return statusMatch && partnerMatch && valueMatch;
+    });
+  }, [customers, statusFilter, partnerFilter, valueFilter]);
+
   const getPartnerName = (partnerId?: string) => {
     const partner = partners.find(p => p.id === partnerId);
     return partner ? partner.name : 'Unassigned';
@@ -25,43 +44,53 @@ const CustomerTable = ({ customers, partners }: CustomerTableProps) => {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Recent Customers</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Company</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Partner</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Value</TableHead>
-              <TableHead>Created</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {customers.slice(0, 10).map((customer) => (
-              <TableRow key={customer.id} className="hover:bg-muted/50">
-                <TableCell className="font-medium">{customer.name}</TableCell>
-                <TableCell>{customer.company}</TableCell>
-                <TableCell>{customer.email}</TableCell>
-                <TableCell>{getPartnerName(customer.partnerId)}</TableCell>
-                <TableCell>
-                  <Badge className={getStatusColor(customer.status)}>
-                    {customer.status}
-                  </Badge>
-                </TableCell>
-                <TableCell>${customer.value.toLocaleString()}</TableCell>
-                <TableCell>{customer.createdAt.toLocaleDateString()}</TableCell>
+    <div>
+      <CustomerFilters
+        onStatusFilter={setStatusFilter}
+        onPartnerFilter={setPartnerFilter}
+        onValueFilter={setValueFilter}
+        partners={partners}
+      />
+      <Card>
+        <CardHeader>
+          <CardTitle>
+            Customers ({filteredCustomers.length} of {customers.length})
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Company</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Partner</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Value</TableHead>
+                <TableHead>Created</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+            </TableHeader>
+            <TableBody>
+              {filteredCustomers.map((customer) => (
+                <TableRow key={customer.id} className="hover:bg-muted/50">
+                  <TableCell className="font-medium">{customer.name}</TableCell>
+                  <TableCell>{customer.company}</TableCell>
+                  <TableCell>{customer.email}</TableCell>
+                  <TableCell>{getPartnerName(customer.partnerId)}</TableCell>
+                  <TableCell>
+                    <Badge className={getStatusColor(customer.status)}>
+                      {customer.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>${customer.value.toLocaleString()}</TableCell>
+                  <TableCell>{customer.createdAt.toLocaleDateString()}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 
