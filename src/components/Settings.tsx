@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -33,7 +32,7 @@ Contract Details:
 - Customer: {customerName}
 - Company: {customerCompany}
 - Partner: {partnerName}
-- Contract Value: ${contractValue}
+- Contract Value: {contractValue}
 - Renewal Date: {renewalDate}
 - Status: {status}
 
