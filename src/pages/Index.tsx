@@ -7,6 +7,7 @@ import CustomerForm from '../components/CustomerForm';
 import PartnerTable from '../components/PartnerTable';
 import ProductTable from '../components/ProductTable';
 import UserHierarchyTable from '../components/UserHierarchyTable';
+import Reports from '../components/Reports';
 import { mockCustomers, mockPartners, mockProducts } from '../utils/mockData';
 import { mockUsers } from '../utils/mockUsers';
 import { Customer, Partner, Product, User, DashboardStats as StatsType } from '../types';
@@ -48,6 +49,8 @@ const Index = () => {
         return <ProductTable products={products} />;
       case 'user-hierarchy':
         return <UserHierarchyTable users={users} />;
+      case 'reports':
+        return <Reports customers={customers} partners={partners} products={products} users={users} />;
       case 'add-customer':
         return <CustomerForm partners={partners} products={products} onCustomerAdd={handleCustomerAdd} />;
       default:
@@ -70,6 +73,7 @@ const Index = () => {
               {activeTab === 'partners' && 'Overview of all partners and their performance'}
               {activeTab === 'products' && 'Manage and view all product information'}
               {activeTab === 'user-hierarchy' && 'Manage user roles and organizational hierarchy'}
+              {activeTab === 'reports' && 'Generate and download business reports'}
               {activeTab === 'add-customer' && 'Add new customers to your database'}
             </p>
           </div>
