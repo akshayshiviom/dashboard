@@ -1,4 +1,3 @@
-
 import DashboardStats from '@/components/DashboardStats';
 import DashboardFilters from '@/components/DashboardFilters';
 import CustomerChart from '@/components/CustomerChart';
@@ -24,7 +23,7 @@ interface TabContentRendererProps {
   activeDashboard: string;
   filteredCustomers: Customer[];
   filteredRenewals: Renewal[];
-  stats: StatsType;
+  stats?: StatsType;
   customers: Customer[];
   partners: Partner[];
   products: Product[];

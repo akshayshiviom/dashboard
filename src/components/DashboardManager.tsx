@@ -1,26 +1,5 @@
 import { useState } from 'react';
-
-export interface Dashboard {
-  id: string;
-  name: string;
-  description?: string;
-  timeframe: 'monthly' | 'yearly' | 'custom';
-  customDateRange?: {
-    from: Date;
-    to: Date;
-  };
-  widgets: {
-    showStats: boolean;
-    showChart: boolean;
-    showRenewals: boolean;
-    showCustomerTable: boolean;
-  };
-  filters: {
-    customerStatus?: string[];
-    partnerIds?: string[];
-    productIds?: string[];
-  };
-}
+import { Dashboard } from '@/types';
 
 export const defaultDashboards: Dashboard[] = [
   { 
