@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import Sidebar from '../components/Sidebar';
 import DashboardStats from '../components/DashboardStats';
@@ -18,11 +17,17 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [customers, setCustomers] = useState<Customer[]>(mockCustomers);
   const [partners] = useState<Partner[]>(mockPartners);
-  const [products] = useState<Product[]>(mockProducts);
+  const [products, setProducts] = useState<Product[]>(mockProducts);
   const [users] = useState<User[]>(mockUsers);
 
   const handleCustomerAdd = (newCustomer: Customer) => {
     setCustomers([...customers, newCustomer]);
+  };
+
+  const handleProductPriceUpdate = (productId: string, newPrice: number) => {
+    setProducts(products.map(product => 
+      product.id === productId ? { ...product, price: newPrice } : product
+    ));
   };
 
   const stats: StatsType = {
@@ -48,9 +53,9 @@ const Index = () => {
       case 'partners':
         return <PartnerTable partners={partners} />;
       case 'products':
-        return <ProductTable products={products} />;
+        return <ProductTable products={products} onPriceUpdate={handleProductPriceUpdate} />;
       case 'price-calculator':
-        return <PriceCalculator products={products} />;
+        return <PriceCalculator products={products} users={users} />;
       case 'user-hierarchy':
         return <UserHierarchyTable users={users} />;
       case 'reports':
@@ -76,7 +81,7 @@ const Index = () => {
               {activeTab === 'customers' && 'Manage and view all customer information'}
               {activeTab === 'partners' && 'Overview of all partners and their performance'}
               {activeTab === 'products' && 'Manage and view all product information'}
-              {activeTab === 'price-calculator' && 'Calculate product prices with various configurations'}
+              {activeTab === 'price-calculator' && 'Calculate prices for multiple products with user-based discounts'}
               {activeTab === 'user-hierarchy' && 'Manage user roles and organizational hierarchy'}
               {activeTab === 'reports' && 'Generate and download business reports'}
               {activeTab === 'add-customer' && 'Add new customers to your database'}

@@ -1,3 +1,4 @@
+
 export interface Customer {
   id: string;
   name: string;
@@ -31,6 +32,7 @@ export interface Product {
   description: string;
   status: 'active' | 'inactive';
   customersCount: number;
+  price: number;
   createdAt: Date;
 }
 
@@ -58,4 +60,18 @@ export interface User {
 export interface UserHierarchy {
   user: User;
   subordinates: UserHierarchy[];
+}
+
+export interface CalculationItem {
+  productId: string;
+  quantity: number;
+  userDiscount: number;
+}
+
+export interface PriceCalculation {
+  items: CalculationItem[];
+  userRole: string;
+  totalDiscount: number;
+  subtotal: number;
+  finalTotal: number;
 }
