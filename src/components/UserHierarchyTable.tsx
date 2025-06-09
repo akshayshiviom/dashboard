@@ -4,7 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Users, Eye, Edit, Trash2 } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Users, Eye, Edit, Trash2, MoreVertical, UserPlus, Download, Filter, Settings2 } from 'lucide-react';
 import { User } from '../types';
 import UserFilters from './UserFilters';
 
@@ -14,6 +16,10 @@ interface UserHierarchyTableProps {
 
 const UserHierarchyTable = ({ users }: UserHierarchyTableProps) => {
   const [filteredUsers, setFilteredUsers] = useState<User[]>(users);
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const [showInactive, setShowInactive] = useState(true);
+  const [compactView, setCompactView] = useState(false);
+  const [showHierarchy, setShowHierarchy] = useState(true);
 
   const getRoleColor = (role: string) => {
     const colors = {
@@ -69,6 +75,34 @@ const UserHierarchyTable = ({ users }: UserHierarchyTableProps) => {
     }
   };
 
+  const handleSelectUser = (userId: string) => {
+    setSelectedUsers(prev => 
+      prev.includes(userId) 
+        ? prev.filter(id => id !== userId)
+        : [...prev, userId]
+    );
+  };
+
+  const handleSelectAll = () => {
+    if (selectedUsers.length === filteredUsers.length) {
+      setSelectedUsers([]);
+    } else {
+      setSelectedUsers(filteredUsers.map(user => user.id));
+    }
+  };
+
+  const handleBulkAction = (action: string) => {
+    console.log(`Performing ${action} on users:`, selectedUsers);
+    // Here you would implement the actual bulk action logic
+  };
+
+  const exportUsers = () => {
+    console.log('Exporting users:', filteredUsers);
+    // Here you would implement the export functionality
+  };
+
+  const displayUsers = showInactive ? filteredUsers : filteredUsers.filter(user => user.status === 'active');
+
   return (
     <div className="space-y-6">
       <UserFilters
@@ -79,45 +113,117 @@ const UserHierarchyTable = ({ users }: UserHierarchyTableProps) => {
       
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Users size={24} />
-            User Hierarchy
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <Users size={24} />
+              User Hierarchy ({displayUsers.length} users)
+            </CardTitle>
+            <div className="flex items-center gap-2">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <Settings2 size={16} />
+                    View Options
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem onClick={() => setShowInactive(!showInactive)}>
+                    {showInactive ? 'Hide' : 'Show'} Inactive Users
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setCompactView(!compactView)}>
+                    {compactView ? 'Detailed' : 'Compact'} View
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setShowHierarchy(!showHierarchy)}>
+                    {showHierarchy ? 'Hide' : 'Show'} Hierarchy
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={exportUsers}>
+                    <Download size={16} className="mr-2" />
+                    Export Users
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              
+              {selectedUsers.length > 0 && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      Bulk Actions ({selectedUsers.length})
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem onClick={() => handleBulkAction('activate')}>
+                      Activate Selected
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleBulkAction('deactivate')}>
+                      Deactivate Selected
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleBulkAction('export')}>
+                      Export Selected
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => handleBulkAction('delete')} className="text-red-600">
+                      Delete Selected
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+              
+              <Button size="sm">
+                <UserPlus size={16} className="mr-2" />
+                Add User
+              </Button>
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-12">
+                  <Checkbox 
+                    checked={selectedUsers.length === displayUsers.length && displayUsers.length > 0}
+                    onCheckedChange={handleSelectAll}
+                  />
+                </TableHead>
                 <TableHead>Name</TableHead>
-                <TableHead>Email</TableHead>
+                {!compactView && <TableHead>Email</TableHead>}
                 <TableHead>Role</TableHead>
-                <TableHead>Department</TableHead>
-                <TableHead>Reporting To</TableHead>
+                {!compactView && <TableHead>Department</TableHead>}
+                {showHierarchy && <TableHead>Reporting To</TableHead>}
                 <TableHead>Status</TableHead>
-                <TableHead>Last Login</TableHead>
+                {!compactView && <TableHead>Last Login</TableHead>}
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredUsers.map((user) => (
+              {displayUsers.map((user) => (
                 <TableRow key={user.id}>
+                  <TableCell>
+                    <Checkbox 
+                      checked={selectedUsers.includes(user.id)}
+                      onCheckedChange={() => handleSelectUser(user.id)}
+                    />
+                  </TableCell>
                   <TableCell className="font-medium">{user.name}</TableCell>
-                  <TableCell>{user.email}</TableCell>
+                  {!compactView && <TableCell>{user.email}</TableCell>}
                   <TableCell>
                     <Badge className={getRoleColor(user.role)}>
                       {getRoleDisplayName(user.role)}
                     </Badge>
                   </TableCell>
-                  <TableCell>{user.department}</TableCell>
-                  <TableCell>{getReportingToName(user.reportingTo)}</TableCell>
+                  {!compactView && <TableCell>{user.department}</TableCell>}
+                  {showHierarchy && <TableCell>{getReportingToName(user.reportingTo)}</TableCell>}
                   <TableCell>
                     <Badge variant={user.status === 'active' ? 'default' : 'secondary'}>
                       {user.status}
                     </Badge>
                   </TableCell>
-                  <TableCell>
-                    {user.lastLogin ? user.lastLogin.toLocaleDateString() : 'Never'}
-                  </TableCell>
+                  {!compactView && (
+                    <TableCell>
+                      {user.lastLogin ? user.lastLogin.toLocaleDateString() : 'Never'}
+                    </TableCell>
+                  )}
                   <TableCell>
                     <div className="flex space-x-2">
                       <Button variant="outline" size="sm">
@@ -126,9 +232,24 @@ const UserHierarchyTable = ({ users }: UserHierarchyTableProps) => {
                       <Button variant="outline" size="sm">
                         <Edit size={16} />
                       </Button>
-                      <Button variant="outline" size="sm">
-                        <Trash2 size={16} />
-                      </Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="outline" size="sm">
+                            <MoreVertical size={16} />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                          <DropdownMenuItem>View Details</DropdownMenuItem>
+                          <DropdownMenuItem>Send Message</DropdownMenuItem>
+                          <DropdownMenuItem>Change Role</DropdownMenuItem>
+                          <DropdownMenuItem>Reset Password</DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem className="text-red-600">
+                            <Trash2 size={16} className="mr-2" />
+                            Delete User
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                   </TableCell>
                 </TableRow>
