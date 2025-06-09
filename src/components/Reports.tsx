@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { FileText, Download, Plus, Calendar, Filter, BarChart3 } from 'lucide-react';
+import { FileText, Download, Plus, Calendar, Filter, BarChart3, Users, Tag, Package } from 'lucide-react';
 import { Customer, Partner, Product, User } from '../types';
 import CustomReportDialog from './CustomReportDialog';
 
