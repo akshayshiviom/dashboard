@@ -1,4 +1,3 @@
-
 export interface Customer {
   id: string;
   name: string;
@@ -41,4 +40,22 @@ export interface DashboardStats {
   totalProducts: number;
   totalValue: number;
   activeCustomers: number;
+}
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  role: 'admin' | 'fsr' | 'team-leader' | 'manager' | 'assistant-manager' | 'bde';
+  reportingTo?: string; // ID of the user they report to
+  department: string;
+  status: 'active' | 'inactive';
+  createdAt: Date;
+  lastLogin?: Date;
+}
+
+export interface UserHierarchy {
+  user: User;
+  subordinates: UserHierarchy[];
 }

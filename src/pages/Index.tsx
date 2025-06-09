@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import Sidebar from '../components/Sidebar';
 import DashboardStats from '../components/DashboardStats';
@@ -7,14 +6,17 @@ import CustomerTable from '../components/CustomerTable';
 import CustomerForm from '../components/CustomerForm';
 import PartnerTable from '../components/PartnerTable';
 import ProductTable from '../components/ProductTable';
+import UserHierarchyTable from '../components/UserHierarchyTable';
 import { mockCustomers, mockPartners, mockProducts } from '../utils/mockData';
-import { Customer, Partner, Product, DashboardStats as StatsType } from '../types';
+import { mockUsers } from '../utils/mockUsers';
+import { Customer, Partner, Product, User, DashboardStats as StatsType } from '../types';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [customers, setCustomers] = useState<Customer[]>(mockCustomers);
   const [partners] = useState<Partner[]>(mockPartners);
   const [products] = useState<Product[]>(mockProducts);
+  const [users] = useState<User[]>(mockUsers);
 
   const handleCustomerAdd = (newCustomer: Customer) => {
     setCustomers([...customers, newCustomer]);
@@ -44,6 +46,8 @@ const Index = () => {
         return <PartnerTable partners={partners} />;
       case 'products':
         return <ProductTable products={products} />;
+      case 'user-hierarchy':
+        return <UserHierarchyTable users={users} />;
       case 'add-customer':
         return <CustomerForm partners={partners} products={products} onCustomerAdd={handleCustomerAdd} />;
       default:
@@ -65,6 +69,7 @@ const Index = () => {
               {activeTab === 'customers' && 'Manage and view all customer information'}
               {activeTab === 'partners' && 'Overview of all partners and their performance'}
               {activeTab === 'products' && 'Manage and view all product information'}
+              {activeTab === 'user-hierarchy' && 'Manage user roles and organizational hierarchy'}
               {activeTab === 'add-customer' && 'Add new customers to your database'}
             </p>
           </div>

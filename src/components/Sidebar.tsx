@@ -1,5 +1,4 @@
-
-import { LayoutDashboard, Users, Tag, Plus, Package } from 'lucide-react';
+import { LayoutDashboard, Users, Tag, Plus, Package, UserCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface SidebarProps {
@@ -13,6 +12,7 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
     { id: 'customers', label: 'Customers', icon: Users },
     { id: 'partners', label: 'Partners', icon: Tag },
     { id: 'products', label: 'Products', icon: Package },
+    { id: 'user-hierarchy', label: 'User Hierarchy', icon: UserCheck },
     { id: 'add-customer', label: 'Add Customer', icon: Plus },
   ];
 
