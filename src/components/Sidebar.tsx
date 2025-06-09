@@ -1,5 +1,4 @@
-
-import { LayoutDashboard, Users, Tag, Plus, Package, UserCheck, FileText } from 'lucide-react';
+import { LayoutDashboard, Users, Tag, Plus, Package, UserCheck, FileText, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface SidebarProps {
@@ -21,6 +20,7 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
     },
     { id: 'partners', label: 'Partners', icon: Tag },
     { id: 'products', label: 'Products', icon: Package },
+    { id: 'renewals', label: 'Renewals', icon: RefreshCw },
     { id: 'user-hierarchy', label: 'User Hierarchy', icon: UserCheck },
     { id: 'reports', label: 'Reports', icon: FileText },
   ];

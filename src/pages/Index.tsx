@@ -8,9 +8,11 @@ import PartnerTable from '../components/PartnerTable';
 import ProductTable from '../components/ProductTable';
 import UserHierarchyTable from '../components/UserHierarchyTable';
 import Reports from '../components/Reports';
+import Renewals from '../components/Renewals';
 import { mockCustomers, mockPartners, mockProducts } from '../utils/mockData';
 import { mockUsers } from '../utils/mockUsers';
-import { Customer, Partner, Product, User, DashboardStats as StatsType } from '../types';
+import { mockRenewals } from '../utils/mockRenewals';
+import { Customer, Partner, Product, User, Renewal, DashboardStats as StatsType } from '../types';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -18,6 +20,7 @@ const Index = () => {
   const [partners] = useState<Partner[]>(mockPartners);
   const [products, setProducts] = useState<Product[]>(mockProducts);
   const [users] = useState<User[]>(mockUsers);
+  const [renewals] = useState<Renewal[]>(mockRenewals);
 
   const handleCustomerAdd = (newCustomer: Customer) => {
     setCustomers([...customers, newCustomer]);
@@ -53,6 +56,8 @@ const Index = () => {
         return <PartnerTable partners={partners} customers={customers} products={products} users={users} />;
       case 'products':
         return <ProductTable products={products} onPriceUpdate={handleProductPriceUpdate} />;
+      case 'renewals':
+        return <Renewals renewals={renewals} customers={customers} partners={partners} products={products} />;
       case 'user-hierarchy':
         return <UserHierarchyTable users={users} />;
       case 'reports':
@@ -78,6 +83,7 @@ const Index = () => {
               {activeTab === 'customers' && 'Manage and view all customer information'}
               {activeTab === 'partners' && 'Overview of all partners and their performance'}
               {activeTab === 'products' && 'Manage and view all product information'}
+              {activeTab === 'renewals' && 'Track software renewals and manage renewal schedules'}
               {activeTab === 'user-hierarchy' && 'Manage user roles and organizational hierarchy'}
               {activeTab === 'reports' && 'Generate and download business reports'}
               {activeTab === 'add-customer' && 'Add new customers to your database'}

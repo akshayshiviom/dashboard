@@ -40,6 +40,13 @@ const Reports = ({ customers, partners, products, users }: ReportsProps) => {
       lastGenerated: new Date('2024-06-06'),
     },
     {
+      id: 'renewal-tracking',
+      title: 'Renewal Tracking Report',
+      description: 'Upcoming renewals with partner and customer information',
+      category: 'renewals',
+      lastGenerated: new Date('2024-06-08'),
+    },
+    {
       id: 'sales-pipeline',
       title: 'Sales Pipeline Report',
       description: 'Current sales opportunities and conversion rates',
@@ -60,6 +67,7 @@ const Reports = ({ customers, partners, products, users }: ReportsProps) => {
       customers: 'bg-blue-100 text-blue-800',
       partners: 'bg-green-100 text-green-800',
       products: 'bg-purple-100 text-purple-800',
+      renewals: 'bg-orange-100 text-orange-800',
       sales: 'bg-orange-100 text-orange-800',
       users: 'bg-indigo-100 text-indigo-800',
     };

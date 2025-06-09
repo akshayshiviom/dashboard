@@ -65,3 +65,16 @@ export interface UserHierarchy {
   user: User;
   subordinates: UserHierarchy[];
 }
+
+export interface Renewal {
+  id: string;
+  customerId: string;
+  partnerId: string;
+  productId: string;
+  renewalDate: Date;
+  contractValue: number;
+  status: 'upcoming' | 'due' | 'overdue' | 'renewed' | 'cancelled';
+  notificationSent: boolean;
+  lastContactDate?: Date;
+  notes?: string;
+}
