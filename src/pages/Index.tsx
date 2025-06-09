@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 import DashboardStats from '@/components/DashboardStats';
+import DashboardFilters from '@/components/DashboardFilters';
 import CustomerChart from '@/components/CustomerChart';
 import CustomerTable from '@/components/CustomerTable';
 import CustomerForm from '@/components/CustomerForm';
@@ -19,6 +20,7 @@ import { Customer, Partner, Product, User, Renewal, DashboardStats as StatsType 
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [timeframe, setTimeframe] = useState<'monthly' | 'yearly'>('monthly');
   const [customers, setCustomers] = useState<Customer[]>(mockCustomers);
   const [partners] = useState<Partner[]>(mockPartners);
   const [products, setProducts] = useState<Product[]>(mockProducts);
@@ -29,13 +31,41 @@ const Index = () => {
     setActiveTab(tab);
   };
 
-  // Calculate dashboard stats
+  const handleTimeframeChange = (newTimeframe: 'monthly' | 'yearly') => {
+    setTimeframe(newTimeframe);
+  };
+
+  // Filter data based on timeframe
+  const getFilteredData = () => {
+    const now = new Date();
+    let cutoffDate: Date;
+
+    if (timeframe === 'monthly') {
+      cutoffDate = new Date(now.getFullYear(), now.getMonth(), 1);
+    } else {
+      cutoffDate = new Date(now.getFullYear(), 0, 1);
+    }
+
+    const filteredCustomers = customers.filter(customer => 
+      new Date(customer.createdAt) >= cutoffDate
+    );
+
+    const filteredRenewals = renewals.filter(renewal => 
+      new Date(renewal.renewalDate) >= cutoffDate
+    );
+
+    return { filteredCustomers, filteredRenewals };
+  };
+
+  const { filteredCustomers, filteredRenewals } = getFilteredData();
+
+  // Calculate dashboard stats based on filtered data
   const stats: StatsType = {
-    totalCustomers: customers.length,
+    totalCustomers: filteredCustomers.length,
     totalPartners: partners.length,
     totalProducts: products.length,
-    totalValue: customers.reduce((sum, customer) => sum + customer.value, 0),
-    activeCustomers: customers.filter(c => c.status === 'active').length,
+    totalValue: filteredCustomers.reduce((sum, customer) => sum + customer.value, 0),
+    activeCustomers: filteredCustomers.filter(c => c.status === 'active').length,
   };
 
   // Callback functions for customer management
@@ -65,9 +95,13 @@ const Index = () => {
       case 'dashboard':
         return (
           <div className="space-y-6">
+            <DashboardFilters 
+              timeframe={timeframe} 
+              onTimeframeChange={handleTimeframeChange} 
+            />
             <DashboardStats stats={stats} />
-            <CustomerChart customers={customers} partners={partners} />
-            <Renewals renewals={renewals} customers={customers} partners={partners} products={products} />
+            <CustomerChart customers={filteredCustomers} partners={partners} />
+            <Renewals renewals={filteredRenewals} customers={customers} partners={partners} products={products} />
           </div>
         );
       case 'customers':
