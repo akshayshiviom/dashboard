@@ -1,6 +1,12 @@
 
-import { LayoutDashboard, Users, Tag, Plus, Package, UserCheck, FileText, RefreshCw, Settings, Mail } from 'lucide-react';
+import { LayoutDashboard, Users, Tag, Plus, Package, UserCheck, FileText, RefreshCw, Settings, Mail, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface SidebarProps {
   activeTab: string;
@@ -45,47 +51,60 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
         {menuItems.map((item) => {
           const Icon = item.icon;
           const hasSubItems = item.subItems && item.subItems.length > 0;
-          const isCustomersSection = item.id === 'customers';
-          const isSettingsSection = item.id === 'settings';
           const isActiveOrSubActive = activeTab === item.id || (hasSubItems && item.subItems?.some(sub => sub.id === activeTab));
           
           return (
             <div key={item.id}>
-              <button
-                onClick={() => onTabChange(item.id)}
-                className={cn(
-                  "w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors",
-                  isActiveOrSubActive
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                )}
-              >
-                <Icon size={20} />
-                <span className="font-medium">{item.label}</span>
-              </button>
-              
-              {/* Sub-items for customers and settings */}
-              {(isCustomersSection || isSettingsSection) && hasSubItems && (
-                <div className="ml-4 mt-1 space-y-1">
-                  {item.subItems.map((subItem) => {
-                    const SubIcon = subItem.icon;
-                    return (
-                      <button
-                        key={subItem.id}
-                        onClick={() => onTabChange(subItem.id)}
-                        className={cn(
-                          "w-full flex items-center space-x-3 px-4 py-2 rounded-lg text-left transition-colors text-sm",
-                          activeTab === subItem.id
-                            ? "bg-primary/10 text-primary border-l-2 border-primary"
-                            : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                        )}
-                      >
-                        {SubIcon && <SubIcon size={16} />}
-                        <span>{subItem.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
+              {hasSubItems ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      className={cn(
+                        "w-full flex items-center justify-between space-x-3 px-4 py-3 rounded-lg text-left transition-colors",
+                        isActiveOrSubActive
+                          ? "bg-primary text-primary-foreground"
+                          : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                      )}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <Icon size={20} />
+                        <span className="font-medium">{item.label}</span>
+                      </div>
+                      <ChevronDown size={16} />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-56">
+                    {item.subItems.map((subItem) => {
+                      const SubIcon = subItem.icon;
+                      return (
+                        <DropdownMenuItem
+                          key={subItem.id}
+                          onClick={() => onTabChange(subItem.id)}
+                          className={cn(
+                            "flex items-center space-x-3 cursor-pointer",
+                            activeTab === subItem.id && "bg-primary/10 text-primary"
+                          )}
+                        >
+                          {SubIcon && <SubIcon size={16} />}
+                          <span>{subItem.label}</span>
+                        </DropdownMenuItem>
+                      );
+                    })}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <button
+                  onClick={() => onTabChange(item.id)}
+                  className={cn(
+                    "w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors",
+                    activeTab === item.id
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                  )}
+                >
+                  <Icon size={20} />
+                  <span className="font-medium">{item.label}</span>
+                </button>
               )}
             </div>
           );
