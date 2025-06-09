@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import Sidebar from '../components/Sidebar';
 import DashboardStats from '../components/DashboardStats';
@@ -51,7 +50,7 @@ const Index = () => {
       case 'customers':
         return <CustomerTable customers={customers} partners={partners} products={products} />;
       case 'partners':
-        return <PartnerTable partners={partners} />;
+        return <PartnerTable partners={partners} customers={customers} products={products} users={users} />;
       case 'products':
         return <ProductTable products={products} onPriceUpdate={handleProductPriceUpdate} />;
       case 'user-hierarchy':

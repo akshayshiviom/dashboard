@@ -1,4 +1,3 @@
-
 import { Customer, Partner, Product } from '../types';
 
 export const mockProducts: Product[] = [
@@ -81,6 +80,11 @@ export const mockPartners: Partner[] = [
     totalValue: 250000,
     status: 'active',
     createdAt: new Date('2024-01-15'),
+    agreementSigned: true,
+    agreementDate: new Date('2024-01-10'),
+    productTypes: ['Identity Management', 'Productivity Suite'],
+    paymentTerms: 'net-30',
+    assignedEmployeeId: '1',
   },
   {
     id: '2',
@@ -92,6 +96,11 @@ export const mockPartners: Partner[] = [
     totalValue: 180000,
     status: 'active',
     createdAt: new Date('2024-02-01'),
+    agreementSigned: true,
+    agreementDate: new Date('2024-01-28'),
+    productTypes: ['Communication', 'Mobile Device Management'],
+    paymentTerms: 'net-60',
+    assignedEmployeeId: '2',
   },
   {
     id: '3',
@@ -103,6 +112,10 @@ export const mockPartners: Partner[] = [
     totalValue: 120000,
     status: 'active',
     createdAt: new Date('2024-03-10'),
+    agreementSigned: false,
+    productTypes: ['Productivity Suite', 'Identity Management'],
+    paymentTerms: 'monthly',
+    assignedEmployeeId: '3',
   },
 ];
 

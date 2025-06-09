@@ -1,4 +1,3 @@
-
 export interface Customer {
   id: string;
   name: string;
@@ -22,6 +21,11 @@ export interface Partner {
   totalValue: number;
   status: 'active' | 'inactive';
   createdAt: Date;
+  agreementSigned: boolean;
+  agreementDate?: Date;
+  productTypes: string[];
+  paymentTerms: 'net-30' | 'net-60' | 'net-90' | 'prepaid' | 'monthly';
+  assignedEmployeeId?: string;
 }
 
 export interface Product {
