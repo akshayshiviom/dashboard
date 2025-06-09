@@ -1,5 +1,5 @@
 
-import { LayoutDashboard, Users, Tag, Plus, Package, UserCheck, FileText, Calculator } from 'lucide-react';
+import { LayoutDashboard, Users, Tag, Plus, Package, UserCheck, FileText } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface SidebarProps {
@@ -20,15 +20,7 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
       ]
     },
     { id: 'partners', label: 'Partners', icon: Tag },
-    { 
-      id: 'products', 
-      label: 'Products', 
-      icon: Package,
-      subItems: [
-        { id: 'products', label: 'View Products' },
-        { id: 'price-calculator', label: 'Product Price Calculator', icon: Calculator },
-      ]
-    },
+    { id: 'products', label: 'Products', icon: Package },
     { id: 'user-hierarchy', label: 'User Hierarchy', icon: UserCheck },
     { id: 'reports', label: 'Reports', icon: FileText },
   ];
@@ -45,7 +37,6 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
           const Icon = item.icon;
           const hasSubItems = item.subItems && item.subItems.length > 0;
           const isCustomersSection = item.id === 'customers';
-          const isProductsSection = item.id === 'products';
           const isActiveOrSubActive = activeTab === item.id || (hasSubItems && item.subItems?.some(sub => sub.id === activeTab));
           
           return (
@@ -63,8 +54,8 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
                 <span className="font-medium">{item.label}</span>
               </button>
               
-              {/* Sub-items for customers and products */}
-              {(isCustomersSection || isProductsSection) && hasSubItems && (
+              {/* Sub-items for customers */}
+              {isCustomersSection && hasSubItems && (
                 <div className="ml-4 mt-1 space-y-1">
                   {item.subItems.map((subItem) => {
                     const SubIcon = subItem.icon;

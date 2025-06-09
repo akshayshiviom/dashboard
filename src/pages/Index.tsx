@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import Sidebar from '../components/Sidebar';
 import DashboardStats from '../components/DashboardStats';
@@ -8,7 +9,6 @@ import PartnerTable from '../components/PartnerTable';
 import ProductTable from '../components/ProductTable';
 import UserHierarchyTable from '../components/UserHierarchyTable';
 import Reports from '../components/Reports';
-import PriceCalculator from '../components/PriceCalculator';
 import { mockCustomers, mockPartners, mockProducts } from '../utils/mockData';
 import { mockUsers } from '../utils/mockUsers';
 import { Customer, Partner, Product, User, DashboardStats as StatsType } from '../types';
@@ -54,8 +54,6 @@ const Index = () => {
         return <PartnerTable partners={partners} />;
       case 'products':
         return <ProductTable products={products} onPriceUpdate={handleProductPriceUpdate} />;
-      case 'price-calculator':
-        return <PriceCalculator products={products} users={users} />;
       case 'user-hierarchy':
         return <UserHierarchyTable users={users} />;
       case 'reports':
@@ -81,7 +79,6 @@ const Index = () => {
               {activeTab === 'customers' && 'Manage and view all customer information'}
               {activeTab === 'partners' && 'Overview of all partners and their performance'}
               {activeTab === 'products' && 'Manage and view all product information'}
-              {activeTab === 'price-calculator' && 'Calculate prices for multiple products with user-based discounts'}
               {activeTab === 'user-hierarchy' && 'Manage user roles and organizational hierarchy'}
               {activeTab === 'reports' && 'Generate and download business reports'}
               {activeTab === 'add-customer' && 'Add new customers to your database'}

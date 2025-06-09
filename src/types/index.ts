@@ -61,17 +61,3 @@ export interface UserHierarchy {
   user: User;
   subordinates: UserHierarchy[];
 }
-
-export interface CalculationItem {
-  productId: string;
-  quantity: number;
-  userDiscount: number;
-}
-
-export interface PriceCalculation {
-  items: CalculationItem[];
-  userRole: string;
-  totalDiscount: number;
-  subtotal: number;
-  finalTotal: number;
-}
