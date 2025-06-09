@@ -57,7 +57,7 @@ const Index = () => {
       case 'products':
         return <ProductTable products={products} onPriceUpdate={handleProductPriceUpdate} />;
       case 'renewals':
-        return <Renewals renewals={renewals} customers={customers} partners={partners} products={products} />;
+        return <Renewals renewals={renewals} customers={customers} partners={partners} products={products} users={users} />;
       case 'user-hierarchy':
         return <UserHierarchyTable users={users} />;
       case 'reports':

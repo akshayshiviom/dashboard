@@ -1,21 +1,22 @@
-
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar, AlertTriangle, CheckCircle, Clock, XCircle, Phone } from 'lucide-react';
-import { Renewal, Customer, Partner, Product } from '../types';
+import { Calendar, AlertTriangle, CheckCircle, Clock, XCircle, Phone, Mail } from 'lucide-react';
+import { Renewal, Customer, Partner, Product, User } from '../types';
+import RenewalEmailDialog from './RenewalEmailDialog';
 
 interface RenewalsProps {
   renewals: Renewal[];
   customers: Customer[];
   partners: Partner[];
   products: Product[];
+  users?: User[];
 }
 
-const Renewals = ({ renewals, customers, partners, products }: RenewalsProps) => {
+const Renewals = ({ renewals, customers, partners, products, users = [] }: RenewalsProps) => {
   const [statusFilter, setStatusFilter] = useState('all');
 
   const filteredRenewals = useMemo(() => {
@@ -29,14 +30,30 @@ const Renewals = ({ renewals, customers, partners, products }: RenewalsProps) =>
     return customer ? customer.name : 'Unknown Customer';
   };
 
+  const getCustomer = (customerId: string) => {
+    return customers.find(c => c.id === customerId);
+  };
+
   const getPartnerName = (partnerId: string) => {
     const partner = partners.find(p => p.id === partnerId);
     return partner ? partner.name : 'Unknown Partner';
   };
 
+  const getPartner = (partnerId: string) => {
+    return partners.find(p => p.id === partnerId);
+  };
+
   const getProductName = (productId: string) => {
     const product = products.find(p => p.id === productId);
     return product ? product.name : 'Unknown Product';
+  };
+
+  const getAssignedEmployee = (partnerId: string) => {
+    const partner = partners.find(p => p.id === partnerId);
+    if (partner?.assignedEmployeeId) {
+      return users.find(u => u.id === partner.assignedEmployeeId);
+    }
+    return undefined;
   };
 
   const getStatusColor = (status: string) => {
@@ -159,6 +176,10 @@ const Renewals = ({ renewals, customers, partners, products }: RenewalsProps) =>
             <TableBody>
               {filteredRenewals.map((renewal) => {
                 const daysLeft = getDaysUntilRenewal(renewal.renewalDate);
+                const customer = getCustomer(renewal.customerId);
+                const partner = getPartner(renewal.partnerId);
+                const assignedEmployee = getAssignedEmployee(renewal.partnerId);
+                
                 return (
                   <TableRow key={renewal.id} className="hover:bg-muted/50">
                     <TableCell className="font-medium">
@@ -194,10 +215,25 @@ const Renewals = ({ renewals, customers, partners, products }: RenewalsProps) =>
                       }
                     </TableCell>
                     <TableCell>
-                      <Button variant="outline" size="sm" className="gap-1">
-                        <Phone size={14} />
-                        Contact
-                      </Button>
+                      <div className="flex gap-1">
+                        <Button variant="outline" size="sm" className="gap-1">
+                          <Phone size={14} />
+                          Contact
+                        </Button>
+                        {customer && partner && (
+                          <RenewalEmailDialog
+                            renewal={renewal}
+                            customer={customer}
+                            partner={partner}
+                            assignedEmployee={assignedEmployee}
+                          >
+                            <Button variant="outline" size="sm" className="gap-1">
+                              <Mail size={14} />
+                              Email
+                            </Button>
+                          </RenewalEmailDialog>
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
                 );
