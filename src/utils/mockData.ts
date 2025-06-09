@@ -10,6 +10,7 @@ export const mockProducts: Product[] = [
     description: 'Cloud-based directory service and identity management platform',
     status: 'active',
     customersCount: 8,
+    price: 299.99,
     createdAt: new Date('2024-01-01'),
   },
   {
@@ -20,6 +21,7 @@ export const mockProducts: Product[] = [
     description: 'Unified endpoint management and mobile device management solution',
     status: 'active',
     customersCount: 5,
+    price: 199.99,
     createdAt: new Date('2024-01-15'),
   },
   {
@@ -30,6 +32,7 @@ export const mockProducts: Product[] = [
     description: 'Cloud-based productivity and collaboration tools',
     status: 'active',
     customersCount: 12,
+    price: 149.99,
     createdAt: new Date('2024-02-01'),
   },
   {
@@ -40,6 +43,7 @@ export const mockProducts: Product[] = [
     description: 'Integrated cloud-based productivity and business applications',
     status: 'active',
     customersCount: 15,
+    price: 179.99,
     createdAt: new Date('2024-02-15'),
   },
   {
@@ -50,6 +54,7 @@ export const mockProducts: Product[] = [
     description: 'Enterprise identity and access management platform',
     status: 'active',
     customersCount: 6,
+    price: 399.99,
     createdAt: new Date('2024-03-01'),
   },
   {
@@ -60,6 +65,7 @@ export const mockProducts: Product[] = [
     description: 'Business communication and collaboration platform',
     status: 'active',
     customersCount: 10,
+    price: 89.99,
     createdAt: new Date('2024-03-15'),
   },
 ];
