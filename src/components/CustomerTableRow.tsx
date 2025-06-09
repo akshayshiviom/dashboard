@@ -83,7 +83,7 @@ const CustomerTableRow = ({
           {customer.status}
         </Badge>
       </TableCell>
-      <TableCell>${customer.value.toLocaleString()}</TableCell>
+      <TableCell>₹{customer.value.toLocaleString('en-IN')}</TableCell>
       <TableCell>{customer.createdAt.toLocaleDateString()}</TableCell>
       <TableCell>
         <div className="flex items-center gap-2">

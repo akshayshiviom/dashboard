@@ -139,7 +139,7 @@ const Reports = ({ customers, partners, products, users }: ReportsProps) => {
               <BarChart3 size={20} className="text-orange-600" />
               <div>
                 <p className="text-sm text-muted-foreground">Total Revenue</p>
-                <p className="text-2xl font-bold">${customers.reduce((sum, c) => sum + c.value, 0).toLocaleString()}</p>
+                <p className="text-2xl font-bold">₹{customers.reduce((sum, c) => sum + c.value, 0).toLocaleString('en-IN')}</p>
               </div>
             </div>
           </CardContent>

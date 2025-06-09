@@ -1,3 +1,4 @@
+
 import { useState, useMemo } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -251,7 +252,7 @@ const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusCha
                       </div>
                     ) : (
                       <div className="flex items-center gap-2">
-                        <span>${product.price.toFixed(2)}</span>
+                        <span>₹{product.price.toFixed(2)}</span>
                         {currentUserRole === 'admin' && (
                           <Button
                             size="sm"

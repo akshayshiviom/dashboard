@@ -23,7 +23,7 @@ const DashboardStats = ({ stats }: DashboardStatsProps) => {
     },
     {
       title: 'Total Value',
-      value: `$${stats.totalValue.toLocaleString()}`,
+      value: `₹${stats.totalValue.toLocaleString('en-IN')}`,
       icon: DollarSign,
       color: 'text-purple-600',
     },

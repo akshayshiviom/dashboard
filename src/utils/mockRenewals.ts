@@ -8,7 +8,7 @@ export const mockRenewals: Renewal[] = [
     partnerId: '1',
     productId: '1',
     renewalDate: new Date('2024-07-15'),
-    contractValue: 8999.99,
+    contractValue: 756000, // ~8999.99 USD converted to INR
     status: 'upcoming',
     notificationSent: true,
     lastContactDate: new Date('2024-06-01'),
@@ -20,7 +20,7 @@ export const mockRenewals: Renewal[] = [
     partnerId: '2',
     productId: '2',
     renewalDate: new Date('2024-06-20'),
-    contractValue: 3999.99,
+    contractValue: 336000, // ~3999.99 USD converted to INR
     status: 'due',
     notificationSent: true,
     lastContactDate: new Date('2024-06-10'),
@@ -32,7 +32,7 @@ export const mockRenewals: Renewal[] = [
     partnerId: '1',
     productId: '5',
     renewalDate: new Date('2024-06-01'),
-    contractValue: 11999.99,
+    contractValue: 1008000, // ~11999.99 USD converted to INR
     status: 'overdue',
     notificationSent: true,
     lastContactDate: new Date('2024-05-28'),
@@ -44,7 +44,7 @@ export const mockRenewals: Renewal[] = [
     partnerId: '3',
     productId: '3',
     renewalDate: new Date('2024-08-30'),
-    contractValue: 4499.99,
+    contractValue: 378000, // ~4499.99 USD converted to INR
     status: 'upcoming',
     notificationSent: false,
     notes: 'Early renewal opportunity identified'
@@ -55,7 +55,7 @@ export const mockRenewals: Renewal[] = [
     partnerId: '1',
     productId: '4',
     renewalDate: new Date('2024-05-15'),
-    contractValue: 5399.99,
+    contractValue: 454000, // ~5399.99 USD converted to INR
     status: 'renewed',
     notificationSent: true,
     lastContactDate: new Date('2024-05-10'),

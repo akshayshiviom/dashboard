@@ -1,3 +1,4 @@
+
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -128,10 +129,10 @@ const Renewals = ({ renewals, customers, partners, products, users = [] }: Renew
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-2">
-              <div className="text-purple-600">$</div>
+              <div className="text-purple-600">₹</div>
               <div>
                 <p className="text-sm text-muted-foreground">Total Value</p>
-                <p className="text-2xl font-bold">${totalValue.toLocaleString()}</p>
+                <p className="text-2xl font-bold">₹{totalValue.toLocaleString('en-IN')}</p>
               </div>
             </div>
           </CardContent>
@@ -199,7 +200,7 @@ const Renewals = ({ renewals, customers, partners, products, users = [] }: Renew
                          `${daysLeft} days`}
                       </span>
                     </TableCell>
-                    <TableCell>${renewal.contractValue.toLocaleString()}</TableCell>
+                    <TableCell>₹{renewal.contractValue.toLocaleString('en-IN')}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         {getStatusIcon(renewal.status)}
