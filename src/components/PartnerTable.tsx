@@ -1,15 +1,13 @@
+
 import { useState, useMemo } from 'react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
+import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger } from '@/components/ui/dropdown-menu';
-import { Eye, CheckCircle, XCircle, Filter } from 'lucide-react';
 import { Partner, Customer, Product, User } from '../types';
 import PartnerDetails from './PartnerDetails';
-import BulkImportDialog from './BulkImportDialog';
+import PartnerTableHeader from './PartnerTableHeader';
+import PartnerTableFilters from './PartnerTableFilters';
+import PartnerTableRow from './PartnerTableRow';
 
 interface PartnerTableProps {
   partners: Partner[];
@@ -31,8 +29,6 @@ const PartnerTable = ({ partners, customers, products, users, onStatusChange, on
   const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null);
   const [selectedPartners, setSelectedPartners] = useState<string[]>([]);
 
-  const specializations = ['Enterprise Software', 'Digital Marketing', 'Cloud Services', 'Consulting', 'E-commerce'];
-
   const filteredPartners = useMemo(() => {
     return partners.filter((partner) => {
       const statusMatch = statusFilter === 'all' || partner.status === statusFilter;
@@ -45,60 +41,6 @@ const PartnerTable = ({ partners, customers, products, users, onStatusChange, on
       return statusMatch && customersMatch && revenueMatch && specializationMatch && zoneMatch && identityMatch;
     });
   }, [partners, statusFilter, customersFilter, revenueFilter, specializationFilter, zoneFilter, identityFilter]);
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active': return 'bg-green-100 text-green-800';
-      case 'inactive': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getPaymentTermsColor = (terms: string) => {
-    switch (terms) {
-      case 'prepaid': return 'bg-green-100 text-green-800';
-      case 'monthly': return 'bg-blue-100 text-blue-800';
-      case 'net-30': return 'bg-yellow-100 text-yellow-800';
-      case 'net-60': return 'bg-orange-100 text-orange-800';
-      case 'net-90': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getZoneColor = (zone?: string) => {
-    switch (zone) {
-      case 'north': return 'bg-blue-100 text-blue-800';
-      case 'east': return 'bg-green-100 text-green-800';
-      case 'west': return 'bg-orange-100 text-orange-800';
-      case 'south': return 'bg-purple-100 text-purple-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getEmployeeName = (employeeId?: string) => {
-    const employee = users.find(u => u.id === employeeId);
-    return employee ? employee.name : 'Unassigned';
-  };
-
-  const getIdentityColor = (identity: string) => {
-    switch (identity) {
-      case 'web-app-developer': return 'bg-blue-100 text-blue-800';
-      case 'system-integrator': return 'bg-green-100 text-green-800';
-      case 'managed-service-provider': return 'bg-purple-100 text-purple-800';
-      case 'digital-marketer': return 'bg-orange-100 text-orange-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getIdentityLabel = (identity: string) => {
-    switch (identity) {
-      case 'web-app-developer': return 'Web/App Developer';
-      case 'system-integrator': return 'System Integrator';
-      case 'managed-service-provider': return 'MSP';
-      case 'digital-marketer': return 'Digital Marketer';
-      default: return identity;
-    }
-  };
 
   const handleStatusToggle = (partnerId: string, currentStatus: string) => {
     const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
@@ -152,128 +94,19 @@ const PartnerTable = ({ partners, customers, products, users, onStatusChange, on
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle>
-              Partners Overview ({filteredPartners.length} of {partners.length})
-            </CardTitle>
-            <div className="flex items-center gap-2">
-              {onBulkImport && (
-                <BulkImportDialog
-                  type="partners"
-                  onImport={onBulkImport}
-                />
-              )}
-              
-              {selectedPartners.length > 0 && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm">
-                      Bulk Actions ({selectedPartners.length})
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem onClick={() => handleBulkAction('activate')}>
-                      Set Active
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleBulkAction('deactivate')}>
-                      Set Inactive
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              )}
-              
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <Filter size={16} className="mr-2" />
-                    Filters
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56">
-                  <DropdownMenuSub>
-                    <DropdownMenuSubTrigger>
-                      Filter by Status
-                    </DropdownMenuSubTrigger>
-                    <DropdownMenuSubContent>
-                      <DropdownMenuItem onClick={() => setStatusFilter('all')}>
-                        All statuses
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => setStatusFilter('active')}>
-                        Active
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setStatusFilter('inactive')}>
-                        Inactive
-                      </DropdownMenuItem>
-                    </DropdownMenuSubContent>
-                  </DropdownMenuSub>
-
-                  <DropdownMenuSub>
-                    <DropdownMenuSubTrigger>
-                      Filter by Identity
-                    </DropdownMenuSubTrigger>
-                    <DropdownMenuSubContent>
-                      <DropdownMenuItem onClick={() => setIdentityFilter('all')}>
-                        All identities
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => setIdentityFilter('web-app-developer')}>
-                        Web/App Developer
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setIdentityFilter('system-integrator')}>
-                        System Integrator
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setIdentityFilter('managed-service-provider')}>
-                        Managed Service Provider
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setIdentityFilter('digital-marketer')}>
-                        Digital Marketer
-                      </DropdownMenuItem>
-                    </DropdownMenuSubContent>
-                  </DropdownMenuSub>
-                  
-                  <DropdownMenuSub>
-                    <DropdownMenuSubTrigger>
-                      Filter by Partner Program
-                    </DropdownMenuSubTrigger>
-                    <DropdownMenuSubContent>
-                      <DropdownMenuItem onClick={() => setSpecializationFilter('all')}>
-                        All programs
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      {specializations.map((spec) => (
-                        <DropdownMenuItem key={spec} onClick={() => setSpecializationFilter(spec)}>
-                          {spec}
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuSubContent>
-                  </DropdownMenuSub>
-
-                  <DropdownMenuSub>
-                    <DropdownMenuSubTrigger>
-                      Filter by Zone
-                    </DropdownMenuSubTrigger>
-                    <DropdownMenuSubContent>
-                      <DropdownMenuItem onClick={() => setZoneFilter('all')}>
-                        All zones
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => setZoneFilter('north')}>
-                        North
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setZoneFilter('east')}>
-                        East
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setZoneFilter('west')}>
-                        West
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setZoneFilter('south')}>
-                        South
-                      </DropdownMenuItem>
-                    </DropdownMenuSubContent>
-                  </DropdownMenuSub>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+            <PartnerTableHeader
+              filteredCount={filteredPartners.length}
+              totalCount={partners.length}
+              selectedCount={selectedPartners.length}
+              onBulkImport={onBulkImport}
+              onBulkAction={handleBulkAction}
+            />
+            <PartnerTableFilters
+              onStatusFilter={setStatusFilter}
+              onIdentityFilter={setIdentityFilter}
+              onSpecializationFilter={setSpecializationFilter}
+              onZoneFilter={setZoneFilter}
+            />
           </div>
         </CardHeader>
         <CardContent>
@@ -302,88 +135,15 @@ const PartnerTable = ({ partners, customers, products, users, onStatusChange, on
             </TableHeader>
             <TableBody>
               {filteredPartners.map((partner) => (
-                <TableRow key={partner.id} className="hover:bg-muted/50">
-                  <TableCell>
-                    <Checkbox 
-                      checked={selectedPartners.includes(partner.id)}
-                      onCheckedChange={() => handleSelectPartner(partner.id)}
-                    />
-                  </TableCell>
-                  <TableCell className="font-medium">{partner.name}</TableCell>
-                  <TableCell>{partner.company}</TableCell>
-                  <TableCell>
-                    <Badge className={getIdentityColor(partner.identity)}>
-                      {getIdentityLabel(partner.identity)}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    {partner.zone ? (
-                      <Badge className={getZoneColor(partner.zone)}>
-                        {partner.zone.charAt(0).toUpperCase() + partner.zone.slice(1)}
-                      </Badge>
-                    ) : (
-                      <span className="text-muted-foreground">Not set</span>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      {partner.agreementSigned ? (
-                        <CheckCircle size={16} className="text-green-600" />
-                      ) : (
-                        <XCircle size={16} className="text-red-600" />
-                      )}
-                      <span className="text-sm">
-                        {partner.agreementSigned ? 'Signed' : 'Pending'}
-                      </span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={getPaymentTermsColor(partner.paymentTerms)}>
-                      {partner.paymentTerms.toUpperCase()}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="max-w-32">
-                      <div className="flex flex-wrap gap-1">
-                        {partner.productTypes.slice(0, 2).map((type, index) => (
-                          <Badge key={index} variant="outline" className="text-xs">
-                            {type}
-                          </Badge>
-                        ))}
-                        {partner.productTypes.length > 2 && (
-                          <Badge variant="outline" className="text-xs">
-                            +{partner.productTypes.length - 2}
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>{getEmployeeName(partner.assignedEmployeeId)}</TableCell>
-                  <TableCell>{partner.customersCount}</TableCell>
-                  <TableCell>${partner.totalValue.toLocaleString()}</TableCell>
-                  <TableCell>
-                    <Badge className={getStatusColor(partner.status)}>
-                      {partner.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Switch
-                        checked={partner.status === 'active'}
-                        onCheckedChange={() => handleStatusToggle(partner.id, partner.status)}
-                      />
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setSelectedPartner(partner)}
-                        className="gap-2"
-                      >
-                        <Eye size={14} />
-                        View Details
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
+                <PartnerTableRow
+                  key={partner.id}
+                  partner={partner}
+                  users={users}
+                  isSelected={selectedPartners.includes(partner.id)}
+                  onSelect={handleSelectPartner}
+                  onStatusToggle={handleStatusToggle}
+                  onViewDetails={setSelectedPartner}
+                />
               ))}
             </TableBody>
           </Table>
