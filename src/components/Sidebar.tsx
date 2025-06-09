@@ -22,13 +22,13 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
     { id: 'partners', label: 'Partners', icon: Tag },
     { id: 'products', label: 'Products', icon: Package },
     { id: 'renewals', label: 'Renewals', icon: RefreshCw },
-    { id: 'user-hierarchy', label: 'User Hierarchy', icon: UserCheck },
     { id: 'reports', label: 'Reports', icon: FileText },
     { 
       id: 'settings', 
       label: 'Settings', 
       icon: Settings,
       subItems: [
+        { id: 'user-hierarchy', label: 'User Hierarchy', icon: UserCheck },
         { id: 'email-templates', label: 'Email Templates', icon: Mail },
       ]
     },
