@@ -2,15 +2,15 @@ import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Switch } from '@/components/ui/switch';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Search, Filter, MoreHorizontal, UserPlus, Download, Upload } from 'lucide-react';
+import { Search, MoreHorizontal, UserPlus, Download, Upload } from 'lucide-react';
 import { Customer, Partner, Product } from '../types';
 import CustomerEditDialog from './CustomerEditDialog';
+import CustomerTableFilters from './CustomerTableFilters';
 
 interface CustomerManagementProps {
   customers: Customer[];
@@ -193,7 +193,7 @@ const CustomerManagement = ({
           <CardContent className="p-4">
             <div className="text-2xl font-bold text-red-600">{stats.inactive}</div>
             <p className="text-sm text-muted-foreground">Inactive</p>
-          </CardContent>
+          </Card>
         </Card>
         <Card>
           <CardContent className="p-4">
@@ -246,7 +246,7 @@ const CustomerManagement = ({
       {/* Filters */}
       <Card>
         <CardContent className="p-4">
-          <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex flex-col md:flex-row gap-4 items-center">
             <div className="flex-1">
               <div className="relative">
                 <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
@@ -258,60 +258,14 @@ const CustomerManagement = ({
                 />
               </div>
             </div>
-            <div className="flex gap-2">
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-32">
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="inactive">Inactive</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select value={processFilter} onValueChange={setProcessFilter}>
-                <SelectTrigger className="w-32">
-                  <SelectValue placeholder="Process" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Process</SelectItem>
-                  <SelectItem value="prospect">Prospect</SelectItem>
-                  <SelectItem value="demo">Demo</SelectItem>
-                  <SelectItem value="poc">POC</SelectItem>
-                  <SelectItem value="negotiating">Negotiating</SelectItem>
-                  <SelectItem value="won">Won</SelectItem>
-                  <SelectItem value="lost">Lost</SelectItem>
-                  <SelectItem value="deployment">Deployment</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select value={partnerFilter} onValueChange={setPartnerFilter}>
-                <SelectTrigger className="w-40">
-                  <SelectValue placeholder="Partner" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Partners</SelectItem>
-                  <SelectItem value="unassigned">Unassigned</SelectItem>
-                  {partners.map((partner) => (
-                    <SelectItem key={partner.id} value={partner.id}>
-                      {partner.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select value={zoneFilter} onValueChange={setZoneFilter}>
-                <SelectTrigger className="w-32">
-                  <SelectValue placeholder="Zone" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Zones</SelectItem>
-                  <SelectItem value="north">North</SelectItem>
-                  <SelectItem value="east">East</SelectItem>
-                  <SelectItem value="west">West</SelectItem>
-                  <SelectItem value="south">South</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <CustomerTableFilters
+              partners={partners}
+              products={products}
+              onStatusFilter={setStatusFilter}
+              onProcessFilter={setProcessFilter}
+              onPartnerFilter={setPartnerFilter}
+              onZoneFilter={setZoneFilter}
+            />
           </div>
         </CardContent>
       </Card>
