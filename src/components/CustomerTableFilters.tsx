@@ -1,7 +1,9 @@
 
+import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger } from '@/components/ui/dropdown-menu';
-import { Filter } from 'lucide-react';
+import { Filter, Search } from 'lucide-react';
 import { Partner } from '../types';
 
 interface CustomerTableFiltersProps {
@@ -17,6 +19,14 @@ const CustomerTableFilters = ({
   onPartnerFilter, 
   onZoneFilter 
 }: CustomerTableFiltersProps) => {
+  const [partnerSearchTerm, setPartnerSearchTerm] = useState('');
+
+  const filteredPartners = useMemo(() => {
+    return partners.filter(partner => 
+      partner.name.toLowerCase().includes(partnerSearchTerm.toLowerCase())
+    );
+  }, [partners, partnerSearchTerm]);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -51,19 +61,38 @@ const CustomerTableFilters = ({
           <DropdownMenuSubTrigger>
             Filter by Partner
           </DropdownMenuSubTrigger>
-          <DropdownMenuSubContent>
-            <DropdownMenuItem onClick={() => onPartnerFilter('all')}>
-              All partners
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onPartnerFilter('unassigned')}>
-              Unassigned
-            </DropdownMenuItem>
+          <DropdownMenuSubContent className="w-64">
+            <div className="p-2">
+              <div className="relative">
+                <Search size={14} className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  placeholder="Search partners..."
+                  value={partnerSearchTerm}
+                  onChange={(e) => setPartnerSearchTerm(e.target.value)}
+                  className="pl-8 h-8 text-sm"
+                />
+              </div>
+            </div>
             <DropdownMenuSeparator />
-            {partners.map((partner) => (
-              <DropdownMenuItem key={partner.id} onClick={() => onPartnerFilter(partner.id)}>
-                {partner.name}
+            <div className="max-h-48 overflow-y-auto">
+              <DropdownMenuItem onClick={() => onPartnerFilter('all')}>
+                All partners
               </DropdownMenuItem>
-            ))}
+              <DropdownMenuItem onClick={() => onPartnerFilter('unassigned')}>
+                Unassigned
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              {filteredPartners.map((partner) => (
+                <DropdownMenuItem key={partner.id} onClick={() => onPartnerFilter(partner.id)}>
+                  {partner.name}
+                </DropdownMenuItem>
+              ))}
+              {filteredPartners.length === 0 && partnerSearchTerm && (
+                <div className="px-2 py-2 text-sm text-muted-foreground">
+                  No partners found
+                </div>
+              )}
+            </div>
           </DropdownMenuSubContent>
         </DropdownMenuSub>
 

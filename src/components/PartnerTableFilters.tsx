@@ -1,7 +1,9 @@
 
+import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger } from '@/components/ui/dropdown-menu';
-import { Filter } from 'lucide-react';
+import { Filter, Search } from 'lucide-react';
 
 interface PartnerTableFiltersProps {
   onStatusFilter: (status: string) => void;
@@ -16,7 +18,14 @@ const PartnerTableFilters = ({
   onSpecializationFilter,
   onZoneFilter
 }: PartnerTableFiltersProps) => {
+  const [specializationSearchTerm, setSpecializationSearchTerm] = useState('');
   const specializations = ['Enterprise Software', 'Digital Marketing', 'Cloud Services', 'Consulting', 'E-commerce'];
+
+  const filteredSpecializations = useMemo(() => {
+    return specializations.filter(spec => 
+      spec.toLowerCase().includes(specializationSearchTerm.toLowerCase())
+    );
+  }, [specializations, specializationSearchTerm]);
 
   return (
     <DropdownMenu>
@@ -73,16 +82,35 @@ const PartnerTableFilters = ({
           <DropdownMenuSubTrigger>
             Filter by Partner Program
           </DropdownMenuSubTrigger>
-          <DropdownMenuSubContent>
-            <DropdownMenuItem onClick={() => onSpecializationFilter('all')}>
-              All programs
-            </DropdownMenuItem>
+          <DropdownMenuSubContent className="w-64">
+            <div className="p-2">
+              <div className="relative">
+                <Search size={14} className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  placeholder="Search programs..."
+                  value={specializationSearchTerm}
+                  onChange={(e) => setSpecializationSearchTerm(e.target.value)}
+                  className="pl-8 h-8 text-sm"
+                />
+              </div>
+            </div>
             <DropdownMenuSeparator />
-            {specializations.map((spec) => (
-              <DropdownMenuItem key={spec} onClick={() => onSpecializationFilter(spec)}>
-                {spec}
+            <div className="max-h-48 overflow-y-auto">
+              <DropdownMenuItem onClick={() => onSpecializationFilter('all')}>
+                All programs
               </DropdownMenuItem>
-            ))}
+              <DropdownMenuSeparator />
+              {filteredSpecializations.map((spec) => (
+                <DropdownMenuItem key={spec} onClick={() => onSpecializationFilter(spec)}>
+                  {spec}
+                </DropdownMenuItem>
+              ))}
+              {filteredSpecializations.length === 0 && specializationSearchTerm && (
+                <div className="px-2 py-2 text-sm text-muted-foreground">
+                  No programs found
+                </div>
+              )}
+            </div>
           </DropdownMenuSubContent>
         </DropdownMenuSub>
 
