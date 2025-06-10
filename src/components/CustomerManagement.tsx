@@ -1,4 +1,3 @@
-
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -308,9 +307,6 @@ const CustomerManagement = ({
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => onBulkAction?.(selectedCustomers, 'deactivate')}>
                       Set Inactive
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onBulkAction?.(selectedCustomers, 'pending')}>
-                      Set Pending
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
