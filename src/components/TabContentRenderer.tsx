@@ -1,4 +1,3 @@
-
 import DashboardStats from '@/components/DashboardStats';
 import DashboardFilters from '@/components/DashboardFilters';
 import CustomerChart from '@/components/CustomerChart';
@@ -93,6 +92,20 @@ const TabContentRenderer = ({
     onBulkAction(customerIds, action);
   };
 
+  const handleUserUpdate = (userId: string, updates: Partial<User>) => {
+    // This would update the user data across the entire application
+    console.log('Updating user:', userId, updates);
+    // In a real app, this would call an API and update the global state
+  };
+
+  const handleUserStatusChange = (userId: string, newStatus: 'active' | 'inactive') => {
+    handleUserUpdate(userId, { status: newStatus });
+  };
+
+  const handleUserBulkStatusChange = (userIds: string[], newStatus: 'active' | 'inactive') => {
+    userIds.forEach(userId => handleUserUpdate(userId, { status: newStatus }));
+  };
+
   switch (activeTab) {
     case 'dashboard':
       return (
@@ -184,7 +197,12 @@ const TabContentRenderer = ({
     case 'user-hierarchy':
       return (
         <div className="space-y-6">
-          <UserHierarchyTable users={users} />
+          <UserHierarchyTable 
+            users={users}
+            onStatusChange={handleUserStatusChange}
+            onBulkStatusChange={handleUserBulkStatusChange}
+            onUserUpdate={handleUserUpdate}
+          />
         </div>
       );
     case 'reports':

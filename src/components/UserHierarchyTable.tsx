@@ -1,4 +1,5 @@
 
+
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -6,22 +7,26 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger } from '@/components/ui/dropdown-menu';
-import { Users, Eye, Edit, Trash2, MoreVertical, UserPlus, Download, Filter, Settings2 } from 'lucide-react';
+import { Users, Edit, UserPlus, Download, Filter, Settings2, MoreVertical } from 'lucide-react';
 import { User } from '../types';
 
 interface UserHierarchyTableProps {
   users: User[];
   onStatusChange?: (userId: string, newStatus: 'active' | 'inactive') => void;
   onBulkStatusChange?: (userIds: string[], newStatus: 'active' | 'inactive') => void;
+  onUserUpdate?: (userId: string, updates: Partial<User>) => void;
 }
 
-const UserHierarchyTable = ({ users, onStatusChange, onBulkStatusChange }: UserHierarchyTableProps) => {
+const UserHierarchyTable = ({ users, onStatusChange, onBulkStatusChange, onUserUpdate }: UserHierarchyTableProps) => {
   const [filteredUsers, setFilteredUsers] = useState<User[]>(users);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [showInactive, setShowInactive] = useState(true);
   const [compactView, setCompactView] = useState(false);
   const [showHierarchy, setShowHierarchy] = useState(true);
+  const [editingUserId, setEditingUserId] = useState<string | null>(null);
+  const [editingName, setEditingName] = useState('');
 
   const roles = ['admin', 'manager', 'assistant-manager', 'team-leader', 'fsr', 'bde'];
 
@@ -115,6 +120,29 @@ const UserHierarchyTable = ({ users, onStatusChange, onBulkStatusChange }: UserH
   const exportUsers = () => {
     console.log('Exporting users:', filteredUsers);
     // Here you would implement the export functionality
+  };
+
+  const handleEditStart = (user: User) => {
+    setEditingUserId(user.id);
+    setEditingName(user.name);
+  };
+
+  const handleEditCancel = () => {
+    setEditingUserId(null);
+    setEditingName('');
+  };
+
+  const handleEditSave = () => {
+    if (editingUserId && editingName.trim()) {
+      onUserUpdate?.(editingUserId, { name: editingName.trim() });
+      setEditingUserId(null);
+      setEditingName('');
+    }
+  };
+
+  const handleSuspendUser = (userId: string, currentStatus: string) => {
+    const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+    onStatusChange?.(userId, newStatus as 'active' | 'inactive');
   };
 
   const displayUsers = showInactive ? filteredUsers : filteredUsers.filter(user => user.status === 'active');
@@ -259,7 +287,25 @@ const UserHierarchyTable = ({ users, onStatusChange, onBulkStatusChange }: UserH
                       onCheckedChange={() => handleSelectUser(user.id)}
                     />
                   </TableCell>
-                  <TableCell className="font-medium">{user.name}</TableCell>
+                  <TableCell className="font-medium">
+                    {editingUserId === user.id ? (
+                      <div className="flex items-center gap-2">
+                        <Input
+                          value={editingName}
+                          onChange={(e) => setEditingName(e.target.value)}
+                          className="h-8"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') handleEditSave();
+                            if (e.key === 'Escape') handleEditCancel();
+                          }}
+                        />
+                        <Button size="sm" onClick={handleEditSave}>Save</Button>
+                        <Button size="sm" variant="outline" onClick={handleEditCancel}>Cancel</Button>
+                      </div>
+                    ) : (
+                      user.name
+                    )}
+                  </TableCell>
                   {!compactView && <TableCell>{user.email}</TableCell>}
                   <TableCell>
                     <Badge className={getRoleColor(user.role)}>
@@ -279,34 +325,24 @@ const UserHierarchyTable = ({ users, onStatusChange, onBulkStatusChange }: UserH
                   )}
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <Switch
-                        checked={user.status === 'active'}
-                        onCheckedChange={() => handleStatusToggle(user.id, user.status)}
-                      />
-                      <Button variant="outline" size="sm">
-                        <Eye size={16} />
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        <Edit size={16} />
-                      </Button>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="outline" size="sm">
-                            <MoreVertical size={16} />
+                      {editingUserId !== user.id ? (
+                        <>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEditStart(user)}
+                          >
+                            <Edit size={16} />
                           </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                          <DropdownMenuItem>View Details</DropdownMenuItem>
-                          <DropdownMenuItem>Send Message</DropdownMenuItem>
-                          <DropdownMenuItem>Change Role</DropdownMenuItem>
-                          <DropdownMenuItem>Reset Password</DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-red-600">
-                            <Trash2 size={16} className="mr-2" />
-                            Delete User
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                          <Button
+                            variant={user.status === 'active' ? 'destructive' : 'default'}
+                            size="sm"
+                            onClick={() => handleSuspendUser(user.id, user.status)}
+                          >
+                            {user.status === 'active' ? 'Suspend' : 'Activate'}
+                          </Button>
+                        </>
+                      ) : null}
                     </div>
                   </TableCell>
                 </TableRow>
