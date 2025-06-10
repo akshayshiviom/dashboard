@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -36,7 +37,10 @@ const Index = () => {
     handlePartnerAdd,
     handleProductAdd,
     handleProductImport,
-    handleProductPriceUpdate
+    handleProductPriceUpdate,
+    handleProductStatusChange,
+    handleProductBulkStatusChange,
+    handleProductUpdate
   } = useDataManager();
 
   useEffect(() => {
@@ -152,6 +156,9 @@ const Index = () => {
               onProductAdd={handleProductAdd}
               onProductImport={handleProductImport}
               onProductPriceUpdate={handleProductPriceUpdate}
+              onProductStatusChange={handleProductStatusChange}
+              onProductBulkStatusChange={handleProductBulkStatusChange}
+              onProductUpdate={handleProductUpdate}
               onPartnerAdd={handlePartnerAdd}
             />
           </div>
@@ -189,6 +196,9 @@ const Index = () => {
           onProductAdd={handleProductAdd}
           onProductImport={handleProductImport}
           onProductPriceUpdate={handleProductPriceUpdate}
+          onProductStatusChange={handleProductStatusChange}
+          onProductBulkStatusChange={handleProductBulkStatusChange}
+          onProductUpdate={handleProductUpdate}
           onPartnerAdd={handlePartnerAdd}
         />
       </div>
@@ -237,6 +247,9 @@ const Index = () => {
               onProductAdd={handleProductAdd}
               onProductImport={handleProductImport}
               onProductPriceUpdate={handleProductPriceUpdate}
+              onProductStatusChange={handleProductStatusChange}
+              onProductBulkStatusChange={handleProductBulkStatusChange}
+              onProductUpdate={handleProductUpdate}
               onPartnerAdd={handlePartnerAdd}
             />
           </main>

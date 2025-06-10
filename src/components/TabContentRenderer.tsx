@@ -1,3 +1,4 @@
+
 import DashboardStats from '@/components/DashboardStats';
 import DashboardFilters from '@/components/DashboardFilters';
 import CustomerChart from '@/components/CustomerChart';
@@ -45,6 +46,9 @@ interface TabContentRendererProps {
   onProductAdd: (product: Product) => void;
   onProductImport: (products: Product[]) => void;
   onProductPriceUpdate: (productId: string, newPrice: number) => void;
+  onProductStatusChange: (productId: string, newStatus: 'active' | 'inactive') => void;
+  onProductBulkStatusChange: (productIds: string[], newStatus: 'active' | 'inactive') => void;
+  onProductUpdate: (productId: string, updates: Partial<Product>) => void;
 }
 
 const TabContentRenderer = ({
@@ -75,6 +79,9 @@ const TabContentRenderer = ({
   onProductAdd,
   onProductImport,
   onProductPriceUpdate,
+  onProductStatusChange,
+  onProductBulkStatusChange,
+  onProductUpdate,
   onPartnerAdd
 }: TabContentRendererProps) => {
   // Wrapper functions to match CustomerTable's expected signatures
@@ -84,12 +91,6 @@ const TabContentRenderer = ({
 
   const handleBulkStatusChange = (customerIds: string[], action: string) => {
     onBulkAction(customerIds, action);
-  };
-
-  // Add product update handler
-  const handleProductUpdate = (productId: string, updates: Partial<Product>) => {
-    // This would typically call a function from DataManager to update the product
-    console.log('Product update:', productId, updates);
   };
 
   switch (activeTab) {
@@ -167,7 +168,9 @@ const TabContentRenderer = ({
           <ProductTable 
             products={products} 
             onPriceUpdate={onProductPriceUpdate}
-            onProductUpdate={handleProductUpdate}
+            onStatusChange={onProductStatusChange}
+            onBulkStatusChange={onProductBulkStatusChange}
+            onProductUpdate={onProductUpdate}
           />
         </div>
       );
