@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -27,8 +26,6 @@ const PlanManagementDialog = ({ product, onUpdateProduct, trigger }: PlanManagem
     name: '',
     price: '',
     billing: 'monthly' as 'monthly' | 'yearly' | 'one-time',
-    features: '',
-    userLimit: '',
     isPopular: false,
   });
 
@@ -37,8 +34,6 @@ const PlanManagementDialog = ({ product, onUpdateProduct, trigger }: PlanManagem
       name: '',
       price: '',
       billing: 'monthly',
-      features: '',
-      userLimit: '',
       isPopular: false,
     });
     setEditingPlan(null);
@@ -52,8 +47,6 @@ const PlanManagementDialog = ({ product, onUpdateProduct, trigger }: PlanManagem
       name: plan.name,
       price: plan.price.toString(),
       billing: plan.billing,
-      features: plan.features.join('\n'),
-      userLimit: plan.userLimit?.toString() || '',
       isPopular: plan.isPopular || false,
     });
   };
@@ -73,8 +66,7 @@ const PlanManagementDialog = ({ product, onUpdateProduct, trigger }: PlanManagem
       name: formData.name,
       price: parseFloat(formData.price),
       billing: formData.billing,
-      features: formData.features.split('\n').filter(f => f.trim()),
-      userLimit: formData.userLimit ? parseInt(formData.userLimit) : undefined,
+      features: [], // Empty array since features are removed
       isPopular: formData.isPopular,
     };
 
@@ -127,7 +119,7 @@ const PlanManagementDialog = ({ product, onUpdateProduct, trigger }: PlanManagem
       <DialogTrigger asChild onClick={() => setIsOpen(true)}>
         {trigger}
       </DialogTrigger>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Manage Plans for {product.name}</DialogTitle>
         </DialogHeader>
@@ -160,56 +152,31 @@ const PlanManagementDialog = ({ product, onUpdateProduct, trigger }: PlanManagem
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="price">Price (₹) *</Label>
+                    <Label htmlFor="price">Price per User (₹) *</Label>
                     <Input
                       id="price"
                       type="number"
                       value={formData.price}
                       onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                      placeholder="Enter price"
+                      placeholder="Enter price per user"
                       step="0.01"
                       min="0"
                     />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="billing">Billing Cycle *</Label>
-                    <Select value={formData.billing} onValueChange={(value: 'monthly' | 'yearly' | 'one-time') => setFormData({ ...formData, billing: value })}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="monthly">Monthly</SelectItem>
-                        <SelectItem value="yearly">Yearly</SelectItem>
-                        <SelectItem value="one-time">One-time</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="userLimit">User Limit</Label>
-                    <Input
-                      id="userLimit"
-                      type="number"
-                      value={formData.userLimit}
-                      onChange={(e) => setFormData({ ...formData, userLimit: e.target.value })}
-                      placeholder="Enter user limit (optional)"
-                      min="1"
-                    />
-                  </div>
-                </div>
-
                 <div className="space-y-2">
-                  <Label htmlFor="features">Features (one per line) *</Label>
-                  <Textarea
-                    id="features"
-                    value={formData.features}
-                    onChange={(e) => setFormData({ ...formData, features: e.target.value })}
-                    placeholder="Enter features, one per line"
-                    rows={4}
-                  />
+                  <Label htmlFor="billing">Billing Cycle *</Label>
+                  <Select value={formData.billing} onValueChange={(value: 'monthly' | 'yearly' | 'one-time') => setFormData({ ...formData, billing: value })}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="monthly">Monthly</SelectItem>
+                      <SelectItem value="yearly">Yearly</SelectItem>
+                      <SelectItem value="one-time">One-time</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="flex items-center space-x-2">
@@ -260,23 +227,7 @@ const PlanManagementDialog = ({ product, onUpdateProduct, trigger }: PlanManagem
                               {plan.billing}
                             </Badge>
                           </div>
-                          <div className="text-2xl font-bold">₹{plan.price.toFixed(2)}</div>
-                          {plan.userLimit && (
-                            <p className="text-sm text-muted-foreground">
-                              Up to {plan.userLimit} users
-                            </p>
-                          )}
-                          <div className="space-y-1">
-                            <p className="text-sm font-medium">Features:</p>
-                            <ul className="text-sm space-y-1">
-                              {plan.features.map((feature, index) => (
-                                <li key={index} className="flex items-start gap-2">
-                                  <span className="text-green-600 mt-0.5">✓</span>
-                                  <span>{feature}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
+                          <div className="text-2xl font-bold">₹{plan.price.toFixed(2)} per user</div>
                         </div>
                         <div className="flex gap-2">
                           <Button

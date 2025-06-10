@@ -103,28 +103,16 @@ const ProductDetail = ({ product, onBack }: ProductDetailProps) => {
                   <CardTitle className="text-lg">{plan.name}</CardTitle>
                   <div className="flex items-baseline gap-1">
                     <span className="text-2xl font-bold">₹{plan.price.toFixed(2)}</span>
+                    <span className="text-sm text-muted-foreground">per user</span>
                     <Badge className={getBillingBadgeColor(plan.billing)} variant="secondary">
                       {plan.billing}
                     </Badge>
                   </div>
-                  {plan.userLimit && (
-                    <p className="text-sm text-muted-foreground">
-                      Up to {plan.userLimit} users
-                    </p>
-                  )}
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-2">
-                    <h4 className="font-medium">Features:</h4>
-                    <ul className="space-y-1">
-                      {plan.features.map((feature, index) => (
-                        <li key={index} className="text-sm flex items-start gap-2">
-                          <span className="text-green-600 mt-0.5">✓</span>
-                          <span>{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Per user pricing for {plan.billing} billing
+                  </p>
                 </CardContent>
               </Card>
             ))}

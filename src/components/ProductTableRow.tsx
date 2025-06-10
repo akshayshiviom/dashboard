@@ -1,3 +1,4 @@
+
 import { TableCell, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -49,6 +50,8 @@ const ProductTableRow = ({ product, currentUserRole, isSelected, onSelect, onSta
     }
   };
 
+  const plans = Array.isArray(product.plans) ? product.plans : [];
+
   return (
     <TableRow className="hover:bg-muted/50 cursor-pointer" onClick={handleRowClick}>
       {currentUserRole === 'admin' && (
@@ -62,12 +65,12 @@ const ProductTableRow = ({ product, currentUserRole, isSelected, onSelect, onSta
       <TableCell className="font-medium">
         <div className="space-y-2">
           <div className="font-semibold">{product.name}</div>
-          {product.plans && product.plans.length > 0 && (
+          {plans.length > 0 && (
             <div className="space-y-1">
-              {product.plans.slice(0, 2).map((plan) => (
+              {plans.slice(0, 2).map((plan) => (
                 <div key={plan.id} className="flex items-center gap-2 text-xs">
                   <span className="font-medium">{plan.name}:</span>
-                  <span>₹{plan.price.toFixed(2)}</span>
+                  <span>₹{plan.price.toFixed(2)} per user</span>
                   <Badge className={getBillingBadgeColor(plan.billing)} variant="secondary">
                     {plan.billing}
                   </Badge>
@@ -76,9 +79,9 @@ const ProductTableRow = ({ product, currentUserRole, isSelected, onSelect, onSta
                   )}
                 </div>
               ))}
-              {product.plans.length > 2 && (
+              {plans.length > 2 && (
                 <div className="text-xs text-muted-foreground">
-                  +{product.plans.length - 2} more plans
+                  +{plans.length - 2} more plans
                 </div>
               )}
             </div>
