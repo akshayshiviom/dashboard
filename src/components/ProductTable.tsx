@@ -59,6 +59,11 @@ const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusCha
     onProductUpdate?.(productId, updatedProduct);
   };
 
+  // Dummy handlers for removed bulk functionality
+  const handleSelect = (productId: string) => {
+    // No longer used since bulk actions are removed
+  };
+
   if (selectedProduct) {
     return <ProductDetail product={selectedProduct} onBack={handleBackToList} onProductUpdate={handleProductUpdate} />;
   }
@@ -100,6 +105,8 @@ const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusCha
                   key={product.id}
                   product={product}
                   currentUserRole={currentUserRole}
+                  isSelected={false}
+                  onSelect={handleSelect}
                   onStatusToggle={handleStatusToggle}
                   onProductClick={handleProductClick}
                   onProductUpdate={handleProductUpdate}
