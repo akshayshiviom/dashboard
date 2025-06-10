@@ -139,7 +139,7 @@ const UserHierarchyTable = ({ users, onStatusChange, onBulkStatusChange, onUserU
       onUserUpdate?.(editingUser.id, {
         name: editingUser.name.trim(),
         role: editingUser.role as User['role'],
-        reportingTo: editingUser.reportingTo
+        reportingTo: editingUser.reportingTo === 'none' ? undefined : editingUser.reportingTo
       });
       setEditingUser(null);
     }
@@ -330,14 +330,14 @@ const UserHierarchyTable = ({ users, onStatusChange, onBulkStatusChange, onUserU
                     <TableCell>
                       {editingUser && editingUser.id === user.id ? (
                         <Select
-                          value={editingUser.reportingTo || ''}
-                          onValueChange={(value) => setEditingUser({ ...editingUser, reportingTo: value || undefined })}
+                          value={editingUser.reportingTo || 'none'}
+                          onValueChange={(value) => setEditingUser({ ...editingUser, reportingTo: value === 'none' ? undefined : value })}
                         >
                           <SelectTrigger className="h-8">
                             <SelectValue placeholder="Select manager" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="">None</SelectItem>
+                            <SelectItem value="none">None</SelectItem>
                             {users
                               .filter(u => u.id !== user.id)
                               .map((u) => (
