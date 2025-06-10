@@ -2,7 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Mail, Building, MapPin, User, Package } from 'lucide-react';
+import { ArrowLeft, Mail, Building, MapPin, User, Package, TrendingUp } from 'lucide-react';
 import { Customer, Partner, Product } from '../types';
 
 interface CustomerDetailProps {
@@ -59,6 +59,21 @@ const CustomerDetail = ({ customer, partners, products, onBack, onCustomerUpdate
   };
 
   const customerProducts = getProductNames(customer.productIds);
+
+  const processSteps = [
+    { id: 'prospect', name: 'Prospect', description: 'Initial contact and qualification' },
+    { id: 'demo', name: 'Demo', description: 'Product demonstration and presentation' },
+    { id: 'poc', name: 'POC', description: 'Proof of concept implementation' },
+    { id: 'negotiating', name: 'Negotiating', description: 'Contract terms and pricing discussion' },
+    { id: 'won', name: 'Won', description: 'Deal closed successfully' },
+    { id: 'deployment', name: 'Deployment', description: 'Solution implementation and go-live' }
+  ];
+
+  const getCurrentStepIndex = () => {
+    return processSteps.findIndex(step => step.id === customer.process);
+  };
+
+  const currentStepIndex = getCurrentStepIndex();
 
   return (
     <div className="space-y-6">
@@ -119,6 +134,61 @@ const CustomerDetail = ({ customer, partners, products, onBack, onCustomerUpdate
             <div>
               <h4 className="font-semibold text-sm text-muted-foreground">Created</h4>
               <p className="text-lg">{customer.createdAt.toLocaleDateString()}</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Customer Management Process */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <TrendingUp size={20} />
+            <CardTitle>Customer Management Process</CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Track the customer's progress through the sales and implementation process
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {processSteps.map((step, index) => {
+                const isCurrentStep = step.id === customer.process;
+                const isCompletedStep = currentStepIndex > index;
+                const isUpcomingStep = currentStepIndex < index && currentStepIndex !== -1;
+
+                return (
+                  <Card key={step.id} className={`transition-all ${
+                    isCurrentStep ? 'ring-2 ring-primary' : 
+                    isCompletedStep ? 'bg-green-50' : 
+                    isUpcomingStep ? 'bg-gray-50' : ''
+                  }`}>
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <Badge 
+                          className={`${getProcessColor(step.id)} ${
+                            isCurrentStep ? 'ring-2 ring-primary ring-offset-1' : ''
+                          }`}
+                        >
+                          {step.name}
+                        </Badge>
+                        {isCurrentStep && (
+                          <Badge variant="outline" className="text-xs">
+                            Current
+                          </Badge>
+                        )}
+                        {isCompletedStep && (
+                          <Badge variant="outline" className="text-xs bg-green-100 text-green-800">
+                            ✓ Done
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-sm text-muted-foreground">{step.description}</p>
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           </div>
         </CardContent>
