@@ -47,7 +47,13 @@ const AddPartnerForm = ({ onPartnerAdd, onCancel }: AddPartnerFormProps) => {
     try {
       const newPartner: Partner = {
         id: `partner-${Date.now()}`,
-        ...data,
+        name: data.name,
+        email: data.email,
+        company: data.company,
+        specialization: data.specialization,
+        identity: data.identity,
+        paymentTerms: data.paymentTerms,
+        zone: data.zone,
         customersCount: 0,
         totalValue: 0,
         status: 'active',
