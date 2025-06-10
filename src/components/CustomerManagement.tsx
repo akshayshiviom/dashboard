@@ -1,3 +1,4 @@
+
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,7 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Switch } from '@/components/ui/switch';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Search, UserPlus, Download, Upload } from 'lucide-react';
-import { Customer, Partner, Product } from '../types';
+import { Customer, Partner, Product, User } from '../types';
 import CustomerDetail from './CustomerDetail';
 import CustomerTableFilters from './CustomerTableFilters';
 
@@ -16,6 +17,7 @@ interface CustomerManagementProps {
   customers: Customer[];
   partners: Partner[];
   products: Product[];
+  users: User[];
   onCustomerUpdate?: (customerId: string, updates: Partial<Customer>) => void;
   onBulkAction?: (customerIds: string[], action: string) => void;
 }
@@ -24,6 +26,7 @@ const CustomerManagement = ({
   customers, 
   partners, 
   products, 
+  users,
   onCustomerUpdate, 
   onBulkAction 
 }: CustomerManagementProps) => {
@@ -152,6 +155,7 @@ const CustomerManagement = ({
         customer={selectedCustomer} 
         partners={partners}
         products={products}
+        users={users}
         onBack={handleBackToList} 
         onCustomerUpdate={handleCustomerUpdate} 
       />

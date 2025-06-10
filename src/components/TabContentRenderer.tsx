@@ -121,6 +121,7 @@ const TabContentRenderer = ({
                 customers={customers} 
                 partners={partners} 
                 products={products}
+                users={users}
                 onStatusChange={handleStatusChange}
                 onBulkStatusChange={handleBulkStatusChange}
                 onBulkImport={onCustomerImport}
@@ -135,12 +136,13 @@ const TabContentRenderer = ({
           customers={customers} 
           partners={partners} 
           products={products}
+          users={users}
           onCustomerUpdate={onCustomerUpdate}
           onBulkAction={onBulkAction}
         />
       );
     case 'partner-onboarding':
-      return <PartnerOnboarding partners={partners} />;
+      return <PartnerOnboarding partners={partners} users={users} onPartnerAdd={onPartnerAdd} />;
     case 'customers':
       return (
         <div className="space-y-6">
@@ -148,6 +150,7 @@ const TabContentRenderer = ({
             customers={customers} 
             partners={partners} 
             products={products}
+            users={users}
             onStatusChange={handleStatusChange}
             onBulkStatusChange={handleBulkStatusChange}
             onBulkImport={onCustomerImport}
