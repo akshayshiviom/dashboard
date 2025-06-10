@@ -51,8 +51,18 @@ const ProductForm = ({ onProductAdd }: ProductFormProps) => {
       description: formData.description,
       status: 'active',
       customersCount: 0,
-      price: parseFloat(formData.price),
+      plans: [
+        {
+          id: `${Date.now()}-1`,
+          name: 'Basic',
+          price: parseFloat(formData.price),
+          billing: 'monthly',
+          features: ['Basic features'],
+          userLimit: 10,
+        }
+      ],
       createdAt: new Date(),
+      price: parseFloat(formData.price), // Keep for backward compatibility
     };
 
     onProductAdd(newProduct);
