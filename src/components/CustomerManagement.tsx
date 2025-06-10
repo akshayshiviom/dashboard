@@ -1,4 +1,3 @@
-
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,9 +7,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Switch } from '@/components/ui/switch';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Search, MoreHorizontal, UserPlus, Download, Upload } from 'lucide-react';
+import { Search, UserPlus, Download, Upload } from 'lucide-react';
 import { Customer, Partner, Product } from '../types';
-import CustomerEditDialog from './CustomerEditDialog';
+import CustomerDetail from './CustomerDetail';
 import CustomerTableFilters from './CustomerTableFilters';
 
 interface CustomerManagementProps {
@@ -34,8 +33,7 @@ const CustomerManagement = ({
   const [partnerFilter, setPartnerFilter] = useState('all');
   const [zoneFilter, setZoneFilter] = useState('all');
   const [selectedCustomers, setSelectedCustomers] = useState<string[]>([]);
-  const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
 
   const filteredCustomers = useMemo(() => {
     return customers.filter(customer => {
@@ -73,6 +71,19 @@ const CustomerManagement = ({
   const handleStatusToggle = (customerId: string, currentStatus: string) => {
     const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
     onCustomerUpdate?.(customerId, { status: newStatus as 'active' | 'inactive' });
+  };
+
+  const handleCustomerClick = (customer: Customer) => {
+    setSelectedCustomer(customer);
+  };
+
+  const handleBackToList = () => {
+    setSelectedCustomer(null);
+  };
+
+  const handleCustomerUpdate = (customerId: string, updates: Partial<Customer>) => {
+    const updatedCustomer = { ...updates, lastEdited: new Date() };
+    onCustomerUpdate?.(customerId, updatedCustomer);
   };
 
   const getPartnerName = (partnerId?: string) => {
@@ -135,16 +146,17 @@ const CustomerManagement = ({
     deployment: customers.filter(c => c.process === 'deployment').length
   };
 
-  const handleEditCustomer = (customer: Customer) => {
-    setEditingCustomer(customer);
-    setIsEditDialogOpen(true);
-  };
-
-  const handleSaveCustomer = (customerId: string, updates: Partial<Customer>) => {
-    onCustomerUpdate?.(customerId, updates);
-    setIsEditDialogOpen(false);
-    setEditingCustomer(null);
-  };
+  if (selectedCustomer) {
+    return (
+      <CustomerDetail 
+        customer={selectedCustomer} 
+        partners={partners}
+        products={products}
+        onBack={handleBackToList} 
+        onCustomerUpdate={handleCustomerUpdate} 
+      />
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -323,13 +335,13 @@ const CustomerManagement = ({
                 <TableHead>Process</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Value</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead>Status Toggle</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredCustomers.map((customer) => (
-                <TableRow key={customer.id}>
-                  <TableCell>
+                <TableRow key={customer.id} className="cursor-pointer hover:bg-muted/50" onClick={() => handleCustomerClick(customer)}>
+                  <TableCell onClick={(e) => e.stopPropagation()}>
                     <Checkbox 
                       checked={selectedCustomers.includes(customer.id)}
                       onCheckedChange={() => handleSelectCustomer(customer.id)}
@@ -372,31 +384,12 @@ const CustomerManagement = ({
                   <TableCell className="font-medium">
                     ₹{customer.value.toLocaleString('en-IN')}
                   </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Switch
-                        checked={customer.status === 'active'}
-                        onCheckedChange={() => handleStatusToggle(customer.id, customer.status)}
-                        disabled={customer.status === 'pending'}
-                      />
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm">
-                            <MoreHorizontal size={16} />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                          <DropdownMenuItem onClick={() => handleEditCustomer(customer)}>
-                            Edit Customer
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>View Details</DropdownMenuItem>
-                          <DropdownMenuItem>Assign Partner</DropdownMenuItem>
-                          <DropdownMenuItem className="text-red-600">
-                            Delete Customer
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
+                  <TableCell onClick={(e) => e.stopPropagation()}>
+                    <Switch
+                      checked={customer.status === 'active'}
+                      onCheckedChange={() => handleStatusToggle(customer.id, customer.status)}
+                      disabled={customer.status === 'pending'}
+                    />
                   </TableCell>
                 </TableRow>
               ))}
@@ -404,20 +397,10 @@ const CustomerManagement = ({
           </Table>
         </CardContent>
       </Card>
-
-      <CustomerEditDialog
-        customer={editingCustomer}
-        partners={partners}
-        products={products}
-        isOpen={isEditDialogOpen}
-        onClose={() => {
-          setIsEditDialogOpen(false);
-          setEditingCustomer(null);
-        }}
-        onSave={handleSaveCustomer}
-      />
     </div>
   );
 };
 
 export default CustomerManagement;
+
+}
