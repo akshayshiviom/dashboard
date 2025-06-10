@@ -1,3 +1,4 @@
+
 export interface Customer {
   id: string;
   name: string;
@@ -19,7 +20,7 @@ export interface Partner {
   email: string;
   company: string;
   specialization: string;
-  identity: 'web-app-developer' | 'system-integrator' | 'managed-service-provider' | 'digital-marketer';
+  identity: 'web-app-developer' | 'system-integrator' | 'managed-service-provider' | 'digital-marketer' | 'cyber-security' | 'cloud-hosting' | 'web-hosting' | 'hardware' | 'cloud-service-provider' | 'microsoft-partner' | 'aws-partner' | 'it-consulting' | 'freelance';
   customersCount: number;
   totalValue: number;
   status: 'active' | 'inactive';

@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -15,7 +14,7 @@ const partnerSchema = z.object({
   email: z.string().email('Please enter a valid email'),
   company: z.string().min(2, 'Company name must be at least 2 characters'),
   specialization: z.string().min(2, 'Specialization is required'),
-  identity: z.enum(['web-app-developer', 'system-integrator', 'managed-service-provider', 'digital-marketer']),
+  identity: z.enum(['web-app-developer', 'system-integrator', 'managed-service-provider', 'digital-marketer', 'cyber-security', 'cloud-hosting', 'web-hosting', 'hardware', 'cloud-service-provider', 'microsoft-partner', 'aws-partner', 'it-consulting', 'freelance']),
   paymentTerms: z.enum(['net-30', 'net-60', 'net-90', 'prepaid', 'monthly']),
   zone: z.enum(['north', 'east', 'west', 'south']).optional(),
 });
@@ -158,6 +157,15 @@ const AddPartnerForm = ({ onPartnerAdd, onCancel }: AddPartnerFormProps) => {
                         <SelectItem value="system-integrator">System Integrator</SelectItem>
                         <SelectItem value="managed-service-provider">Managed Service Provider</SelectItem>
                         <SelectItem value="digital-marketer">Digital Marketer</SelectItem>
+                        <SelectItem value="cyber-security">Cyber Security</SelectItem>
+                        <SelectItem value="cloud-hosting">Cloud Hosting</SelectItem>
+                        <SelectItem value="web-hosting">Web Hosting</SelectItem>
+                        <SelectItem value="hardware">Hardware</SelectItem>
+                        <SelectItem value="cloud-service-provider">Cloud Service Provider</SelectItem>
+                        <SelectItem value="microsoft-partner">Microsoft Partner</SelectItem>
+                        <SelectItem value="aws-partner">AWS Partner</SelectItem>
+                        <SelectItem value="it-consulting">IT Consulting</SelectItem>
+                        <SelectItem value="freelance">Freelance</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

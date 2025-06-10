@@ -75,6 +75,33 @@ const PartnerTableFilters = ({
             <DropdownMenuItem onClick={() => onIdentityFilter('digital-marketer')}>
               Digital Marketer
             </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onIdentityFilter('cyber-security')}>
+              Cyber Security
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onIdentityFilter('cloud-hosting')}>
+              Cloud Hosting
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onIdentityFilter('web-hosting')}>
+              Web Hosting
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onIdentityFilter('hardware')}>
+              Hardware
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onIdentityFilter('cloud-service-provider')}>
+              Cloud Service Provider
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onIdentityFilter('microsoft-partner')}>
+              Microsoft Partner
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onIdentityFilter('aws-partner')}>
+              AWS Partner
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onIdentityFilter('it-consulting')}>
+              IT Consulting
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onIdentityFilter('freelance')}>
+              Freelance
+            </DropdownMenuItem>
           </DropdownMenuSubContent>
         </DropdownMenuSub>
         
