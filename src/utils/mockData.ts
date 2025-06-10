@@ -1,4 +1,3 @@
-
 import { Customer, Partner, Product } from '../types';
 
 export const mockProducts: Product[] = [
@@ -16,16 +15,12 @@ export const mockProducts: Product[] = [
         name: 'Core',
         price: 2.50,
         billing: 'monthly',
-        features: ['User Management', 'SSO', 'Basic MFA'],
-        userLimit: 10,
       },
       {
         id: '1-2',
         name: 'Business',
         price: 8.00,
         billing: 'monthly',
-        features: ['Advanced SSO', 'RADIUS', 'LDAP'],
-        userLimit: 50,
         isPopular: true,
       },
       {
@@ -33,8 +28,6 @@ export const mockProducts: Product[] = [
         name: 'Enterprise',
         price: 20.00,
         billing: 'monthly',
-        features: ['Everything in Business', 'Advanced MFA', 'API Access'],
-        userLimit: 1000,
       }
     ],
     price: 299.99,
@@ -54,16 +47,12 @@ export const mockProducts: Product[] = [
         name: 'Growth',
         price: 2.00,
         billing: 'monthly',
-        features: ['Device Management', 'App Management', 'Basic Security'],
-        userLimit: 25,
       },
       {
         id: '2-2',
         name: 'Business',
         price: 4.00,
         billing: 'monthly',
-        features: ['Advanced Security', 'Kiosk Mode', 'Geofencing'],
-        userLimit: 100,
         isPopular: true,
       },
       {
@@ -71,7 +60,6 @@ export const mockProducts: Product[] = [
         name: 'Enterprise',
         price: 7.00,
         billing: 'monthly',
-        features: ['Custom Branding', 'Advanced Analytics', 'Priority Support'],
       }
     ],
     price: 199.99,
@@ -91,16 +79,12 @@ export const mockProducts: Product[] = [
         name: 'Business Starter',
         price: 6.00,
         billing: 'monthly',
-        features: ['Gmail', 'Drive (30GB)', 'Meet', 'Calendar'],
-        userLimit: 300,
       },
       {
         id: '3-2',
         name: 'Business Standard',
         price: 12.00,
         billing: 'monthly',
-        features: ['Drive (2TB)', 'Enhanced Meet', 'Shared Drives'],
-        userLimit: 300,
         isPopular: true,
       },
       {
@@ -108,8 +92,6 @@ export const mockProducts: Product[] = [
         name: 'Business Plus',
         price: 18.00,
         billing: 'monthly',
-        features: ['Drive (5TB)', 'Advanced Security', 'eDiscovery'],
-        userLimit: 300,
       }
     ],
     price: 149.99,
@@ -129,16 +111,12 @@ export const mockProducts: Product[] = [
         name: 'Business Basic',
         price: 6.00,
         billing: 'monthly',
-        features: ['Exchange', 'OneDrive (1TB)', 'Teams', 'SharePoint'],
-        userLimit: 300,
       },
       {
         id: '4-2',
         name: 'Business Standard',
         price: 12.50,
         billing: 'monthly',
-        features: ['Office Apps', 'Desktop Versions', 'Advanced Teams'],
-        userLimit: 300,
         isPopular: true,
       },
       {
@@ -146,8 +124,6 @@ export const mockProducts: Product[] = [
         name: 'Business Premium',
         price: 22.00,
         billing: 'monthly',
-        features: ['Advanced Security', 'Device Management', 'Advanced Compliance'],
-        userLimit: 300,
       }
     ],
     price: 179.99,
@@ -167,14 +143,12 @@ export const mockProducts: Product[] = [
         name: 'Workforce Identity',
         price: 2.00,
         billing: 'monthly',
-        features: ['SSO', 'MFA', 'Lifecycle Management'],
       },
       {
         id: '5-2',
         name: 'Customer Identity',
         price: 0.55,
         billing: 'monthly',
-        features: ['Customer Registration', 'Social Login', 'Progressive Profiling'],
         isPopular: true,
       }
     ],
@@ -195,14 +169,12 @@ export const mockProducts: Product[] = [
         name: 'Pro',
         price: 7.25,
         billing: 'monthly',
-        features: ['Unlimited Messages', 'Apps & Integrations', 'Guest Access'],
       },
       {
         id: '6-2',
         name: 'Business+',
         price: 12.50,
         billing: 'monthly',
-        features: ['SAML SSO', 'Compliance Exports', '99.99% Uptime SLA'],
         isPopular: true,
       },
       {
@@ -210,7 +182,6 @@ export const mockProducts: Product[] = [
         name: 'Enterprise Grid',
         price: 19.00,
         billing: 'monthly',
-        features: ['Advanced Security', 'Data Loss Prevention', 'Enterprise Key Management'],
       }
     ],
     price: 89.99,

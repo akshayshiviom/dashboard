@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -66,7 +67,6 @@ const PlanManagementDialog = ({ product, onUpdateProduct, trigger }: PlanManagem
       name: formData.name,
       price: parseFloat(formData.price),
       billing: formData.billing,
-      features: [], // Empty array since features are removed
       isPopular: formData.isPopular,
     };
 
