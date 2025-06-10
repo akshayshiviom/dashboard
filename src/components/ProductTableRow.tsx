@@ -1,4 +1,3 @@
-
 import { TableCell, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -6,6 +5,7 @@ import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Edit2 } from 'lucide-react';
 import { Product } from '../types';
+import PlanManagementDialog from './PlanManagementDialog';
 
 interface ProductTableRowProps {
   product: Product;
@@ -14,9 +14,10 @@ interface ProductTableRowProps {
   onSelect: (productId: string) => void;
   onStatusToggle: (productId: string, currentStatus: string) => void;
   onProductClick: (product: Product) => void;
+  onProductUpdate?: (productId: string, updates: Partial<Product>) => void;
 }
 
-const ProductTableRow = ({ product, currentUserRole, isSelected, onSelect, onStatusToggle, onProductClick }: ProductTableRowProps) => {
+const ProductTableRow = ({ product, currentUserRole, isSelected, onSelect, onStatusToggle, onProductClick, onProductUpdate }: ProductTableRowProps) => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active': return 'bg-green-100 text-green-800';
@@ -40,6 +41,12 @@ const ProductTableRow = ({ product, currentUserRole, isSelected, onSelect, onSta
       return;
     }
     onProductClick(product);
+  };
+
+  const handleProductUpdate = (productId: string, updates: Partial<Product>) => {
+    if (onProductUpdate) {
+      onProductUpdate(productId, updates);
+    }
   };
 
   return (
@@ -105,17 +112,19 @@ const ProductTableRow = ({ product, currentUserRole, isSelected, onSelect, onSta
               checked={product.status === 'active'}
               onCheckedChange={() => onStatusToggle(product.id, product.status)}
             />
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => {
-                // Handle plan management - could open a dialog
-                console.log('Manage plans for:', product.name);
-              }}
-            >
-              <Edit2 size={14} className="mr-1" />
-              Manage Plans
-            </Button>
+            <PlanManagementDialog
+              product={product}
+              onUpdateProduct={handleProductUpdate}
+              trigger={
+                <Button
+                  size="sm"
+                  variant="outline"
+                >
+                  <Edit2 size={14} className="mr-1" />
+                  Manage Plans
+                </Button>
+              }
+            />
           </div>
         </TableCell>
       )}

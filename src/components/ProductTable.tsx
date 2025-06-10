@@ -1,4 +1,3 @@
-
 import { useState, useMemo } from 'react';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent } from '@/components/ui/card';
@@ -14,9 +13,10 @@ interface ProductTableProps {
   onStatusChange?: (productId: string, newStatus: 'active' | 'inactive') => void;
   onBulkStatusChange?: (productIds: string[], newStatus: 'active' | 'inactive') => void;
   onBulkImport?: (products: Product[]) => void;
+  onProductUpdate?: (productId: string, updates: Partial<Product>) => void;
 }
 
-const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusChange, onBulkImport }: ProductTableProps) => {
+const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusChange, onBulkImport, onProductUpdate }: ProductTableProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
@@ -137,6 +137,7 @@ const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusCha
                   onSelect={handleSelectProduct}
                   onStatusToggle={handleStatusToggle}
                   onProductClick={handleProductClick}
+                  onProductUpdate={onProductUpdate}
                 />
               ))}
             </TableBody>

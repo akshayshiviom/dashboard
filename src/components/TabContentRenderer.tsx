@@ -1,4 +1,3 @@
-
 import DashboardStats from '@/components/DashboardStats';
 import DashboardFilters from '@/components/DashboardFilters';
 import CustomerChart from '@/components/CustomerChart';
@@ -75,7 +74,8 @@ const TabContentRenderer = ({
   onCustomerImport,
   onProductAdd,
   onProductImport,
-  onProductPriceUpdate
+  onProductPriceUpdate,
+  onPartnerAdd
 }: TabContentRendererProps) => {
   // Wrapper functions to match CustomerTable's expected signatures
   const handleStatusChange = (customerId: string, newStatus: 'active' | 'inactive' | 'pending') => {
@@ -84,6 +84,12 @@ const TabContentRenderer = ({
 
   const handleBulkStatusChange = (customerIds: string[], action: string) => {
     onBulkAction(customerIds, action);
+  };
+
+  // Add product update handler
+  const handleProductUpdate = (productId: string, updates: Partial<Product>) => {
+    // This would typically call a function from DataManager to update the product
+    console.log('Product update:', productId, updates);
   };
 
   switch (activeTab) {
@@ -158,7 +164,11 @@ const TabContentRenderer = ({
     case 'products':
       return (
         <div className="space-y-6">
-          <ProductTable products={products} onPriceUpdate={onProductPriceUpdate} />
+          <ProductTable 
+            products={products} 
+            onPriceUpdate={onProductPriceUpdate}
+            onProductUpdate={handleProductUpdate}
+          />
         </div>
       );
     case 'add-product':
