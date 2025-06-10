@@ -42,6 +42,7 @@ interface TabContentRendererProps {
   onCustomerUpdate: (customerId: string, updates: Partial<Customer>) => void;
   onBulkAction: (customerIds: string[], action: string) => void;
   onCustomerImport: (customers: Customer[]) => void;
+  onPartnerAdd: (partner: Partner) => void;
   onProductAdd: (product: Product) => void;
   onProductImport: (products: Product[]) => void;
   onProductPriceUpdate: (productId: string, newPrice: number) => void;

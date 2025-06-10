@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,9 +8,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Progress } from '@/components/ui/progress';
 import { Search, UserPlus, Filter, CheckCircle, Clock, AlertCircle, Eye } from 'lucide-react';
 import { Partner } from '@/types';
+import AddPartnerForm from '@/components/AddPartnerForm';
 
 interface PartnerOnboardingProps {
   partners: Partner[];
+  onPartnerAdd?: (partner: Partner) => void;
 }
 
 interface OnboardingStep {
@@ -29,9 +30,10 @@ interface OnboardingPartner extends Partner {
   lastActivity: Date;
 }
 
-const PartnerOnboarding = ({ partners }: PartnerOnboardingProps) => {
+const PartnerOnboarding = ({ partners, onPartnerAdd }: PartnerOnboardingProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [showAddForm, setShowAddForm] = useState(false);
 
   // Mock onboarding data - in real app this would come from API
   const onboardingPartners: OnboardingPartner[] = partners.map(partner => ({
@@ -48,6 +50,13 @@ const PartnerOnboarding = ({ partners }: PartnerOnboardingProps) => {
       { id: '5', name: 'First Sale', completed: false, required: false },
     ]
   }));
+
+  const handleAddPartner = (partner: Partner) => {
+    if (onPartnerAdd) {
+      onPartnerAdd(partner);
+    }
+    setShowAddForm(false);
+  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -106,6 +115,17 @@ const PartnerOnboarding = ({ partners }: PartnerOnboardingProps) => {
     }
   ];
 
+  if (showAddForm) {
+    return (
+      <div className="space-y-6">
+        <AddPartnerForm 
+          onPartnerAdd={handleAddPartner}
+          onCancel={() => setShowAddForm(false)}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -116,9 +136,9 @@ const PartnerOnboarding = ({ partners }: PartnerOnboardingProps) => {
           </p>
         </div>
         <div className="flex space-x-2">
-          <Button>
+          <Button onClick={() => setShowAddForm(true)}>
             <UserPlus className="h-4 w-4 mr-2" />
-            Start Onboarding
+            Add Partner
           </Button>
         </div>
       </div>

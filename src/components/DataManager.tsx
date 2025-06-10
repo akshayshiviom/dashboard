@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { mockCustomers, mockPartners, mockProducts } from '@/utils/mockData';
 import { mockUsers } from '@/utils/mockUsers';
@@ -72,6 +71,10 @@ export const useDataManager = () => {
     }));
   };
 
+  const handlePartnerAdd = (partner: Partner) => {
+    setPartners([...partners, partner]);
+  };
+
   const handleProductAdd = (product: Product) => {
     setProducts([...products, product]);
   };
@@ -96,6 +99,7 @@ export const useDataManager = () => {
     handleCustomerUpdate,
     handleBulkAction,
     handleCustomerImport,
+    handlePartnerAdd,
     handleProductAdd,
     handleProductImport,
     handleProductPriceUpdate

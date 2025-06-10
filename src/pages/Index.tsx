@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -34,6 +33,7 @@ const Index = () => {
     handleCustomerUpdate,
     handleBulkAction,
     handleCustomerImport,
+    handlePartnerAdd,
     handleProductAdd,
     handleProductImport,
     handleProductPriceUpdate
@@ -152,6 +152,7 @@ const Index = () => {
               onProductAdd={handleProductAdd}
               onProductImport={handleProductImport}
               onProductPriceUpdate={handleProductPriceUpdate}
+              onPartnerAdd={handlePartnerAdd}
             />
           </div>
         </div>
@@ -188,6 +189,7 @@ const Index = () => {
           onProductAdd={handleProductAdd}
           onProductImport={handleProductImport}
           onProductPriceUpdate={handleProductPriceUpdate}
+          onPartnerAdd={handlePartnerAdd}
         />
       </div>
     );
@@ -235,6 +237,7 @@ const Index = () => {
               onProductAdd={handleProductAdd}
               onProductImport={handleProductImport}
               onProductPriceUpdate={handleProductPriceUpdate}
+              onPartnerAdd={handlePartnerAdd}
             />
           </main>
         </SidebarInset>
