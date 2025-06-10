@@ -1,4 +1,3 @@
-
 import { useState, useMemo } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger } from '@/components/ui/dropdown-menu';
-import { Edit2, Check, X, Filter } from 'lucide-react';
+import { Edit2, Check, X, Filter, Search } from 'lucide-react';
 import { Product } from '../types';
 import BulkImportDialog from './BulkImportDialog';
 
@@ -21,6 +20,7 @@ interface ProductTableProps {
 }
 
 const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusChange, onBulkImport }: ProductTableProps) => {
+  const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [customersFilter, setCustomersFilter] = useState(0);
@@ -35,13 +35,19 @@ const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusCha
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
+      const searchMatch = searchTerm === '' || 
+        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.website.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.description.toLowerCase().includes(searchTerm.toLowerCase());
+      
       const statusMatch = statusFilter === 'all' || product.status === statusFilter;
       const categoryMatch = categoryFilter === 'all' || product.category === categoryFilter;
       const customersMatch = product.customersCount >= customersFilter;
       
-      return statusMatch && categoryMatch && customersMatch;
+      return searchMatch && statusMatch && categoryMatch && customersMatch;
     });
-  }, [products, statusFilter, categoryFilter, customersFilter]);
+  }, [products, searchTerm, statusFilter, categoryFilter, customersFilter]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -182,6 +188,19 @@ const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusCha
                   </DropdownMenuSub>
                 </DropdownMenuContent>
               </DropdownMenu>
+            </div>
+          </div>
+          <div className="flex flex-col md:flex-row gap-4 items-center">
+            <div className="flex-1 w-full md:w-auto">
+              <div className="relative">
+                <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  placeholder="Search products by name, website, category, or description..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
             </div>
           </div>
         </CardHeader>
