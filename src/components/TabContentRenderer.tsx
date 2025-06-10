@@ -39,6 +39,8 @@ interface TabContentRendererProps {
   onUpdateDashboard: (dashboardId: string, updates: Partial<Dashboard>) => void;
   onDeleteDashboard: (dashboardId: string) => void;
   onCustomerAdd: (customer: Customer) => void;
+  onCustomerUpdate: (customerId: string, updates: Partial<Customer>) => void;
+  onBulkAction: (customerIds: string[], action: string) => void;
   onCustomerImport: (customers: Customer[]) => void;
   onProductAdd: (product: Product) => void;
   onProductImport: (products: Product[]) => void;
@@ -67,6 +69,8 @@ const TabContentRenderer = ({
   onUpdateDashboard,
   onDeleteDashboard,
   onCustomerAdd,
+  onCustomerUpdate,
+  onBulkAction,
   onCustomerImport,
   onProductAdd,
   onProductImport,
@@ -96,19 +100,41 @@ const TabContentRenderer = ({
           {currentDashboard.widgets.showRenewals && <Renewals renewals={filteredRenewals} customers={customers} partners={partners} products={products} />}
           {currentDashboard.widgets.showCustomerTable && (
             <div className="space-y-6">
-              <CustomerTable customers={customers} partners={partners} products={products} />
+              <CustomerTable 
+                customers={customers} 
+                partners={partners} 
+                products={products}
+                onStatusChange={onCustomerUpdate}
+                onBulkStatusChange={onBulkAction}
+                onBulkImport={onCustomerImport}
+              />
             </div>
           )}
         </div>
       );
     case 'customer-management':
-      return <CustomerManagement customers={customers} partners={partners} products={products} />;
+      return (
+        <CustomerManagement 
+          customers={customers} 
+          partners={partners} 
+          products={products}
+          onCustomerUpdate={onCustomerUpdate}
+          onBulkAction={onBulkAction}
+        />
+      );
     case 'partner-onboarding':
       return <PartnerOnboarding partners={partners} />;
     case 'customers':
       return (
         <div className="space-y-6">
-          <CustomerTable customers={customers} partners={partners} products={products} />
+          <CustomerTable 
+            customers={customers} 
+            partners={partners} 
+            products={products}
+            onStatusChange={onCustomerUpdate}
+            onBulkStatusChange={onBulkAction}
+            onBulkImport={onCustomerImport}
+          />
         </div>
       );
     case 'add-customer':
