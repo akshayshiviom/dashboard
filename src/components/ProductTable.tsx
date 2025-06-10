@@ -46,6 +46,7 @@ const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusCha
 
   const handleStatusToggle = (productId: string, currentStatus: string) => {
     const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+    console.log('Status toggle called for product:', productId, 'from', currentStatus, 'to', newStatus);
     onStatusChange?.(productId, newStatus as 'active' | 'inactive');
   };
 

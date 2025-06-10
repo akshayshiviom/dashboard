@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { mockCustomers, mockPartners, mockProducts } from '@/utils/mockData';
 import { mockUsers } from '@/utils/mockUsers';
@@ -91,12 +90,14 @@ export const useDataManager = () => {
   };
 
   const handleProductStatusChange = (productId: string, newStatus: 'active' | 'inactive') => {
+    console.log('DataManager: Changing product status for', productId, 'to', newStatus);
     setProducts(prev => prev.map(product => 
       product.id === productId ? { ...product, status: newStatus, lastEdited: new Date() } : product
     ));
   };
 
   const handleProductBulkStatusChange = (productIds: string[], newStatus: 'active' | 'inactive') => {
+    console.log('DataManager: Bulk changing product status for', productIds, 'to', newStatus);
     setProducts(prev => prev.map(product => 
       productIds.includes(product.id) ? { ...product, status: newStatus, lastEdited: new Date() } : product
     ));
