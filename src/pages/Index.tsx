@@ -31,6 +31,8 @@ const Index = () => {
     users,
     renewals,
     handleCustomerAdd,
+    handleCustomerUpdate,
+    handleBulkAction,
     handleCustomerImport,
     handleProductAdd,
     handleProductImport,
@@ -144,6 +146,8 @@ const Index = () => {
               onUpdateDashboard={handleUpdateDashboard}
               onDeleteDashboard={handleDeleteDashboard}
               onCustomerAdd={handleCustomerAdd}
+              onCustomerUpdate={handleCustomerUpdate}
+              onBulkAction={handleBulkAction}
               onCustomerImport={handleCustomerImport}
               onProductAdd={handleProductAdd}
               onProductImport={handleProductImport}
@@ -178,6 +182,8 @@ const Index = () => {
           onUpdateDashboard={handleUpdateDashboard}
           onDeleteDashboard={handleDeleteDashboard}
           onCustomerAdd={handleCustomerAdd}
+          onCustomerUpdate={handleCustomerUpdate}
+          onBulkAction={handleBulkAction}
           onCustomerImport={handleCustomerImport}
           onProductAdd={handleProductAdd}
           onProductImport={handleProductImport}
@@ -223,6 +229,8 @@ const Index = () => {
               onUpdateDashboard={handleUpdateDashboard}
               onDeleteDashboard={handleDeleteDashboard}
               onCustomerAdd={handleCustomerAdd}
+              onCustomerUpdate={handleCustomerUpdate}
+              onBulkAction={handleBulkAction}
               onCustomerImport={handleCustomerImport}
               onProductAdd={handleProductAdd}
               onProductImport={handleProductImport}

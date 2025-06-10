@@ -1,4 +1,3 @@
-
 import { useState, useMemo } from 'react';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -26,6 +25,7 @@ const CustomerTable = ({
   onBulkImport 
 }: CustomerTableProps) => {
   const [statusFilter, setStatusFilter] = useState('all');
+  const [processFilter, setProcessFilter] = useState('all');
   const [partnerFilter, setPartnerFilter] = useState('all');
   const [valueFilter, setValueFilter] = useState(0);
   const [zoneFilter, setZoneFilter] = useState('all');
@@ -34,6 +34,7 @@ const CustomerTable = ({
   const filteredCustomers = useMemo(() => {
     return customers.filter((customer) => {
       const statusMatch = statusFilter === 'all' || customer.status === statusFilter;
+      const processMatch = processFilter === 'all' || customer.process === processFilter;
       const partnerMatch = 
         partnerFilter === 'all' || 
         (partnerFilter === 'unassigned' && !customer.partnerId) ||
@@ -41,9 +42,9 @@ const CustomerTable = ({
       const valueMatch = customer.value >= valueFilter;
       const zoneMatch = zoneFilter === 'all' || customer.zone === zoneFilter;
       
-      return statusMatch && partnerMatch && valueMatch && zoneMatch;
+      return statusMatch && processMatch && partnerMatch && valueMatch && zoneMatch;
     });
-  }, [customers, statusFilter, partnerFilter, valueFilter, zoneFilter]);
+  }, [customers, statusFilter, processFilter, partnerFilter, valueFilter, zoneFilter]);
 
   const handleStatusToggle = (customerId: string, currentStatus: string) => {
     const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
@@ -97,7 +98,9 @@ const CustomerTable = ({
           <div className="flex items-center justify-end">
             <CustomerTableFilters
               partners={partners}
+              products={products}
               onStatusFilter={setStatusFilter}
+              onProcessFilter={setProcessFilter}
               onPartnerFilter={setPartnerFilter}
               onZoneFilter={setZoneFilter}
             />
