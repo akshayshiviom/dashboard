@@ -145,22 +145,6 @@ const UserHierarchyTable = ({ users, onStatusChange, onBulkStatusChange, onUserU
     }
   };
 
-  const handleRoleFilter = (role: string) => {
-    if (role === 'all') {
-      setFilteredUsers(users);
-    } else {
-      setFilteredUsers(users.filter(user => user.role === role));
-    }
-  };
-
-  const handleStatusFilter = (status: string) => {
-    if (status === 'all') {
-      setFilteredUsers(users);
-    } else {
-      setFilteredUsers(users.filter(user => user.status === status));
-    }
-  };
-
   const displayUsers = showInactive ? filteredUsers : filteredUsers.filter(user => user.status === 'active');
 
   return (
