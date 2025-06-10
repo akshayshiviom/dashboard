@@ -28,7 +28,9 @@ const ProductDetail = ({ product, onBack }: ProductDetailProps) => {
     }
   };
 
-  const sortedPlans = [...product.plans].sort((a, b) => a.price - b.price);
+  // Safely handle plans - ensure it's an array before sorting
+  const plans = Array.isArray(product.plans) ? product.plans : [];
+  const sortedPlans = [...plans].sort((a, b) => a.price - b.price);
 
   return (
     <div className="space-y-6">
@@ -81,45 +83,53 @@ const ProductDetail = ({ product, onBack }: ProductDetailProps) => {
 
       {/* Plans */}
       <div>
-        <h2 className="text-xl font-semibold mb-4">Available Plans ({product.plans.length})</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {sortedPlans.map((plan) => (
-            <Card key={plan.id} className={`relative ${plan.isPopular ? 'ring-2 ring-blue-500' : ''}`}>
-              {plan.isPopular && (
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <Badge className="bg-blue-500 text-white">Most Popular</Badge>
-                </div>
-              )}
-              <CardHeader>
-                <CardTitle className="text-lg">{plan.name}</CardTitle>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-2xl font-bold">₹{plan.price.toFixed(2)}</span>
-                  <Badge className={getBillingBadgeColor(plan.billing)} variant="secondary">
-                    {plan.billing}
-                  </Badge>
-                </div>
-                {plan.userLimit && (
-                  <p className="text-sm text-muted-foreground">
-                    Up to {plan.userLimit} users
-                  </p>
+        <h2 className="text-xl font-semibold mb-4">Available Plans ({plans.length})</h2>
+        {plans.length === 0 ? (
+          <Card>
+            <CardContent className="flex items-center justify-center py-8">
+              <p className="text-muted-foreground">No plans available for this product.</p>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {sortedPlans.map((plan) => (
+              <Card key={plan.id} className={`relative ${plan.isPopular ? 'ring-2 ring-blue-500' : ''}`}>
+                {plan.isPopular && (
+                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                    <Badge className="bg-blue-500 text-white">Most Popular</Badge>
+                  </div>
                 )}
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <h4 className="font-medium">Features:</h4>
-                  <ul className="space-y-1">
-                    {plan.features.map((feature, index) => (
-                      <li key={index} className="text-sm flex items-start gap-2">
-                        <span className="text-green-600 mt-0.5">✓</span>
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                <CardHeader>
+                  <CardTitle className="text-lg">{plan.name}</CardTitle>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-2xl font-bold">₹{plan.price.toFixed(2)}</span>
+                    <Badge className={getBillingBadgeColor(plan.billing)} variant="secondary">
+                      {plan.billing}
+                    </Badge>
+                  </div>
+                  {plan.userLimit && (
+                    <p className="text-sm text-muted-foreground">
+                      Up to {plan.userLimit} users
+                    </p>
+                  )}
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <h4 className="font-medium">Features:</h4>
+                    <ul className="space-y-1">
+                      {plan.features.map((feature, index) => (
+                        <li key={index} className="text-sm flex items-start gap-2">
+                          <span className="text-green-600 mt-0.5">✓</span>
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
