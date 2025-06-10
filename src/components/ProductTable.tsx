@@ -1,7 +1,7 @@
+
 import { useState, useMemo } from 'react';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Product } from '../types';
 import ProductTableHeader from './ProductTableHeader';
 import ProductTableRow from './ProductTableRow';
@@ -20,7 +20,6 @@ const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusCha
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
-  const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   // Simulate current user role - in a real app, this would come from auth context
@@ -41,49 +40,10 @@ const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusCha
     });
   }, [products, searchTerm, statusFilter, categoryFilter]);
 
-  // Only allow selection of active products
-  const selectableProducts = filteredProducts.filter(product => product.status === 'active');
-
   const handleStatusToggle = (productId: string, currentStatus: string) => {
     const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
     console.log('Status toggle called for product:', productId, 'from', currentStatus, 'to', newStatus);
     onStatusChange?.(productId, newStatus as 'active' | 'inactive');
-  };
-
-  const handleSelectProduct = (productId: string) => {
-    // Only allow selection if product is active
-    const product = products.find(p => p.id === productId);
-    if (product && product.status !== 'active') {
-      return; // Don't allow selection of inactive products
-    }
-
-    setSelectedProducts(prev => 
-      prev.includes(productId) 
-        ? prev.filter(id => id !== productId)
-        : [...prev, productId]
-    );
-  };
-
-  const handleSelectAll = () => {
-    if (selectedProducts.length === selectableProducts.length) {
-      setSelectedProducts([]);
-    } else {
-      setSelectedProducts(selectableProducts.map(product => product.id));
-    }
-  };
-
-  const handleBulkAction = (action: string) => {
-    if (selectedProducts.length === 0) return;
-    
-    switch (action) {
-      case 'activate':
-        onBulkStatusChange?.(selectedProducts, 'active');
-        break;
-      case 'deactivate':
-        onBulkStatusChange?.(selectedProducts, 'inactive');
-        break;
-    }
-    setSelectedProducts([]);
   };
 
   const handleProductClick = (product: Product) => {
@@ -112,26 +72,16 @@ const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusCha
           searchTerm={searchTerm}
           statusFilter={statusFilter}
           categoryFilter={categoryFilter}
-          selectedProducts={selectedProducts}
           currentUserRole={currentUserRole}
           onSearchChange={setSearchTerm}
           onStatusFilter={setStatusFilter}
           onCategoryFilter={setCategoryFilter}
-          onBulkAction={handleBulkAction}
           onBulkImport={onBulkImport}
         />
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                {currentUserRole === 'admin' && (
-                  <TableHead className="w-12">
-                    <Checkbox 
-                      checked={selectedProducts.length === selectableProducts.length && selectableProducts.length > 0}
-                      onCheckedChange={handleSelectAll}
-                    />
-                  </TableHead>
-                )}
                 <TableHead>Software Name</TableHead>
                 <TableHead>Plans</TableHead>
                 <TableHead>Website</TableHead>
@@ -150,8 +100,6 @@ const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusCha
                   key={product.id}
                   product={product}
                   currentUserRole={currentUserRole}
-                  isSelected={selectedProducts.includes(product.id)}
-                  onSelect={handleSelectProduct}
                   onStatusToggle={handleStatusToggle}
                   onProductClick={handleProductClick}
                   onProductUpdate={handleProductUpdate}

@@ -1,8 +1,6 @@
 
 import { CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Search } from 'lucide-react';
 import { Product } from '../types';
 import BulkImportDialog from './BulkImportDialog';
@@ -14,12 +12,10 @@ interface ProductTableHeaderProps {
   searchTerm: string;
   statusFilter: string;
   categoryFilter: string;
-  selectedProducts: string[];
   currentUserRole: string;
   onSearchChange: (value: string) => void;
   onStatusFilter: (status: string) => void;
   onCategoryFilter: (category: string) => void;
-  onBulkAction: (action: string) => void;
   onBulkImport?: (products: Product[]) => void;
 }
 
@@ -29,12 +25,10 @@ const ProductTableHeader = ({
   searchTerm,
   statusFilter,
   categoryFilter,
-  selectedProducts,
   currentUserRole,
   onSearchChange,
   onStatusFilter,
   onCategoryFilter,
-  onBulkAction,
   onBulkImport
 }: ProductTableHeaderProps) => {
   return (
@@ -49,24 +43,6 @@ const ProductTableHeader = ({
               type="products"
               onImport={onBulkImport}
             />
-          )}
-          
-          {selectedProducts.length > 0 && currentUserRole === 'admin' && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
-                  Bulk Actions ({selectedProducts.length})
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => onBulkAction('activate')}>
-                  Set Active
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onBulkAction('deactivate')}>
-                  Set Inactive
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
           )}
           
           <ProductTableFilters
