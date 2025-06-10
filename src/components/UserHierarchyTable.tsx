@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -23,7 +24,6 @@ const UserHierarchyTable = ({ users, onStatusChange, onBulkStatusChange }: UserH
   const [showHierarchy, setShowHierarchy] = useState(true);
 
   const roles = ['admin', 'manager', 'assistant-manager', 'team-leader', 'fsr', 'bde'];
-  const departments = ['Administration', 'Sales', 'Field Sales', 'Business Development', 'Marketing', 'Operations'];
 
   const getRoleColor = (role: string) => {
     const colors = {
@@ -68,14 +68,6 @@ const UserHierarchyTable = ({ users, onStatusChange, onBulkStatusChange }: UserH
       setFilteredUsers(users);
     } else {
       setFilteredUsers(users.filter(user => user.status === status));
-    }
-  };
-
-  const handleDepartmentFilter = (department: string) => {
-    if (department === 'all') {
-      setFilteredUsers(users);
-    } else {
-      setFilteredUsers(users.filter(user => user.department === department));
     }
   };
 
@@ -179,23 +171,6 @@ const UserHierarchyTable = ({ users, onStatusChange, onBulkStatusChange }: UserH
                       </DropdownMenuItem>
                     </DropdownMenuSubContent>
                   </DropdownMenuSub>
-                  
-                  <DropdownMenuSub>
-                    <DropdownMenuSubTrigger>
-                      Filter by Department
-                    </DropdownMenuSubTrigger>
-                    <DropdownMenuSubContent>
-                      <DropdownMenuItem onClick={() => handleDepartmentFilter('all')}>
-                        All departments
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      {departments.map((department) => (
-                        <DropdownMenuItem key={department} onClick={() => handleDepartmentFilter(department)}>
-                          {department}
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuSubContent>
-                  </DropdownMenuSub>
                 </DropdownMenuContent>
               </DropdownMenu>
 
@@ -269,7 +244,6 @@ const UserHierarchyTable = ({ users, onStatusChange, onBulkStatusChange }: UserH
                 <TableHead>Name</TableHead>
                 {!compactView && <TableHead>Email</TableHead>}
                 <TableHead>Role</TableHead>
-                {!compactView && <TableHead>Department</TableHead>}
                 {showHierarchy && <TableHead>Reporting To</TableHead>}
                 <TableHead>Status</TableHead>
                 {!compactView && <TableHead>Last Login</TableHead>}
@@ -292,7 +266,6 @@ const UserHierarchyTable = ({ users, onStatusChange, onBulkStatusChange }: UserH
                       {getRoleDisplayName(user.role)}
                     </Badge>
                   </TableCell>
-                  {!compactView && <TableCell>{user.department}</TableCell>}
                   {showHierarchy && <TableCell>{getReportingToName(user.reportingTo)}</TableCell>}
                   <TableCell>
                     <Badge variant={user.status === 'active' ? 'default' : 'secondary'}>
