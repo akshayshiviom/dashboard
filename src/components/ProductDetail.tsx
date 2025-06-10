@@ -2,15 +2,17 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, ExternalLink, Users } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Users, Edit2 } from 'lucide-react';
 import { Product } from '../types';
+import PlanManagementDialog from './PlanManagementDialog';
 
 interface ProductDetailProps {
   product: Product;
   onBack: () => void;
+  onProductUpdate?: (productId: string, updates: Partial<Product>) => void;
 }
 
-const ProductDetail = ({ product, onBack }: ProductDetailProps) => {
+const ProductDetail = ({ product, onBack, onProductUpdate }: ProductDetailProps) => {
   const getBillingBadgeColor = (billing: string) => {
     switch (billing) {
       case 'monthly': return 'bg-blue-100 text-blue-800';
@@ -28,9 +30,16 @@ const ProductDetail = ({ product, onBack }: ProductDetailProps) => {
     }
   };
 
+  const handleProductUpdate = (productId: string, updates: Partial<Product>) => {
+    if (onProductUpdate) {
+      onProductUpdate(productId, updates);
+    }
+  };
+
   // Safely handle plans - ensure it's an array before sorting
   const plans = Array.isArray(product.plans) ? product.plans : [];
   const sortedPlans = [...plans].sort((a, b) => a.price - b.price);
+  const isInactive = product.status === 'inactive';
 
   return (
     <div className="space-y-6">
@@ -83,7 +92,24 @@ const ProductDetail = ({ product, onBack }: ProductDetailProps) => {
 
       {/* Plans */}
       <div>
-        <h2 className="text-xl font-semibold mb-4">Available Plans ({plans.length})</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold">Available Plans ({plans.length})</h2>
+          {onProductUpdate && (
+            <PlanManagementDialog
+              product={product}
+              onUpdateProduct={handleProductUpdate}
+              trigger={
+                <Button
+                  variant="outline"
+                  disabled={isInactive}
+                >
+                  <Edit2 size={14} className="mr-2" />
+                  Manage Plans
+                </Button>
+              }
+            />
+          )}
+        </div>
         {plans.length === 0 ? (
           <Card>
             <CardContent className="flex items-center justify-center py-8">

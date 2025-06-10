@@ -1,12 +1,9 @@
 
 import { TableCell, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Edit2 } from 'lucide-react';
 import { Product } from '../types';
-import PlanManagementDialog from './PlanManagementDialog';
 
 interface ProductTableRowProps {
   product: Product;
@@ -42,12 +39,6 @@ const ProductTableRow = ({ product, currentUserRole, isSelected, onSelect, onSta
       return;
     }
     onProductClick(product);
-  };
-
-  const handleProductUpdate = (productId: string, updates: Partial<Product>) => {
-    if (onProductUpdate) {
-      onProductUpdate(productId, updates);
-    }
   };
 
   const plans = Array.isArray(product.plans) ? product.plans : [];
@@ -133,26 +124,10 @@ const ProductTableRow = ({ product, currentUserRole, isSelected, onSelect, onSta
       </TableCell>
       {currentUserRole === 'admin' && (
         <TableCell onClick={(e) => e.stopPropagation()}>
-          <div className="flex items-center gap-2">
-            <Switch
-              checked={product.status === 'active'}
-              onCheckedChange={() => onStatusToggle(product.id, product.status)}
-            />
-            <PlanManagementDialog
-              product={product}
-              onUpdateProduct={handleProductUpdate}
-              trigger={
-                <Button
-                  size="sm"
-                  variant="outline"
-                  disabled={isInactive}
-                >
-                  <Edit2 size={14} className="mr-1" />
-                  Manage Plans
-                </Button>
-              }
-            />
-          </div>
+          <Switch
+            checked={product.status === 'active'}
+            onCheckedChange={() => onStatusToggle(product.id, product.status)}
+          />
         </TableCell>
       )}
     </TableRow>

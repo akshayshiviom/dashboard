@@ -1,4 +1,3 @@
-
 import { useState, useMemo } from 'react';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent } from '@/components/ui/card';
@@ -100,7 +99,7 @@ const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusCha
   };
 
   if (selectedProduct) {
-    return <ProductDetail product={selectedProduct} onBack={handleBackToList} />;
+    return <ProductDetail product={selectedProduct} onBack={handleBackToList} onProductUpdate={handleProductUpdate} />;
   }
 
   return (
@@ -141,7 +140,7 @@ const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusCha
                 <TableHead>Status</TableHead>
                 <TableHead>Added</TableHead>
                 <TableHead>Last Edited</TableHead>
-                {currentUserRole === 'admin' && <TableHead>Actions</TableHead>}
+                {currentUserRole === 'admin' && <TableHead>Status Toggle</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
