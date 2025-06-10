@@ -2,6 +2,8 @@ import { useState, useMemo } from 'react';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Search } from 'lucide-react';
 import { Customer, Partner, Product } from '../types';
 import CustomerTableHeader from './CustomerTableHeader';
 import CustomerTableFilters from './CustomerTableFilters';
@@ -24,6 +26,7 @@ const CustomerTable = ({
   onBulkStatusChange, 
   onBulkImport 
 }: CustomerTableProps) => {
+  const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [processFilter, setProcessFilter] = useState('all');
   const [partnerFilter, setPartnerFilter] = useState('all');
@@ -33,6 +36,11 @@ const CustomerTable = ({
 
   const filteredCustomers = useMemo(() => {
     return customers.filter((customer) => {
+      const searchMatch = searchTerm === '' || 
+        customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        customer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        customer.company.toLowerCase().includes(searchTerm.toLowerCase());
+      
       const statusMatch = statusFilter === 'all' || customer.status === statusFilter;
       const processMatch = processFilter === 'all' || customer.process === processFilter;
       const partnerMatch = 
@@ -42,9 +50,9 @@ const CustomerTable = ({
       const valueMatch = customer.value >= valueFilter;
       const zoneMatch = zoneFilter === 'all' || customer.zone === zoneFilter;
       
-      return statusMatch && processMatch && partnerMatch && valueMatch && zoneMatch;
+      return searchMatch && statusMatch && processMatch && partnerMatch && valueMatch && zoneMatch;
     });
-  }, [customers, statusFilter, processFilter, partnerFilter, valueFilter, zoneFilter]);
+  }, [customers, searchTerm, statusFilter, processFilter, partnerFilter, valueFilter, zoneFilter]);
 
   const handleStatusToggle = (customerId: string, currentStatus: string) => {
     const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
@@ -95,7 +103,18 @@ const CustomerTable = ({
             onBulkImport={onBulkImport}
             onBulkAction={handleBulkAction}
           />
-          <div className="flex items-center justify-end">
+          <div className="flex flex-col md:flex-row gap-4 items-center">
+            <div className="flex-1 w-full md:w-auto">
+              <div className="relative">
+                <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  placeholder="Search customers by name, email, or company..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
             <CustomerTableFilters
               partners={partners}
               products={products}
