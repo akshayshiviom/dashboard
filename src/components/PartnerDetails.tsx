@@ -24,12 +24,31 @@ const PartnerDetails = ({ partner, customers, products, users, onBack }: Partner
 
   const getPaymentTermsColor = (terms: string) => {
     switch (terms) {
-      case 'prepaid': return 'bg-green-100 text-green-800';
+      case 'annual-in-advance': return 'bg-green-100 text-green-800';
       case 'monthly': return 'bg-blue-100 text-blue-800';
+      case 'quarterly': return 'bg-cyan-100 text-cyan-800';
+      case 'half-yearly': return 'bg-teal-100 text-teal-800';
+      case 'net-15': return 'bg-lime-100 text-lime-800';
       case 'net-30': return 'bg-yellow-100 text-yellow-800';
+      case 'net-45': return 'bg-amber-100 text-amber-800';
       case 'net-60': return 'bg-orange-100 text-orange-800';
       case 'net-90': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getPaymentTermsLabel = (terms: string) => {
+    switch (terms) {
+      case 'annual-in-advance': return 'Annual in Advance';
+      case 'monthly': return 'Monthly';
+      case 'quarterly': return 'Quarterly';
+      case 'half-yearly': return 'Half Yearly';
+      case 'net-15': return 'Net 15';
+      case 'net-30': return 'Net 30';
+      case 'net-45': return 'Net 45';
+      case 'net-60': return 'Net 60';
+      case 'net-90': return 'Net 90';
+      default: return terms;
     }
   };
 
@@ -135,7 +154,7 @@ const PartnerDetails = ({ partner, customers, products, users, onBack }: Partner
               <div>
                 <p className="text-sm text-muted-foreground">Payment Terms</p>
                 <Badge className={getPaymentTermsColor(partner.paymentTerms)}>
-                  {partner.paymentTerms.toUpperCase()}
+                  {getPaymentTermsLabel(partner.paymentTerms)}
                 </Badge>
               </div>
             </div>

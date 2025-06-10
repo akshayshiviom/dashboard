@@ -28,7 +28,7 @@ export interface Partner {
   agreementSigned: boolean;
   agreementDate?: Date;
   productTypes: string[];
-  paymentTerms: 'net-30' | 'net-60' | 'net-90' | 'prepaid' | 'monthly';
+  paymentTerms: 'net-15' | 'net-30' | 'net-45' | 'net-60' | 'net-90' | 'annual-in-advance' | 'monthly' | 'quarterly' | 'half-yearly';
   assignedEmployeeId?: string;
   zone?: 'north' | 'east' | 'west' | 'south';
 }

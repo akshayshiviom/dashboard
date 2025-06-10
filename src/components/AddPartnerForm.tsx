@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -15,7 +16,7 @@ const partnerSchema = z.object({
   company: z.string().min(2, 'Company name must be at least 2 characters'),
   specialization: z.string().min(2, 'Specialization is required'),
   identity: z.enum(['web-app-developer', 'system-integrator', 'managed-service-provider', 'digital-marketer', 'cyber-security', 'cloud-hosting', 'web-hosting', 'hardware', 'cloud-service-provider', 'microsoft-partner', 'aws-partner', 'it-consulting', 'freelance']),
-  paymentTerms: z.enum(['net-30', 'net-60', 'net-90', 'prepaid', 'monthly']),
+  paymentTerms: z.enum(['net-15', 'net-30', 'net-45', 'net-60', 'net-90', 'annual-in-advance', 'monthly', 'quarterly', 'half-yearly']),
   zone: z.enum(['north', 'east', 'west', 'south']).optional(),
 });
 
@@ -186,11 +187,15 @@ const AddPartnerForm = ({ onPartnerAdd, onCancel }: AddPartnerFormProps) => {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
+                        <SelectItem value="net-15">Net 15</SelectItem>
                         <SelectItem value="net-30">Net 30</SelectItem>
+                        <SelectItem value="net-45">Net 45</SelectItem>
                         <SelectItem value="net-60">Net 60</SelectItem>
                         <SelectItem value="net-90">Net 90</SelectItem>
-                        <SelectItem value="prepaid">Prepaid</SelectItem>
+                        <SelectItem value="annual-in-advance">Annual in Advance</SelectItem>
                         <SelectItem value="monthly">Monthly</SelectItem>
+                        <SelectItem value="quarterly">Quarterly</SelectItem>
+                        <SelectItem value="half-yearly">Half Yearly</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
