@@ -1,3 +1,4 @@
+
 import { useState, useMemo } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,7 +9,7 @@ import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger } from '@/components/ui/dropdown-menu';
 import { Edit2, Check, X, Filter, Search } from 'lucide-react';
-import { Product } from '../types';
+import { Product, ProductPlan } from '../types';
 import BulkImportDialog from './BulkImportDialog';
 
 interface ProductTableProps {
@@ -24,8 +25,6 @@ const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusCha
   const [statusFilter, setStatusFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [customersFilter, setCustomersFilter] = useState(0);
-  const [editingPrice, setEditingPrice] = useState<string | null>(null);
-  const [editPrice, setEditPrice] = useState<number>(0);
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
 
   // Simulate current user role - in a real app, this would come from auth context
@@ -57,22 +56,13 @@ const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusCha
     }
   };
 
-  const startPriceEdit = (productId: string, currentPrice: number) => {
-    setEditingPrice(productId);
-    setEditPrice(currentPrice);
-  };
-
-  const savePriceEdit = (productId: string) => {
-    if (onPriceUpdate && editPrice > 0) {
-      onPriceUpdate(productId, editPrice);
+  const getBillingBadgeColor = (billing: string) => {
+    switch (billing) {
+      case 'monthly': return 'bg-blue-100 text-blue-800';
+      case 'yearly': return 'bg-purple-100 text-purple-800';
+      case 'one-time': return 'bg-orange-100 text-orange-800';
+      default: return 'bg-gray-100 text-gray-800';
     }
-    setEditingPrice(null);
-    setEditPrice(0);
-  };
-
-  const cancelPriceEdit = () => {
-    setEditingPrice(null);
-    setEditPrice(0);
   };
 
   const handleStatusToggle = (productId: string, currentStatus: string) => {
@@ -110,13 +100,38 @@ const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusCha
     setSelectedProducts([]);
   };
 
+  const renderPlansCell = (plans: ProductPlan[]) => {
+    if (!plans || plans.length === 0) {
+      return <span className="text-muted-foreground">No plans available</span>;
+    }
+
+    const sortedPlans = [...plans].sort((a, b) => a.price - b.price);
+    
+    return (
+      <div className="space-y-1">
+        {sortedPlans.map((plan) => (
+          <div key={plan.id} className="flex items-center gap-2 text-sm">
+            <span className="font-medium">{plan.name}:</span>
+            <span>₹{plan.price.toFixed(2)}</span>
+            <Badge className={getBillingBadgeColor(plan.billing)} variant="secondary">
+              {plan.billing}
+            </Badge>
+            {plan.isPopular && (
+              <Badge variant="default" className="text-xs">Popular</Badge>
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div>
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>
-              Products Overview ({filteredProducts.length} of {products.length})
+              Software Products Overview ({filteredProducts.length} of {products.length})
             </CardTitle>
             <div className="flex items-center gap-2">
               {currentUserRole === 'admin' && onBulkImport && (
@@ -195,7 +210,7 @@ const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusCha
               <div className="relative">
                 <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
                 <Input
-                  placeholder="Search products by name, website, category, or description..."
+                  placeholder="Search software products by name, website, category, or description..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -216,11 +231,11 @@ const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusCha
                     />
                   </TableHead>
                 )}
-                <TableHead>Product Name</TableHead>
+                <TableHead>Software Name</TableHead>
                 <TableHead>Website</TableHead>
                 <TableHead>Category</TableHead>
                 <TableHead>Description</TableHead>
-                <TableHead>Price</TableHead>
+                <TableHead>Plans & Pricing</TableHead>
                 <TableHead>Active Customers</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Added</TableHead>
@@ -251,38 +266,8 @@ const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusCha
                   </TableCell>
                   <TableCell>{product.category}</TableCell>
                   <TableCell className="max-w-xs truncate">{product.description}</TableCell>
-                  <TableCell>
-                    {editingPrice === product.id ? (
-                      <div className="flex items-center gap-2">
-                        <Input
-                          type="number"
-                          value={editPrice}
-                          onChange={(e) => setEditPrice(parseFloat(e.target.value) || 0)}
-                          className="w-24"
-                          step="0.01"
-                          min="0"
-                        />
-                        <Button size="sm" onClick={() => savePriceEdit(product.id)}>
-                          <Check size={14} />
-                        </Button>
-                        <Button size="sm" variant="outline" onClick={cancelPriceEdit}>
-                          <X size={14} />
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <span>₹{product.price.toFixed(2)}</span>
-                        {currentUserRole === 'admin' && (
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => startPriceEdit(product.id, product.price)}
-                          >
-                            <Edit2 size={14} />
-                          </Button>
-                        )}
-                      </div>
-                    )}
+                  <TableCell className="min-w-64">
+                    {renderPlansCell(product.plans)}
                   </TableCell>
                   <TableCell>{product.customersCount}</TableCell>
                   <TableCell>
@@ -298,16 +283,17 @@ const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusCha
                           checked={product.status === 'active'}
                           onCheckedChange={() => handleStatusToggle(product.id, product.status)}
                         />
-                        {editingPrice !== product.id && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => startPriceEdit(product.id, product.price)}
-                          >
-                            <Edit2 size={14} className="mr-1" />
-                            Edit Price
-                          </Button>
-                        )}
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            // Handle plan management - could open a dialog
+                            console.log('Manage plans for:', product.name);
+                          }}
+                        >
+                          <Edit2 size={14} className="mr-1" />
+                          Manage Plans
+                        </Button>
                       </div>
                     </TableCell>
                   )}

@@ -33,6 +33,16 @@ export interface Partner {
   zone?: 'north' | 'east' | 'west' | 'south';
 }
 
+export interface ProductPlan {
+  id: string;
+  name: string;
+  price: number;
+  billing: 'monthly' | 'yearly' | 'one-time';
+  features: string[];
+  userLimit?: number;
+  isPopular?: boolean;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -41,8 +51,10 @@ export interface Product {
   description: string;
   status: 'active' | 'inactive';
   customersCount: number;
-  price: number;
+  plans: ProductPlan[];
   createdAt: Date;
+  // Legacy price field for backward compatibility
+  price?: number;
 }
 
 export interface DashboardStats {
