@@ -1,4 +1,3 @@
-
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -49,12 +48,17 @@ const Renewals = ({ renewals, customers, partners, products, users = [] }: Renew
     return product ? product.name : 'Unknown Product';
   };
 
-  const getAssignedEmployee = (partnerId: string) => {
+  const getAssignedEmployees = (partnerId: string) => {
     const partner = partners.find(p => p.id === partnerId);
-    if (partner?.assignedEmployeeId) {
-      return users.find(u => u.id === partner.assignedEmployeeId);
+    if (partner?.assignedUserIds) {
+      return users.filter(u => partner.assignedUserIds?.includes(u.id));
     }
-    return undefined;
+    return [];
+  };
+
+  const getFirstAssignedEmployee = (partnerId: string) => {
+    const assignedEmployees = getAssignedEmployees(partnerId);
+    return assignedEmployees.length > 0 ? assignedEmployees[0] : undefined;
   };
 
   const getStatusColor = (status: string) => {
@@ -179,7 +183,7 @@ const Renewals = ({ renewals, customers, partners, products, users = [] }: Renew
                 const daysLeft = getDaysUntilRenewal(renewal.renewalDate);
                 const customer = getCustomer(renewal.customerId);
                 const partner = getPartner(renewal.partnerId);
-                const assignedEmployee = getAssignedEmployee(renewal.partnerId);
+                const assignedEmployee = getFirstAssignedEmployee(renewal.partnerId);
                 
                 return (
                   <TableRow key={renewal.id} className="hover:bg-muted/50">

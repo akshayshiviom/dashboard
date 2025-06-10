@@ -4,18 +4,19 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Mail, Building, MapPin, User, Package, Edit } from 'lucide-react';
-import { Customer, Partner, Product } from '../types';
+import { Customer, Partner, Product, User as UserType } from '../types';
 import CustomerEditDialog from './CustomerEditDialog';
 
 interface CustomerDetailProps {
   customer: Customer;
   partners: Partner[];
   products: Product[];
+  users: UserType[];
   onBack: () => void;
   onCustomerUpdate?: (customerId: string, updates: Partial<Customer>) => void;
 }
 
-const CustomerDetail = ({ customer, partners, products, onBack, onCustomerUpdate }: CustomerDetailProps) => {
+const CustomerDetail = ({ customer, partners, products, users, onBack, onCustomerUpdate }: CustomerDetailProps) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   const getPartnerName = (partnerId?: string) => {
@@ -186,6 +187,7 @@ const CustomerDetail = ({ customer, partners, products, onBack, onCustomerUpdate
         customer={customer}
         partners={partners}
         products={products}
+        users={users}
         isOpen={isEditDialogOpen}
         onClose={() => setIsEditDialogOpen(false)}
         onSave={handleEditSave}

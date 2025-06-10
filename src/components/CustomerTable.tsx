@@ -1,10 +1,11 @@
+
 import { useState, useMemo } from 'react';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
-import { Customer, Partner, Product } from '../types';
+import { Customer, Partner, Product, User } from '../types';
 import CustomerTableHeader from './CustomerTableHeader';
 import CustomerTableFilters from './CustomerTableFilters';
 import CustomerTableRow from './CustomerTableRow';
@@ -13,6 +14,7 @@ interface CustomerTableProps {
   customers: Customer[];
   partners: Partner[];
   products: Product[];
+  users: User[];
   onStatusChange?: (customerId: string, newStatus: 'active' | 'inactive' | 'pending') => void;
   onBulkStatusChange?: (customerIds: string[], newStatus: 'active' | 'inactive' | 'pending') => void;
   onBulkImport?: (customers: Customer[]) => void;
@@ -22,6 +24,7 @@ const CustomerTable = ({
   customers, 
   partners, 
   products, 
+  users,
   onStatusChange, 
   onBulkStatusChange, 
   onBulkImport 
@@ -154,6 +157,7 @@ const CustomerTable = ({
                   customer={customer}
                   partners={partners}
                   products={products}
+                  users={users}
                   isSelected={selectedCustomers.includes(customer.id)}
                   onSelect={handleSelectCustomer}
                   onStatusToggle={handleStatusToggle}

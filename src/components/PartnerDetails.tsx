@@ -16,7 +16,7 @@ interface PartnerDetailsProps {
 
 const PartnerDetails = ({ partner, customers, products, users, onBack }: PartnerDetailsProps) => {
   const partnerCustomers = customers.filter(c => c.partnerId === partner.id);
-  const assignedEmployee = users.find(u => u.id === partner.assignedEmployeeId);
+  const assignedUsers = users.filter(u => partner.assignedUserIds?.includes(u.id));
 
   const getProductName = (productId: string) => {
     return products.find(p => p.id === productId)?.name || 'Unknown Product';
@@ -99,6 +99,14 @@ const PartnerDetails = ({ partner, customers, products, users, onBack }: Partner
     }
   };
 
+  const getAssignedUserNames = (userIds?: string[]) => {
+    if (!userIds || userIds.length === 0) return 'Unassigned';
+    return userIds
+      .map(id => users.find(u => u.id === id)?.name)
+      .filter(Boolean)
+      .join(', ');
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -166,10 +174,10 @@ const PartnerDetails = ({ partner, customers, products, users, onBack }: Partner
             <div className="flex items-center gap-2">
               <User size={20} className="text-purple-600" />
               <div>
-                <p className="text-sm text-muted-foreground">Assigned Employee</p>
-                <p className="font-medium">{assignedEmployee?.name || 'Unassigned'}</p>
-                {assignedEmployee && (
-                  <p className="text-xs text-muted-foreground">{assignedEmployee.email}</p>
+                <p className="text-sm text-muted-foreground">Assigned Users</p>
+                <p className="font-medium">{getAssignedUserNames(partner.assignedUserIds)}</p>
+                {assignedUsers.length > 0 && (
+                  <p className="text-xs text-muted-foreground">{assignedUsers.length} user(s)</p>
                 )}
               </div>
             </div>

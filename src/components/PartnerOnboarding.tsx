@@ -7,11 +7,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
 import { Search, UserPlus, Filter, CheckCircle, Clock, AlertCircle, Eye } from 'lucide-react';
-import { Partner } from '@/types';
+import { Partner, User } from '@/types';
 import AddPartnerForm from '@/components/AddPartnerForm';
 
 interface PartnerOnboardingProps {
   partners: Partner[];
+  users: User[];
   onPartnerAdd?: (partner: Partner) => void;
 }
 
@@ -30,7 +31,7 @@ interface OnboardingPartner extends Partner {
   lastActivity: Date;
 }
 
-const PartnerOnboarding = ({ partners, onPartnerAdd }: PartnerOnboardingProps) => {
+const PartnerOnboarding = ({ partners, users, onPartnerAdd }: PartnerOnboardingProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [showAddForm, setShowAddForm] = useState(false);
@@ -119,6 +120,7 @@ const PartnerOnboarding = ({ partners, onPartnerAdd }: PartnerOnboardingProps) =
     return (
       <div className="space-y-6">
         <AddPartnerForm 
+          users={users}
           onPartnerAdd={handleAddPartner}
           onCancel={() => setShowAddForm(false)}
         />
