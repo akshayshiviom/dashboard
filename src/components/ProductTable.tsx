@@ -1,4 +1,3 @@
-
 import { useState, useMemo } from 'react';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent } from '@/components/ui/card';
@@ -85,6 +84,11 @@ const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusCha
     setSelectedProduct(null);
   };
 
+  const handleProductUpdate = (productId: string, updates: Partial<Product>) => {
+    const updatedProduct = { ...updates, lastEdited: new Date() };
+    onProductUpdate?.(productId, updatedProduct);
+  };
+
   if (selectedProduct) {
     return <ProductDetail product={selectedProduct} onBack={handleBackToList} />;
   }
@@ -126,6 +130,7 @@ const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusCha
                 <TableHead>Active Customers</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Added</TableHead>
+                <TableHead>Last Edited</TableHead>
                 {currentUserRole === 'admin' && <TableHead>Actions</TableHead>}
               </TableRow>
             </TableHeader>
@@ -139,7 +144,7 @@ const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusCha
                   onSelect={handleSelectProduct}
                   onStatusToggle={handleStatusToggle}
                   onProductClick={handleProductClick}
-                  onProductUpdate={onProductUpdate}
+                  onProductUpdate={handleProductUpdate}
                 />
               ))}
             </TableBody>

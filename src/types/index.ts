@@ -1,4 +1,3 @@
-
 export interface Customer {
   id: string;
   name: string;
@@ -38,8 +37,6 @@ export interface ProductPlan {
   name: string;
   price: number;
   billing: 'monthly' | 'yearly' | 'one-time';
-  features: string[];
-  userLimit?: number;
   isPopular?: boolean;
 }
 
@@ -53,6 +50,7 @@ export interface Product {
   customersCount: number;
   plans: ProductPlan[];
   createdAt: Date;
+  lastEdited?: Date;
   // Legacy price field for backward compatibility
   price?: number;
 }

@@ -110,6 +110,18 @@ const ProductTableRow = ({ product, currentUserRole, isSelected, onSelect, onSta
         </Badge>
       </TableCell>
       <TableCell>{product.createdAt.toLocaleDateString()}</TableCell>
+      <TableCell>
+        {product.lastEdited ? (
+          <div className="text-sm">
+            <div>{product.lastEdited.toLocaleDateString()}</div>
+            <div className="text-muted-foreground text-xs">
+              {product.lastEdited.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            </div>
+          </div>
+        ) : (
+          <span className="text-muted-foreground text-sm">Never</span>
+        )}
+      </TableCell>
       {currentUserRole === 'admin' && (
         <TableCell onClick={(e) => e.stopPropagation()}>
           <div className="flex items-center gap-2">
