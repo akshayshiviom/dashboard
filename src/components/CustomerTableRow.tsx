@@ -3,12 +3,13 @@ import { TableCell, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Customer, Partner, Product } from '../types';
+import { Customer, Partner, Product, User } from '../types';
 
 interface CustomerTableRowProps {
   customer: Customer;
   partners: Partner[];
   products: Product[];
+  users: User[];
   isSelected: boolean;
   onSelect: (customerId: string) => void;
   onStatusToggle: (customerId: string, currentStatus: string) => void;
@@ -18,6 +19,7 @@ const CustomerTableRow = ({
   customer, 
   partners, 
   products, 
+  users,
   isSelected, 
   onSelect, 
   onStatusToggle 
@@ -31,6 +33,14 @@ const CustomerTableRow = ({
     if (!productIds || productIds.length === 0) return 'None';
     return productIds
       .map(id => products.find(p => p.id === id)?.name)
+      .filter(Boolean)
+      .join(', ');
+  };
+
+  const getAssignedUserNames = (userIds?: string[]) => {
+    if (!userIds || userIds.length === 0) return 'Unassigned';
+    return userIds
+      .map(id => users.find(u => u.id === id)?.name)
       .filter(Boolean)
       .join(', ');
   };
@@ -77,6 +87,9 @@ const CustomerTableRow = ({
         ) : (
           <span className="text-muted-foreground">Not set</span>
         )}
+      </TableCell>
+      <TableCell className="hidden xl:table-cell max-w-xs truncate">
+        {getAssignedUserNames(customer.assignedUserIds)}
       </TableCell>
       <TableCell className="hidden xl:table-cell max-w-xs truncate">
         {getProductNames(customer.productIds)}

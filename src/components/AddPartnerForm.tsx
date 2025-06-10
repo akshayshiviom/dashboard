@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -8,7 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Partner } from '@/types';
+import { Partner, User } from '@/types';
+import UserAssignmentSelect from './UserAssignmentSelect';
 
 const partnerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -23,12 +23,14 @@ const partnerSchema = z.object({
 type PartnerFormData = z.infer<typeof partnerSchema>;
 
 interface AddPartnerFormProps {
+  users: User[];
   onPartnerAdd: (partner: Partner) => void;
   onCancel: () => void;
 }
 
-const AddPartnerForm = ({ onPartnerAdd, onCancel }: AddPartnerFormProps) => {
+const AddPartnerForm = ({ users, onPartnerAdd, onCancel }: AddPartnerFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [assignedUserIds, setAssignedUserIds] = useState<string[]>([]);
 
   const form = useForm<PartnerFormData>({
     resolver: zodResolver(partnerSchema),
@@ -54,6 +56,7 @@ const AddPartnerForm = ({ onPartnerAdd, onCancel }: AddPartnerFormProps) => {
         identity: data.identity,
         paymentTerms: data.paymentTerms,
         zone: data.zone,
+        assignedUserIds: assignedUserIds.length > 0 ? assignedUserIds : undefined,
         customersCount: 0,
         totalValue: 0,
         status: 'active',
@@ -64,6 +67,7 @@ const AddPartnerForm = ({ onPartnerAdd, onCancel }: AddPartnerFormProps) => {
 
       onPartnerAdd(newPartner);
       form.reset();
+      setAssignedUserIds([]);
       onCancel();
     } catch (error) {
       console.error('Error adding partner:', error);
@@ -227,6 +231,19 @@ const AddPartnerForm = ({ onPartnerAdd, onCancel }: AddPartnerFormProps) => {
                 </FormItem>
               )}
             />
+
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Assigned Users
+              </label>
+              <UserAssignmentSelect
+                users={users}
+                assignedUserIds={assignedUserIds}
+                onAssignmentChange={setAssignedUserIds}
+                maxAssignments={3}
+                allowedRoles={['fsr', 'team-leader', 'bde']}
+              />
+            </div>
 
             <div className="flex justify-end space-x-2 pt-4">
               <Button type="button" variant="outline" onClick={onCancel}>

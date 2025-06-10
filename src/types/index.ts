@@ -1,4 +1,3 @@
-
 export interface Customer {
   id: string;
   name: string;
@@ -12,6 +11,7 @@ export interface Customer {
   createdAt: Date;
   value: number;
   zone?: 'north' | 'east' | 'west' | 'south';
+  assignedUserIds?: string[]; // Changed from single assignedEmployeeId to array
 }
 
 export interface Partner {
@@ -29,7 +29,7 @@ export interface Partner {
   agreementDate?: Date;
   productTypes: string[];
   paymentTerms: 'net-15' | 'net-30' | 'net-45' | 'net-60' | 'net-90' | 'annual-in-advance' | 'monthly' | 'quarterly' | 'half-yearly';
-  assignedEmployeeId?: string;
+  assignedUserIds?: string[]; // Changed from single assignedEmployeeId to array
   zone?: 'north' | 'east' | 'west' | 'south';
 }
 

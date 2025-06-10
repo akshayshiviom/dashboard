@@ -114,6 +114,14 @@ const PartnerTableRow = ({
     }
   };
 
+  const getAssignedUserNames = (userIds?: string[]) => {
+    if (!userIds || userIds.length === 0) return 'Unassigned';
+    return userIds
+      .map(id => users.find(u => u.id === id)?.name)
+      .filter(Boolean)
+      .join(', ');
+  };
+
   return (
     <TableRow className="hover:bg-muted/50">
       <TableCell>
@@ -171,7 +179,9 @@ const PartnerTableRow = ({
           </div>
         </div>
       </TableCell>
-      <TableCell>{getEmployeeName(partner.assignedEmployeeId)}</TableCell>
+      <TableCell className="max-w-32 truncate">
+        {getAssignedUserNames(partner.assignedUserIds)}
+      </TableCell>
       <TableCell>{partner.customersCount}</TableCell>
       <TableCell>${partner.totalValue.toLocaleString()}</TableCell>
       <TableCell>

@@ -3,16 +3,18 @@ import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Customer, Partner, Product } from '../types';
+import { Customer, Partner, Product, User } from '../types';
 import CustomerBasicInfoForm from './CustomerBasicInfoForm';
 import CustomerStatusForm from './CustomerStatusForm';
 import CustomerAssignmentForm from './CustomerAssignmentForm';
 import CustomerProductSelection from './CustomerProductSelection';
+import UserAssignmentSelect from './UserAssignmentSelect';
 
 interface CustomerEditDialogProps {
   customer: Customer | null;
   partners: Partner[];
   products: Product[];
+  users: User[];
   isOpen: boolean;
   onClose: () => void;
   onSave: (customerId: string, updates: Partial<Customer>) => void;
@@ -22,6 +24,7 @@ const CustomerEditDialog = ({
   customer, 
   partners, 
   products, 
+  users,
   isOpen, 
   onClose, 
   onSave 
@@ -39,6 +42,7 @@ const CustomerEditDialog = ({
     process: 'prospect' as 'prospect' | 'demo' | 'poc' | 'negotiating' | 'lost' | 'won' | 'deployment'
   });
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
+  const [assignedUserIds, setAssignedUserIds] = useState<string[]>([]);
 
   useEffect(() => {
     if (customer) {
@@ -54,6 +58,7 @@ const CustomerEditDialog = ({
         process: customer.process || 'prospect'
       });
       setSelectedProducts(customer.productIds || []);
+      setAssignedUserIds(customer.assignedUserIds || []);
     }
   }, [customer]);
 
@@ -92,6 +97,7 @@ const CustomerEditDialog = ({
       productIds: selectedProducts.length > 0 ? selectedProducts : undefined,
       value: parseInt(formData.value) || 0,
       zone: formData.zone as 'north' | 'east' | 'west' | 'south' || undefined,
+      assignedUserIds: assignedUserIds.length > 0 ? assignedUserIds : undefined,
     };
 
     onSave(customer.id, updates);
@@ -127,6 +133,19 @@ const CustomerEditDialog = ({
             partners={partners} 
             onChange={handleFormChange} 
           />
+
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              Assigned Users
+            </label>
+            <UserAssignmentSelect
+              users={users}
+              assignedUserIds={assignedUserIds}
+              onAssignmentChange={setAssignedUserIds}
+              maxAssignments={3}
+              allowedRoles={['fsr', 'team-leader', 'bde']}
+            />
+          </div>
 
           <CustomerProductSelection 
             products={products} 
