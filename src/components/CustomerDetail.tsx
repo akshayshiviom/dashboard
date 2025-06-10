@@ -1,9 +1,11 @@
 
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Mail, Building, MapPin, User, Package } from 'lucide-react';
+import { ArrowLeft, Mail, Building, MapPin, User, Package, Edit } from 'lucide-react';
 import { Customer, Partner, Product } from '../types';
+import CustomerEditDialog from './CustomerEditDialog';
 
 interface CustomerDetailProps {
   customer: Customer;
@@ -14,6 +16,8 @@ interface CustomerDetailProps {
 }
 
 const CustomerDetail = ({ customer, partners, products, onBack, onCustomerUpdate }: CustomerDetailProps) => {
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+
   const getPartnerName = (partnerId?: string) => {
     const partner = partners.find(p => p.id === partnerId);
     return partner ? partner.name : 'Unassigned';
@@ -60,12 +64,22 @@ const CustomerDetail = ({ customer, partners, products, onBack, onCustomerUpdate
 
   const customerProducts = getProductNames(customer.productIds);
 
+  const handleEditSave = (customerId: string, updates: Partial<Customer>) => {
+    onCustomerUpdate?.(customerId, updates);
+    setIsEditDialogOpen(false);
+  };
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
+      {/* Header */}
+      <div className="flex items-center justify-between">
         <Button variant="outline" onClick={onBack}>
           <ArrowLeft size={16} className="mr-2" />
           Back to Customer Management
+        </Button>
+        <Button onClick={() => setIsEditDialogOpen(true)}>
+          <Edit size={16} className="mr-2" />
+          Edit Customer
         </Button>
       </div>
 
@@ -166,6 +180,16 @@ const CustomerDetail = ({ customer, partners, products, onBack, onCustomerUpdate
           </div>
         )}
       </div>
+
+      {/* Edit Dialog */}
+      <CustomerEditDialog
+        customer={customer}
+        partners={partners}
+        products={products}
+        isOpen={isEditDialogOpen}
+        onClose={() => setIsEditDialogOpen(false)}
+        onSave={handleEditSave}
+      />
     </div>
   );
 };
