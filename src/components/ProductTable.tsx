@@ -1,3 +1,4 @@
+
 import { useState, useMemo } from 'react';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent } from '@/components/ui/card';
@@ -5,6 +6,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Product } from '../types';
 import ProductTableHeader from './ProductTableHeader';
 import ProductTableRow from './ProductTableRow';
+import ProductDetail from './ProductDetail';
 
 interface ProductTableProps {
   products: Product[];
@@ -19,6 +21,7 @@ const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusCha
   const [statusFilter, setStatusFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   // Simulate current user role - in a real app, this would come from auth context
   const currentUserRole = 'admin';
@@ -73,6 +76,18 @@ const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusCha
     setSelectedProducts([]);
   };
 
+  const handleProductClick = (product: Product) => {
+    setSelectedProduct(product);
+  };
+
+  const handleBackToList = () => {
+    setSelectedProduct(null);
+  };
+
+  if (selectedProduct) {
+    return <ProductDetail product={selectedProduct} onBack={handleBackToList} />;
+  }
+
   return (
     <div>
       <Card>
@@ -121,6 +136,7 @@ const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusCha
                   isSelected={selectedProducts.includes(product.id)}
                   onSelect={handleSelectProduct}
                   onStatusToggle={handleStatusToggle}
+                  onProductClick={handleProductClick}
                 />
               ))}
             </TableBody>

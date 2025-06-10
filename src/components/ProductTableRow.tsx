@@ -13,9 +13,10 @@ interface ProductTableRowProps {
   isSelected: boolean;
   onSelect: (productId: string) => void;
   onStatusToggle: (productId: string, currentStatus: string) => void;
+  onProductClick: (product: Product) => void;
 }
 
-const ProductTableRow = ({ product, currentUserRole, isSelected, onSelect, onStatusToggle }: ProductTableRowProps) => {
+const ProductTableRow = ({ product, currentUserRole, isSelected, onSelect, onStatusToggle, onProductClick }: ProductTableRowProps) => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active': return 'bg-green-100 text-green-800';
@@ -33,10 +34,18 @@ const ProductTableRow = ({ product, currentUserRole, isSelected, onSelect, onSta
     }
   };
 
+  const handleRowClick = (e: React.MouseEvent) => {
+    // Don't trigger if clicking on interactive elements
+    if ((e.target as HTMLElement).closest('button, input, a, [role="switch"]')) {
+      return;
+    }
+    onProductClick(product);
+  };
+
   return (
-    <TableRow className="hover:bg-muted/50">
+    <TableRow className="hover:bg-muted/50 cursor-pointer" onClick={handleRowClick}>
       {currentUserRole === 'admin' && (
-        <TableCell>
+        <TableCell onClick={(e) => e.stopPropagation()}>
           <Checkbox 
             checked={isSelected}
             onCheckedChange={() => onSelect(product.id)}
@@ -48,7 +57,7 @@ const ProductTableRow = ({ product, currentUserRole, isSelected, onSelect, onSta
           <div className="font-semibold">{product.name}</div>
           {product.plans && product.plans.length > 0 && (
             <div className="space-y-1">
-              {product.plans.slice(0, 3).map((plan) => (
+              {product.plans.slice(0, 2).map((plan) => (
                 <div key={plan.id} className="flex items-center gap-2 text-xs">
                   <span className="font-medium">{plan.name}:</span>
                   <span>₹{plan.price.toFixed(2)}</span>
@@ -60,9 +69,9 @@ const ProductTableRow = ({ product, currentUserRole, isSelected, onSelect, onSta
                   )}
                 </div>
               ))}
-              {product.plans.length > 3 && (
+              {product.plans.length > 2 && (
                 <div className="text-xs text-muted-foreground">
-                  +{product.plans.length - 3} more plans
+                  +{product.plans.length - 2} more plans
                 </div>
               )}
             </div>
@@ -75,6 +84,7 @@ const ProductTableRow = ({ product, currentUserRole, isSelected, onSelect, onSta
           target="_blank" 
           rel="noopener noreferrer"
           className="text-blue-600 hover:underline"
+          onClick={(e) => e.stopPropagation()}
         >
           {product.website}
         </a>
@@ -89,7 +99,7 @@ const ProductTableRow = ({ product, currentUserRole, isSelected, onSelect, onSta
       </TableCell>
       <TableCell>{product.createdAt.toLocaleDateString()}</TableCell>
       {currentUserRole === 'admin' && (
-        <TableCell>
+        <TableCell onClick={(e) => e.stopPropagation()}>
           <div className="flex items-center gap-2">
             <Switch
               checked={product.status === 'active'}
