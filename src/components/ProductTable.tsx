@@ -1,3 +1,4 @@
+
 import { useState, useMemo } from 'react';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent } from '@/components/ui/card';
@@ -41,12 +42,21 @@ const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusCha
     });
   }, [products, searchTerm, statusFilter, categoryFilter]);
 
+  // Only allow selection of active products
+  const selectableProducts = filteredProducts.filter(product => product.status === 'active');
+
   const handleStatusToggle = (productId: string, currentStatus: string) => {
     const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
     onStatusChange?.(productId, newStatus as 'active' | 'inactive');
   };
 
   const handleSelectProduct = (productId: string) => {
+    // Only allow selection if product is active
+    const product = products.find(p => p.id === productId);
+    if (product && product.status !== 'active') {
+      return; // Don't allow selection of inactive products
+    }
+
     setSelectedProducts(prev => 
       prev.includes(productId) 
         ? prev.filter(id => id !== productId)
@@ -55,10 +65,10 @@ const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusCha
   };
 
   const handleSelectAll = () => {
-    if (selectedProducts.length === filteredProducts.length) {
+    if (selectedProducts.length === selectableProducts.length) {
       setSelectedProducts([]);
     } else {
-      setSelectedProducts(filteredProducts.map(product => product.id));
+      setSelectedProducts(selectableProducts.map(product => product.id));
     }
   };
 
@@ -117,7 +127,7 @@ const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusCha
                 {currentUserRole === 'admin' && (
                   <TableHead className="w-12">
                     <Checkbox 
-                      checked={selectedProducts.length === filteredProducts.length && filteredProducts.length > 0}
+                      checked={selectedProducts.length === selectableProducts.length && selectableProducts.length > 0}
                       onCheckedChange={handleSelectAll}
                     />
                   </TableHead>

@@ -51,19 +51,28 @@ const ProductTableRow = ({ product, currentUserRole, isSelected, onSelect, onSta
   };
 
   const plans = Array.isArray(product.plans) ? product.plans : [];
+  const isInactive = product.status === 'inactive';
 
   return (
-    <TableRow className="hover:bg-muted/50 cursor-pointer" onClick={handleRowClick}>
+    <TableRow 
+      className={`hover:bg-muted/50 cursor-pointer ${isInactive ? 'opacity-60' : ''}`} 
+      onClick={handleRowClick}
+    >
       {currentUserRole === 'admin' && (
         <TableCell onClick={(e) => e.stopPropagation()}>
           <Checkbox 
             checked={isSelected}
             onCheckedChange={() => onSelect(product.id)}
+            disabled={isInactive}
+            className={isInactive ? 'cursor-not-allowed' : ''}
           />
         </TableCell>
       )}
       <TableCell className="font-medium">
-        <div className="font-semibold">{product.name}</div>
+        <div className={`font-semibold ${isInactive ? 'text-muted-foreground' : ''}`}>
+          {product.name}
+          {isInactive && <span className="ml-2 text-xs text-red-600">(Inactive)</span>}
+        </div>
       </TableCell>
       <TableCell>
         {plans.length > 0 ? (
@@ -136,6 +145,7 @@ const ProductTableRow = ({ product, currentUserRole, isSelected, onSelect, onSta
                 <Button
                   size="sm"
                   variant="outline"
+                  disabled={isInactive}
                 >
                   <Edit2 size={14} className="mr-1" />
                   Manage Plans

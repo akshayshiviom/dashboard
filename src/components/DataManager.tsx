@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { mockCustomers, mockPartners, mockProducts } from '@/utils/mockData';
 import { mockUsers } from '@/utils/mockUsers';
@@ -89,6 +90,24 @@ export const useDataManager = () => {
     ));
   };
 
+  const handleProductStatusChange = (productId: string, newStatus: 'active' | 'inactive') => {
+    setProducts(prev => prev.map(product => 
+      product.id === productId ? { ...product, status: newStatus, lastEdited: new Date() } : product
+    ));
+  };
+
+  const handleProductBulkStatusChange = (productIds: string[], newStatus: 'active' | 'inactive') => {
+    setProducts(prev => prev.map(product => 
+      productIds.includes(product.id) ? { ...product, status: newStatus, lastEdited: new Date() } : product
+    ));
+  };
+
+  const handleProductUpdate = (productId: string, updates: Partial<Product>) => {
+    setProducts(prev => prev.map(product => 
+      product.id === productId ? { ...product, ...updates, lastEdited: new Date() } : product
+    ));
+  };
+
   return {
     customers,
     partners,
@@ -102,6 +121,9 @@ export const useDataManager = () => {
     handlePartnerAdd,
     handleProductAdd,
     handleProductImport,
-    handleProductPriceUpdate
+    handleProductPriceUpdate,
+    handleProductStatusChange,
+    handleProductBulkStatusChange,
+    handleProductUpdate
   };
 };
