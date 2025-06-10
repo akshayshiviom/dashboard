@@ -1,3 +1,4 @@
+
 import { useState, useMemo } from 'react';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent } from '@/components/ui/card';
@@ -117,7 +118,8 @@ const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusCha
                     />
                   </TableHead>
                 )}
-                <TableHead>Software Name & Plans</TableHead>
+                <TableHead>Software Name</TableHead>
+                <TableHead>Plans</TableHead>
                 <TableHead>Website</TableHead>
                 <TableHead>Category</TableHead>
                 <TableHead>Description</TableHead>

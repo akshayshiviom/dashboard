@@ -63,30 +63,32 @@ const ProductTableRow = ({ product, currentUserRole, isSelected, onSelect, onSta
         </TableCell>
       )}
       <TableCell className="font-medium">
-        <div className="space-y-2">
-          <div className="font-semibold">{product.name}</div>
-          {plans.length > 0 && (
-            <div className="space-y-1">
-              {plans.slice(0, 2).map((plan) => (
-                <div key={plan.id} className="flex items-center gap-2 text-xs">
-                  <span className="font-medium">{plan.name}:</span>
-                  <span>₹{plan.price.toFixed(2)} per user</span>
-                  <Badge className={getBillingBadgeColor(plan.billing)} variant="secondary">
-                    {plan.billing}
-                  </Badge>
-                  {plan.isPopular && (
-                    <Badge variant="default" className="text-xs">Popular</Badge>
-                  )}
-                </div>
-              ))}
-              {plans.length > 2 && (
-                <div className="text-xs text-muted-foreground">
-                  +{plans.length - 2} more plans
-                </div>
-              )}
-            </div>
-          )}
-        </div>
+        <div className="font-semibold">{product.name}</div>
+      </TableCell>
+      <TableCell>
+        {plans.length > 0 ? (
+          <div className="space-y-1">
+            {plans.slice(0, 2).map((plan) => (
+              <div key={plan.id} className="flex items-center gap-2 text-sm">
+                <span className="font-medium">{plan.name}:</span>
+                <span>₹{plan.price.toFixed(2)} per user</span>
+                <Badge className={getBillingBadgeColor(plan.billing)} variant="secondary">
+                  {plan.billing}
+                </Badge>
+                {plan.isPopular && (
+                  <Badge variant="default" className="text-xs">Popular</Badge>
+                )}
+              </div>
+            ))}
+            {plans.length > 2 && (
+              <div className="text-sm text-muted-foreground">
+                +{plans.length - 2} more plans
+              </div>
+            )}
+          </div>
+        ) : (
+          <span className="text-muted-foreground text-sm">No plans available</span>
+        )}
       </TableCell>
       <TableCell>
         <a 
