@@ -1,15 +1,14 @@
 
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger } from '@/components/ui/dropdown-menu';
-import { Users, Edit, UserPlus, Download, Filter, Settings2, MoreVertical } from 'lucide-react';
+import { Users, Edit, UserPlus, Download, Filter, Settings2 } from 'lucide-react';
 import { User } from '../types';
 
 interface UserHierarchyTableProps {
@@ -19,14 +18,20 @@ interface UserHierarchyTableProps {
   onUserUpdate?: (userId: string, updates: Partial<User>) => void;
 }
 
+interface EditingUser {
+  id: string;
+  name: string;
+  role: string;
+  reportingTo?: string;
+}
+
 const UserHierarchyTable = ({ users, onStatusChange, onBulkStatusChange, onUserUpdate }: UserHierarchyTableProps) => {
   const [filteredUsers, setFilteredUsers] = useState<User[]>(users);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [showInactive, setShowInactive] = useState(true);
   const [compactView, setCompactView] = useState(false);
   const [showHierarchy, setShowHierarchy] = useState(true);
-  const [editingUserId, setEditingUserId] = useState<string | null>(null);
-  const [editingName, setEditingName] = useState('');
+  const [editingUser, setEditingUser] = useState<EditingUser | null>(null);
 
   const roles = ['admin', 'manager', 'assistant-manager', 'team-leader', 'fsr', 'bde'];
 
@@ -92,11 +97,6 @@ const UserHierarchyTable = ({ users, onStatusChange, onBulkStatusChange, onUserU
     }
   };
 
-  const handleStatusToggle = (userId: string, currentStatus: string) => {
-    const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
-    onStatusChange?.(userId, newStatus as 'active' | 'inactive');
-  };
-
   const handleBulkAction = (action: string) => {
     if (selectedUsers.length === 0) return;
 
@@ -119,30 +119,46 @@ const UserHierarchyTable = ({ users, onStatusChange, onBulkStatusChange, onUserU
 
   const exportUsers = () => {
     console.log('Exporting users:', filteredUsers);
-    // Here you would implement the export functionality
   };
 
   const handleEditStart = (user: User) => {
-    setEditingUserId(user.id);
-    setEditingName(user.name);
+    setEditingUser({
+      id: user.id,
+      name: user.name,
+      role: user.role,
+      reportingTo: user.reportingTo
+    });
   };
 
   const handleEditCancel = () => {
-    setEditingUserId(null);
-    setEditingName('');
+    setEditingUser(null);
   };
 
   const handleEditSave = () => {
-    if (editingUserId && editingName.trim()) {
-      onUserUpdate?.(editingUserId, { name: editingName.trim() });
-      setEditingUserId(null);
-      setEditingName('');
+    if (editingUser && editingUser.name.trim()) {
+      onUserUpdate?.(editingUser.id, {
+        name: editingUser.name.trim(),
+        role: editingUser.role as User['role'],
+        reportingTo: editingUser.reportingTo
+      });
+      setEditingUser(null);
     }
   };
 
-  const handleSuspendUser = (userId: string, currentStatus: string) => {
-    const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
-    onStatusChange?.(userId, newStatus as 'active' | 'inactive');
+  const handleRoleFilter = (role: string) => {
+    if (role === 'all') {
+      setFilteredUsers(users);
+    } else {
+      setFilteredUsers(users.filter(user => user.role === role));
+    }
+  };
+
+  const handleStatusFilter = (status: string) => {
+    if (status === 'all') {
+      setFilteredUsers(users);
+    } else {
+      setFilteredUsers(users.filter(user => user.status === status));
+    }
   };
 
   const displayUsers = showInactive ? filteredUsers : filteredUsers.filter(user => user.status === 'active');
@@ -288,31 +304,70 @@ const UserHierarchyTable = ({ users, onStatusChange, onBulkStatusChange, onUserU
                     />
                   </TableCell>
                   <TableCell className="font-medium">
-                    {editingUserId === user.id ? (
-                      <div className="flex items-center gap-2">
-                        <Input
-                          value={editingName}
-                          onChange={(e) => setEditingName(e.target.value)}
-                          className="h-8"
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') handleEditSave();
-                            if (e.key === 'Escape') handleEditCancel();
-                          }}
-                        />
-                        <Button size="sm" onClick={handleEditSave}>Save</Button>
-                        <Button size="sm" variant="outline" onClick={handleEditCancel}>Cancel</Button>
-                      </div>
+                    {editingUser && editingUser.id === user.id ? (
+                      <Input
+                        value={editingUser.name}
+                        onChange={(e) => setEditingUser({ ...editingUser, name: e.target.value })}
+                        className="h-8"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') handleEditSave();
+                          if (e.key === 'Escape') handleEditCancel();
+                        }}
+                      />
                     ) : (
                       user.name
                     )}
                   </TableCell>
                   {!compactView && <TableCell>{user.email}</TableCell>}
                   <TableCell>
-                    <Badge className={getRoleColor(user.role)}>
-                      {getRoleDisplayName(user.role)}
-                    </Badge>
+                    {editingUser && editingUser.id === user.id ? (
+                      <Select
+                        value={editingUser.role}
+                        onValueChange={(value) => setEditingUser({ ...editingUser, role: value })}
+                      >
+                        <SelectTrigger className="h-8">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {roles.map((role) => (
+                            <SelectItem key={role} value={role}>
+                              {getRoleDisplayName(role)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <Badge className={getRoleColor(user.role)}>
+                        {getRoleDisplayName(user.role)}
+                      </Badge>
+                    )}
                   </TableCell>
-                  {showHierarchy && <TableCell>{getReportingToName(user.reportingTo)}</TableCell>}
+                  {showHierarchy && (
+                    <TableCell>
+                      {editingUser && editingUser.id === user.id ? (
+                        <Select
+                          value={editingUser.reportingTo || ''}
+                          onValueChange={(value) => setEditingUser({ ...editingUser, reportingTo: value || undefined })}
+                        >
+                          <SelectTrigger className="h-8">
+                            <SelectValue placeholder="Select manager" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="">None</SelectItem>
+                            {users
+                              .filter(u => u.id !== user.id)
+                              .map((u) => (
+                                <SelectItem key={u.id} value={u.id}>
+                                  {u.name}
+                                </SelectItem>
+                              ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        getReportingToName(user.reportingTo)
+                      )}
+                    </TableCell>
+                  )}
                   <TableCell>
                     <Badge variant={user.status === 'active' ? 'default' : 'secondary'}>
                       {user.status}
@@ -325,24 +380,24 @@ const UserHierarchyTable = ({ users, onStatusChange, onBulkStatusChange, onUserU
                   )}
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      {editingUserId !== user.id ? (
+                      {editingUser && editingUser.id === user.id ? (
                         <>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleEditStart(user)}
-                          >
-                            <Edit size={16} />
+                          <Button size="sm" onClick={handleEditSave}>
+                            Save
                           </Button>
-                          <Button
-                            variant={user.status === 'active' ? 'destructive' : 'default'}
-                            size="sm"
-                            onClick={() => handleSuspendUser(user.id, user.status)}
-                          >
-                            {user.status === 'active' ? 'Suspend' : 'Activate'}
+                          <Button size="sm" variant="outline" onClick={handleEditCancel}>
+                            Cancel
                           </Button>
                         </>
-                      ) : null}
+                      ) : (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEditStart(user)}
+                        >
+                          <Edit size={16} />
+                        </Button>
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>
