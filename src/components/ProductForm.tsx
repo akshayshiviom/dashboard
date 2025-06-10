@@ -20,7 +20,6 @@ const ProductForm = ({ onProductAdd }: ProductFormProps) => {
     website: '',
     category: '',
     description: '',
-    price: '',
   });
 
   const categories = [
@@ -34,7 +33,7 @@ const ProductForm = ({ onProductAdd }: ProductFormProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.website || !formData.category || !formData.description || !formData.price) {
+    if (!formData.name || !formData.website || !formData.category || !formData.description) {
       toast({
         title: "Error",
         description: "Please fill in all required fields.",
@@ -51,18 +50,8 @@ const ProductForm = ({ onProductAdd }: ProductFormProps) => {
       description: formData.description,
       status: 'active',
       customersCount: 0,
-      plans: [
-        {
-          id: `${Date.now()}-1`,
-          name: 'Basic',
-          price: parseFloat(formData.price),
-          billing: 'monthly',
-          features: ['Basic features'],
-          userLimit: 10,
-        }
-      ],
+      plans: [], // Start with empty plans array
       createdAt: new Date(),
-      price: parseFloat(formData.price), // Keep for backward compatibility
     };
 
     onProductAdd(newProduct);
@@ -72,12 +61,11 @@ const ProductForm = ({ onProductAdd }: ProductFormProps) => {
       website: '',
       category: '',
       description: '',
-      price: '',
     });
 
     toast({
       title: "Success",
-      description: "Product added successfully!",
+      description: "Product added successfully! You can add plans later by clicking 'Manage Plans'.",
     });
   };
 
@@ -112,36 +100,20 @@ const ProductForm = ({ onProductAdd }: ProductFormProps) => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="category">Category *</Label>
-              <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map((category) => (
-                    <SelectItem key={category} value={category}>
-                      {category}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="price">Price ($) *</Label>
-              <Input
-                id="price"
-                type="number"
-                value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                placeholder="Enter price"
-                step="0.01"
-                min="0"
-                required
-              />
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="category">Category *</Label>
+            <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((category) => (
+                  <SelectItem key={category} value={category}>
+                    {category}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">
@@ -154,6 +126,12 @@ const ProductForm = ({ onProductAdd }: ProductFormProps) => {
               rows={3}
               required
             />
+          </div>
+
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <p className="text-sm text-blue-800">
+              <strong>Note:</strong> You can add pricing plans after creating the product using the "Manage Plans" button in the products table.
+            </p>
           </div>
 
           <Button type="submit" className="w-full">
