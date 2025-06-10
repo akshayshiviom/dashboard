@@ -6,7 +6,6 @@ import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Edit2 } from 'lucide-react';
 import { Product } from '../types';
-import ProductPlansCell from './ProductPlansCell';
 
 interface ProductTableRowProps {
   product: Product;
@@ -25,6 +24,15 @@ const ProductTableRow = ({ product, currentUserRole, isSelected, onSelect, onSta
     }
   };
 
+  const getBillingBadgeColor = (billing: string) => {
+    switch (billing) {
+      case 'monthly': return 'bg-blue-100 text-blue-800';
+      case 'yearly': return 'bg-purple-100 text-purple-800';
+      case 'one-time': return 'bg-orange-100 text-orange-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
   return (
     <TableRow className="hover:bg-muted/50">
       {currentUserRole === 'admin' && (
@@ -35,7 +43,32 @@ const ProductTableRow = ({ product, currentUserRole, isSelected, onSelect, onSta
           />
         </TableCell>
       )}
-      <TableCell className="font-medium">{product.name}</TableCell>
+      <TableCell className="font-medium">
+        <div className="space-y-2">
+          <div className="font-semibold">{product.name}</div>
+          {product.plans && product.plans.length > 0 && (
+            <div className="space-y-1">
+              {product.plans.slice(0, 3).map((plan) => (
+                <div key={plan.id} className="flex items-center gap-2 text-xs">
+                  <span className="font-medium">{plan.name}:</span>
+                  <span>₹{plan.price.toFixed(2)}</span>
+                  <Badge className={getBillingBadgeColor(plan.billing)} variant="secondary">
+                    {plan.billing}
+                  </Badge>
+                  {plan.isPopular && (
+                    <Badge variant="default" className="text-xs">Popular</Badge>
+                  )}
+                </div>
+              ))}
+              {product.plans.length > 3 && (
+                <div className="text-xs text-muted-foreground">
+                  +{product.plans.length - 3} more plans
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </TableCell>
       <TableCell>
         <a 
           href={`https://${product.website}`} 
@@ -48,9 +81,6 @@ const ProductTableRow = ({ product, currentUserRole, isSelected, onSelect, onSta
       </TableCell>
       <TableCell>{product.category}</TableCell>
       <TableCell className="max-w-xs truncate">{product.description}</TableCell>
-      <TableCell className="min-w-64">
-        <ProductPlansCell plans={product.plans} />
-      </TableCell>
       <TableCell>{product.customersCount}</TableCell>
       <TableCell>
         <Badge className={getStatusColor(product.status)}>
