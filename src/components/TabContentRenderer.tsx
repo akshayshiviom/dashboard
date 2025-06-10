@@ -76,6 +76,15 @@ const TabContentRenderer = ({
   onProductImport,
   onProductPriceUpdate
 }: TabContentRendererProps) => {
+  // Wrapper functions to match CustomerTable's expected signatures
+  const handleStatusChange = (customerId: string, newStatus: 'active' | 'inactive' | 'pending') => {
+    onCustomerUpdate(customerId, { status: newStatus });
+  };
+
+  const handleBulkStatusChange = (customerIds: string[], action: string) => {
+    onBulkAction(customerIds, action);
+  };
+
   switch (activeTab) {
     case 'dashboard':
       return (
@@ -104,8 +113,8 @@ const TabContentRenderer = ({
                 customers={customers} 
                 partners={partners} 
                 products={products}
-                onStatusChange={onCustomerUpdate}
-                onBulkStatusChange={onBulkAction}
+                onStatusChange={handleStatusChange}
+                onBulkStatusChange={handleBulkStatusChange}
                 onBulkImport={onCustomerImport}
               />
             </div>
@@ -131,8 +140,8 @@ const TabContentRenderer = ({
             customers={customers} 
             partners={partners} 
             products={products}
-            onStatusChange={onCustomerUpdate}
-            onBulkStatusChange={onBulkAction}
+            onStatusChange={handleStatusChange}
+            onBulkStatusChange={handleBulkStatusChange}
             onBulkImport={onCustomerImport}
           />
         </div>
