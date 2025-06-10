@@ -1,3 +1,4 @@
+
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -193,7 +194,7 @@ const CustomerManagement = ({
           <CardContent className="p-4">
             <div className="text-2xl font-bold text-red-600">{stats.inactive}</div>
             <p className="text-sm text-muted-foreground">Inactive</p>
-          </Card>
+          </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
