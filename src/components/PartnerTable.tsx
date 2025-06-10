@@ -1,8 +1,9 @@
-
 import { useState, useMemo } from 'react';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Search } from 'lucide-react';
 import { Partner, Customer, Product, User } from '../types';
 import PartnerDetails from './PartnerDetails';
 import PartnerTableHeader from './PartnerTableHeader';
@@ -20,6 +21,7 @@ interface PartnerTableProps {
 }
 
 const PartnerTable = ({ partners, customers, products, users, onStatusChange, onBulkStatusChange, onBulkImport }: PartnerTableProps) => {
+  const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [customersFilter, setCustomersFilter] = useState(0);
   const [revenueFilter, setRevenueFilter] = useState(0);
@@ -31,6 +33,11 @@ const PartnerTable = ({ partners, customers, products, users, onStatusChange, on
 
   const filteredPartners = useMemo(() => {
     return partners.filter((partner) => {
+      const searchMatch = searchTerm === '' || 
+        partner.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        partner.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        partner.company.toLowerCase().includes(searchTerm.toLowerCase());
+      
       const statusMatch = statusFilter === 'all' || partner.status === statusFilter;
       const customersMatch = partner.customersCount >= customersFilter;
       const revenueMatch = partner.totalValue >= revenueFilter;
@@ -38,9 +45,9 @@ const PartnerTable = ({ partners, customers, products, users, onStatusChange, on
       const zoneMatch = zoneFilter === 'all' || partner.zone === zoneFilter;
       const identityMatch = identityFilter === 'all' || partner.identity === identityFilter;
       
-      return statusMatch && customersMatch && revenueMatch && specializationMatch && zoneMatch && identityMatch;
+      return searchMatch && statusMatch && customersMatch && revenueMatch && specializationMatch && zoneMatch && identityMatch;
     });
-  }, [partners, statusFilter, customersFilter, revenueFilter, specializationFilter, zoneFilter, identityFilter]);
+  }, [partners, searchTerm, statusFilter, customersFilter, revenueFilter, specializationFilter, zoneFilter, identityFilter]);
 
   const handleStatusToggle = (partnerId: string, currentStatus: string) => {
     const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
@@ -93,14 +100,25 @@ const PartnerTable = ({ partners, customers, products, users, onStatusChange, on
     <div>
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <PartnerTableHeader
-              filteredCount={filteredPartners.length}
-              totalCount={partners.length}
-              selectedCount={selectedPartners.length}
-              onBulkImport={onBulkImport}
-              onBulkAction={handleBulkAction}
-            />
+          <PartnerTableHeader
+            filteredCount={filteredPartners.length}
+            totalCount={partners.length}
+            selectedCount={selectedPartners.length}
+            onBulkImport={onBulkImport}
+            onBulkAction={handleBulkAction}
+          />
+          <div className="flex flex-col md:flex-row gap-4 items-center">
+            <div className="flex-1 w-full md:w-auto">
+              <div className="relative">
+                <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  placeholder="Search partners by name, email, or company..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
             <PartnerTableFilters
               onStatusFilter={setStatusFilter}
               onIdentityFilter={setIdentityFilter}
