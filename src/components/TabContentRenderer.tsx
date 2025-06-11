@@ -106,6 +106,12 @@ const TabContentRenderer = ({
     userIds.forEach(userId => handleUserUpdate(userId, { status: newStatus }));
   };
 
+  const handleUserAdd = (userData: Omit<User, 'id' | 'createdAt'>) => {
+    // This would add the user data across the entire application
+    console.log('Adding new user:', userData);
+    // In a real app, this would call an API and update the global state
+  };
+
   switch (activeTab) {
     case 'dashboard':
       return (
@@ -202,6 +208,7 @@ const TabContentRenderer = ({
             onStatusChange={handleUserStatusChange}
             onBulkStatusChange={handleUserBulkStatusChange}
             onUserUpdate={handleUserUpdate}
+            onUserAdd={handleUserAdd}
           />
         </div>
       );

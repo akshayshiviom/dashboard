@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -10,12 +9,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger } from '@/components/ui/dropdown-menu';
 import { Users, Edit, UserPlus, Download, Filter, Settings2 } from 'lucide-react';
 import { User } from '../types';
+import AddUserDialog from './AddUserDialog';
 
 interface UserHierarchyTableProps {
   users: User[];
   onStatusChange?: (userId: string, newStatus: 'active' | 'inactive') => void;
   onBulkStatusChange?: (userIds: string[], newStatus: 'active' | 'inactive') => void;
   onUserUpdate?: (userId: string, updates: Partial<User>) => void;
+  onUserAdd?: (user: Omit<User, 'id' | 'createdAt'>) => void;
 }
 
 interface EditingUser {
@@ -25,7 +26,7 @@ interface EditingUser {
   reportingTo?: string;
 }
 
-const UserHierarchyTable = ({ users, onStatusChange, onBulkStatusChange, onUserUpdate }: UserHierarchyTableProps) => {
+const UserHierarchyTable = ({ users, onStatusChange, onBulkStatusChange, onUserUpdate, onUserAdd }: UserHierarchyTableProps) => {
   const [filteredUsers, setFilteredUsers] = useState<User[]>(users);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [showInactive, setShowInactive] = useState(true);
@@ -145,6 +146,17 @@ const UserHierarchyTable = ({ users, onStatusChange, onBulkStatusChange, onUserU
     }
   };
 
+  const handleUserAdd = (userData: Omit<User, 'id' | 'createdAt'>) => {
+    const newUser: User = {
+      ...userData,
+      id: Date.now().toString(), // Simple ID generation for demo
+      createdAt: new Date(),
+    };
+    
+    onUserAdd?.(userData);
+    console.log('Adding new user:', newUser);
+  };
+
   const displayUsers = showInactive ? filteredUsers : filteredUsers.filter(user => user.status === 'active');
 
   return (
@@ -252,10 +264,7 @@ const UserHierarchyTable = ({ users, onStatusChange, onBulkStatusChange, onUserU
                 </DropdownMenu>
               )}
               
-              <Button size="sm">
-                <UserPlus size={16} className="mr-2" />
-                Add User
-              </Button>
+              <AddUserDialog users={users} onUserAdd={handleUserAdd} />
             </div>
           </div>
         </CardHeader>
