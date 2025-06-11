@@ -48,6 +48,8 @@ interface TabContentRendererProps {
   onProductStatusChange: (productId: string, newStatus: 'active' | 'inactive') => void;
   onProductBulkStatusChange: (productIds: string[], newStatus: 'active' | 'inactive') => void;
   onProductUpdate: (productId: string, updates: Partial<Product>) => void;
+  onUserAdd?: (user: User) => void;
+  onUserUpdate?: (userId: string, updates: Partial<User>) => void;
 }
 
 const TabContentRenderer = ({
@@ -81,7 +83,9 @@ const TabContentRenderer = ({
   onProductStatusChange,
   onProductBulkStatusChange,
   onProductUpdate,
-  onPartnerAdd
+  onPartnerAdd,
+  onUserAdd,
+  onUserUpdate
 }: TabContentRendererProps) => {
   // Wrapper functions to match CustomerTable's expected signatures
   const handleStatusChange = (customerId: string, newStatus: 'active' | 'inactive' | 'pending') => {
@@ -93,9 +97,11 @@ const TabContentRenderer = ({
   };
 
   const handleUserUpdate = (userId: string, updates: Partial<User>) => {
-    // This would update the user data across the entire application
-    console.log('Updating user:', userId, updates);
-    // In a real app, this would call an API and update the global state
+    if (onUserUpdate) {
+      onUserUpdate(userId, updates);
+    } else {
+      console.log('Updating user:', userId, updates);
+    }
   };
 
   const handleUserStatusChange = (userId: string, newStatus: 'active' | 'inactive') => {
@@ -107,9 +113,17 @@ const TabContentRenderer = ({
   };
 
   const handleUserAdd = (userData: Omit<User, 'id' | 'createdAt'>) => {
-    // This would add the user data across the entire application
-    console.log('Adding new user:', userData);
-    // In a real app, this would call an API and update the global state
+    const newUser: User = {
+      ...userData,
+      id: Date.now().toString(),
+      createdAt: new Date(),
+    };
+    
+    if (onUserAdd) {
+      onUserAdd(newUser);
+    } else {
+      console.log('Adding new user:', newUser);
+    }
   };
 
   switch (activeTab) {
