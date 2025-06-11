@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Switch } from '@/components/ui/switch';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Search, UserPlus, Download, Upload } from 'lucide-react';
+import { Search, Download, Upload, Edit } from 'lucide-react';
 import { Customer, Partner, Product, User } from '../types';
 import CustomerDetail from './CustomerDetail';
 import CustomerTableFilters from './CustomerTableFilters';
@@ -179,10 +179,6 @@ const CustomerManagement = ({
             <Upload size={16} className="mr-2" />
             Import
           </Button>
-          <Button size="sm">
-            <UserPlus size={16} className="mr-2" />
-            Add Customer
-          </Button>
         </div>
       </div>
 
@@ -336,27 +332,27 @@ const CustomerManagement = ({
                 <TableHead>Process</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Value</TableHead>
-                <TableHead>Status Toggle</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredCustomers.map((customer) => (
-                <TableRow key={customer.id} className="cursor-pointer hover:bg-muted/50" onClick={() => handleCustomerClick(customer)}>
+                <TableRow key={customer.id} className="hover:bg-muted/50">
                   <TableCell onClick={(e) => e.stopPropagation()}>
                     <Checkbox 
                       checked={selectedCustomers.includes(customer.id)}
                       onCheckedChange={() => handleSelectCustomer(customer.id)}
                     />
                   </TableCell>
-                  <TableCell>
+                  <TableCell onClick={() => handleCustomerClick(customer)} className="cursor-pointer">
                     <div>
                       <div className="font-medium">{customer.name}</div>
                       <div className="text-sm text-muted-foreground">{customer.email}</div>
                     </div>
                   </TableCell>
-                  <TableCell>{customer.company}</TableCell>
-                  <TableCell>{getPartnerName(customer.partnerId)}</TableCell>
-                  <TableCell>
+                  <TableCell onClick={() => handleCustomerClick(customer)} className="cursor-pointer">{customer.company}</TableCell>
+                  <TableCell onClick={() => handleCustomerClick(customer)} className="cursor-pointer">{getPartnerName(customer.partnerId)}</TableCell>
+                  <TableCell onClick={() => handleCustomerClick(customer)} className="cursor-pointer">
                     {customer.zone ? (
                       <Badge className={getZoneColor(customer.zone)}>
                         {customer.zone.charAt(0).toUpperCase() + customer.zone.slice(1)}
@@ -365,10 +361,10 @@ const CustomerManagement = ({
                       <span className="text-muted-foreground">Not set</span>
                     )}
                   </TableCell>
-                  <TableCell className="max-w-xs truncate">
+                  <TableCell onClick={() => handleCustomerClick(customer)} className="cursor-pointer max-w-xs truncate">
                     {getProductNames(customer.productIds)}
                   </TableCell>
-                  <TableCell>
+                  <TableCell onClick={() => handleCustomerClick(customer)} className="cursor-pointer">
                     {customer.process ? (
                       <Badge className={getProcessColor(customer.process)}>
                         {customer.process.charAt(0).toUpperCase() + customer.process.slice(1)}
@@ -377,20 +373,29 @@ const CustomerManagement = ({
                       <span className="text-muted-foreground">Not set</span>
                     )}
                   </TableCell>
-                  <TableCell>
+                  <TableCell onClick={() => handleCustomerClick(customer)} className="cursor-pointer">
                     <Badge className={getStatusColor(customer.status)}>
                       {customer.status}
                     </Badge>
                   </TableCell>
-                  <TableCell className="font-medium">
+                  <TableCell onClick={() => handleCustomerClick(customer)} className="cursor-pointer font-medium">
                     ₹{customer.value.toLocaleString('en-IN')}
                   </TableCell>
                   <TableCell onClick={(e) => e.stopPropagation()}>
-                    <Switch
-                      checked={customer.status === 'active'}
-                      onCheckedChange={() => handleStatusToggle(customer.id, customer.status)}
-                      disabled={customer.status === 'pending'}
-                    />
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleCustomerClick(customer)}
+                      >
+                        <Edit size={16} />
+                      </Button>
+                      <Switch
+                        checked={customer.status === 'active'}
+                        onCheckedChange={() => handleStatusToggle(customer.id, customer.status)}
+                        disabled={customer.status === 'pending'}
+                      />
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
