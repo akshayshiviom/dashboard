@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { mockCustomers, mockPartners, mockProducts } from '@/utils/mockData';
 import { mockUsers } from '@/utils/mockUsers';
@@ -8,7 +9,7 @@ export const useDataManager = () => {
   const [customers, setCustomers] = useState<Customer[]>(mockCustomers);
   const [partners, setPartners] = useState<Partner[]>(mockPartners);
   const [products, setProducts] = useState<Product[]>(mockProducts);
-  const [users] = useState<User[]>(mockUsers);
+  const [users, setUsers] = useState<User[]>(mockUsers);
   const [renewals] = useState<Renewal[]>(mockRenewals);
 
   const handleCustomerAdd = (customer: Customer) => {
@@ -109,6 +110,16 @@ export const useDataManager = () => {
     ));
   };
 
+  const handleUserAdd = (user: User) => {
+    setUsers([...users, user]);
+  };
+
+  const handleUserUpdate = (userId: string, updates: Partial<User>) => {
+    setUsers(prev => prev.map(user => 
+      user.id === userId ? { ...user, ...updates } : user
+    ));
+  };
+
   return {
     customers,
     partners,
@@ -125,6 +136,8 @@ export const useDataManager = () => {
     handleProductPriceUpdate,
     handleProductStatusChange,
     handleProductBulkStatusChange,
-    handleProductUpdate
+    handleProductUpdate,
+    handleUserAdd,
+    handleUserUpdate
   };
 };
