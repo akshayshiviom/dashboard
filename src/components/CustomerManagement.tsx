@@ -1,4 +1,3 @@
-
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Switch } from '@/components/ui/switch';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Search, Download, Upload, Edit } from 'lucide-react';
+import { Search, Edit } from 'lucide-react';
 import { Customer, Partner, Product, User } from '../types';
 import CustomerDetail from './CustomerDetail';
 import CustomerTableFilters from './CustomerTableFilters';
@@ -169,16 +168,6 @@ const CustomerManagement = ({
         <div>
           <h2 className="text-2xl font-bold">Customer Management</h2>
           <p className="text-muted-foreground">Manage your partner customers and relationships</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">
-            <Download size={16} className="mr-2" />
-            Export
-          </Button>
-          <Button variant="outline" size="sm">
-            <Upload size={16} className="mr-2" />
-            Import
-          </Button>
         </div>
       </div>
 
