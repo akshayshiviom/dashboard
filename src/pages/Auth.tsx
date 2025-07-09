@@ -66,7 +66,7 @@ const Auth: React.FC = () => {
               Test Credentials
             </CardTitle>
             <p className="text-sm text-amber-700 dark:text-amber-300">
-              Use these sample accounts for testing:
+              Create these users in Supabase Dashboard first, then use for testing:
             </p>
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
