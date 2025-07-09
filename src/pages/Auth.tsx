@@ -58,11 +58,38 @@ const Auth: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
-          <p className="text-muted-foreground">Sign in to your account</p>
-        </CardHeader>
+      <div className="w-full max-w-md space-y-4">
+        {/* Sample Credentials for Testing */}
+        <Card className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/50">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg text-amber-800 dark:text-amber-200">
+              Test Credentials
+            </CardTitle>
+            <p className="text-sm text-amber-700 dark:text-amber-300">
+              Use these sample accounts for testing:
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm">
+            <div className="space-y-1">
+              <p className="font-medium text-amber-800 dark:text-amber-200">Admin Account:</p>
+              <p className="text-amber-700 dark:text-amber-300 font-mono">admin@shiviom.com / admin123</p>
+            </div>
+            <div className="space-y-1">
+              <p className="font-medium text-amber-800 dark:text-amber-200">Manager Account:</p>
+              <p className="text-amber-700 dark:text-amber-300 font-mono">manager@shiviom.com / manager123</p>
+            </div>
+            <div className="space-y-1">
+              <p className="font-medium text-amber-800 dark:text-amber-200">User Account:</p>
+              <p className="text-amber-700 dark:text-amber-300 font-mono">user@shiviom.com / user123</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="w-full">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
+            <p className="text-muted-foreground">Sign in to your account</p>
+          </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
@@ -115,7 +142,8 @@ const Auth: React.FC = () => {
             </div>
           </form>
         </CardContent>
-      </Card>
+        </Card>
+      </div>
     </div>
   );
 };
