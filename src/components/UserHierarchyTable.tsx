@@ -7,9 +7,11 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger } from '@/components/ui/dropdown-menu';
-import { Users, Edit, UserPlus, Download, Filter, Settings2 } from 'lucide-react';
+import { Users, Edit, UserPlus, Download, Filter, Settings2, Key } from 'lucide-react';
 import { User } from '../types';
+import { useAuth } from '@/contexts/AuthContext';
 import AddUserDialog from './AddUserDialog';
+import AdminPasswordResetDialog from './AdminPasswordResetDialog';
 
 interface UserHierarchyTableProps {
   users: User[];
@@ -33,6 +35,9 @@ const UserHierarchyTable = ({ users, onStatusChange, onBulkStatusChange, onUserU
   const [compactView, setCompactView] = useState(false);
   const [showHierarchy, setShowHierarchy] = useState(true);
   const [editingUser, setEditingUser] = useState<EditingUser | null>(null);
+  const [passwordResetUser, setPasswordResetUser] = useState<User | null>(null);
+  
+  const { isAdmin } = useAuth();
 
   const roles = ['admin', 'manager', 'assistant-manager', 'team-leader', 'fsr', 'bde'];
 
@@ -383,13 +388,25 @@ const UserHierarchyTable = ({ users, onStatusChange, onBulkStatusChange, onUserU
                           </Button>
                         </>
                       ) : (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleEditStart(user)}
-                        >
-                          <Edit size={16} />
-                        </Button>
+                        <>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEditStart(user)}
+                          >
+                            <Edit size={16} />
+                          </Button>
+                          {isAdmin && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setPasswordResetUser(user)}
+                              title="Reset Password"
+                            >
+                              <Key size={16} />
+                            </Button>
+                          )}
+                        </>
                       )}
                     </div>
                   </TableCell>
@@ -399,6 +416,15 @@ const UserHierarchyTable = ({ users, onStatusChange, onBulkStatusChange, onUserU
           </Table>
         </CardContent>
       </Card>
+      
+      {passwordResetUser && (
+        <AdminPasswordResetDialog
+          open={true}
+          onOpenChange={(open) => !open && setPasswordResetUser(null)}
+          userEmail={passwordResetUser.email}
+          userName={passwordResetUser.name}
+        />
+      )}
     </div>
   );
 };

@@ -1,6 +1,9 @@
 
-import { LayoutDashboard, Users, Tag, Plus, Package, UserCheck, FileText, RefreshCw, Settings, Mail, ChevronDown, Upload, Building, UserPlus } from 'lucide-react';
+import { LayoutDashboard, Users, Tag, Plus, Package, UserCheck, FileText, RefreshCw, Settings, Mail, ChevronDown, Upload, Building, UserPlus, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,9 +17,11 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
-  // Mock user role - in a real app, this would come from authentication context
-  const userRole = 'admin'; // Change this to 'user' to test non-admin access
-  const isAdmin = userRole === 'admin';
+  const { profile, signOut, isAdmin } = useAuth();
+
+  const handleSignOut = async () => {
+    await signOut();
+  };
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -63,13 +68,20 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
   ];
 
   return (
-    <div className="w-64 bg-card border-r border-border h-screen p-6">
+    <div className="w-64 bg-card border-r border-border h-screen p-6 flex flex-col">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-foreground">Shiviom Dashboard</h1>
+        <div className="flex items-center justify-between mb-2">
+          <h1 className="text-2xl font-bold text-foreground">Shiviom Dashboard</h1>
+          {profile && (
+            <Badge variant="outline" className="text-xs">
+              {profile.role}
+            </Badge>
+          )}
+        </div>
         <p className="text-sm text-muted-foreground">Customer & Partner Management</p>
       </div>
       
-      <nav className="space-y-2">
+      <nav className="space-y-2 flex-1">
         {menuItems.map((item) => {
           const Icon = item.icon;
           const hasSubItems = item.subItems && item.subItems.length > 0;
@@ -132,6 +144,27 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
           );
         })}
       </nav>
+
+      {/* User info and logout section */}
+      <div className="pt-4 border-t border-border space-y-2">
+        {profile && (
+          <div className="px-4 py-2 text-sm">
+            <p className="font-medium">{profile.first_name} {profile.last_name}</p>
+            <p className="text-muted-foreground text-xs">{profile.email}</p>
+          </div>
+        )}
+        <Button 
+          variant="ghost" 
+          className="w-full justify-start text-muted-foreground hover:text-foreground" 
+          onClick={handleSignOut}
+        >
+          <LogOut className="mr-2 h-4 w-4" />
+          Sign Out
+        </Button>
+        <p className="text-xs text-muted-foreground px-4">
+          © 2024 CRM System. All rights reserved.
+        </p>
+      </div>
     </div>
   );
 };
