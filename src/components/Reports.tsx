@@ -1,11 +1,12 @@
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { FileText, Download, Plus, Calendar, Filter, BarChart3, Users, Tag, Package } from 'lucide-react';
 import { Customer, Partner, Product, User } from '../types';
 import CustomReportDialog from './CustomReportDialog';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface ReportsProps {
   customers: Customer[];
@@ -16,51 +17,94 @@ interface ReportsProps {
 
 const Reports = ({ customers, partners, products, users }: ReportsProps) => {
   const [isCustomReportOpen, setIsCustomReportOpen] = useState(false);
+  const { user, profile } = useAuth();
+  
+  // Filter data based on user role and assignments
+  const { filteredCustomers, filteredPartners } = useMemo(() => {
+    // Admin users see all data
+    if (profile?.role === 'admin') {
+      return {
+        filteredCustomers: customers,
+        filteredPartners: partners
+      };
+    }
+    
+    // Regular users only see data assigned to them
+    const userAssignedCustomers = customers.filter(customer => 
+      customer.assignedUserIds?.includes(user?.id || '')
+    );
+    
+    const userAssignedPartners = partners.filter(partner => 
+      partner.assignedUserIds?.includes(user?.id || '')
+    );
+    
+    return {
+      filteredCustomers: userAssignedCustomers,
+      filteredPartners: userAssignedPartners
+    };
+  }, [customers, partners, user?.id, profile?.role]);
 
-  const predefinedReports = [
-    {
-      id: 'customer-summary',
-      title: 'Customer Summary Report',
-      description: 'Overview of all customers with status and value metrics',
-      category: 'customers',
-      lastGenerated: new Date('2024-06-08'),
-    },
-    {
-      id: 'partner-performance',
-      title: 'Partner Performance Report',
-      description: 'Partner revenue and customer acquisition metrics',
-      category: 'partners',
-      lastGenerated: new Date('2024-06-07'),
-    },
-    {
-      id: 'product-adoption',
-      title: 'Product Adoption Report',
-      description: 'Product usage and customer adoption analytics',
-      category: 'products',
-      lastGenerated: new Date('2024-06-06'),
-    },
-    {
-      id: 'renewal-tracking',
-      title: 'Renewal Tracking Report',
-      description: 'Upcoming renewals with partner and customer information',
-      category: 'renewals',
-      lastGenerated: new Date('2024-06-08'),
-    },
-    {
-      id: 'sales-pipeline',
-      title: 'Sales Pipeline Report',
-      description: 'Current sales opportunities and conversion rates',
-      category: 'sales',
-      lastGenerated: new Date('2024-06-08'),
-    },
-    {
-      id: 'user-activity',
-      title: 'User Activity Report',
-      description: 'Team performance and activity tracking',
-      category: 'users',
-      lastGenerated: new Date('2024-06-05'),
-    },
-  ];
+  // Filter reports based on user role
+  const availableReports = useMemo(() => {
+    const allReports = [
+      {
+        id: 'customer-summary',
+        title: 'Customer Summary Report',
+        description: profile?.role === 'admin' 
+          ? 'Overview of all customers with status and value metrics'
+          : 'Overview of your assigned customers with status and value metrics',
+        category: 'customers',
+        lastGenerated: new Date('2024-06-08'),
+      },
+      {
+        id: 'partner-performance',
+        title: 'Partner Performance Report',
+        description: profile?.role === 'admin'
+          ? 'Partner revenue and customer acquisition metrics'
+          : 'Performance metrics for your assigned partners',
+        category: 'partners',
+        lastGenerated: new Date('2024-06-07'),
+      },
+      {
+        id: 'product-adoption',
+        title: 'Product Adoption Report',
+        description: 'Product usage and customer adoption analytics',
+        category: 'products',
+        lastGenerated: new Date('2024-06-06'),
+      },
+      {
+        id: 'renewal-tracking',
+        title: 'Renewal Tracking Report',
+        description: profile?.role === 'admin'
+          ? 'Upcoming renewals with partner and customer information'
+          : 'Upcoming renewals for your assigned customers and partners',
+        category: 'renewals',
+        lastGenerated: new Date('2024-06-08'),
+      },
+      {
+        id: 'sales-pipeline',
+        title: 'Sales Pipeline Report',
+        description: profile?.role === 'admin'
+          ? 'Current sales opportunities and conversion rates'
+          : 'Sales opportunities for your assigned customers',
+        category: 'sales',
+        lastGenerated: new Date('2024-06-08'),
+      },
+    ];
+
+    // For non-admin users, exclude user activity reports
+    if (profile?.role === 'admin') {
+      allReports.push({
+        id: 'user-activity',
+        title: 'User Activity Report',
+        description: 'Team performance and activity tracking',
+        category: 'users',
+        lastGenerated: new Date('2024-06-05'),
+      });
+    }
+
+    return allReports;
+  }, [profile?.role]);
 
   const getCategoryColor = (category: string) => {
     const colors = {
@@ -106,7 +150,7 @@ const Reports = ({ customers, partners, products, users }: ReportsProps) => {
               <Users size={16} className="text-blue-600 md:w-5 md:h-5" />
               <div className="min-w-0 flex-1">
                 <p className="text-xs md:text-sm text-muted-foreground truncate">Customers</p>
-                <p className="text-lg md:text-2xl font-bold">{customers.length}</p>
+                <p className="text-lg md:text-2xl font-bold">{filteredCustomers.length}</p>
               </div>
             </div>
           </CardContent>
@@ -117,7 +161,7 @@ const Reports = ({ customers, partners, products, users }: ReportsProps) => {
               <Tag size={16} className="text-green-600 md:w-5 md:h-5" />
               <div className="min-w-0 flex-1">
                 <p className="text-xs md:text-sm text-muted-foreground truncate">Partners</p>
-                <p className="text-lg md:text-2xl font-bold">{partners.filter(p => p.status === 'active').length}</p>
+                <p className="text-lg md:text-2xl font-bold">{filteredPartners.filter(p => p.status === 'active').length}</p>
               </div>
             </div>
           </CardContent>
@@ -139,7 +183,7 @@ const Reports = ({ customers, partners, products, users }: ReportsProps) => {
               <BarChart3 size={16} className="text-orange-600 md:w-5 md:h-5" />
               <div className="min-w-0 flex-1">
                 <p className="text-xs md:text-sm text-muted-foreground truncate">Revenue</p>
-                <p className="text-lg md:text-2xl font-bold">₹{customers.reduce((sum, c) => sum + c.value, 0).toLocaleString('en-IN')}</p>
+                <p className="text-lg md:text-2xl font-bold">₹{filteredCustomers.reduce((sum, c) => sum + c.value, 0).toLocaleString('en-IN')}</p>
               </div>
             </div>
           </CardContent>
@@ -156,7 +200,7 @@ const Reports = ({ customers, partners, products, users }: ReportsProps) => {
         </CardHeader>
         <CardContent>
           <div className="space-y-3 md:space-y-4">
-            {predefinedReports.map((report) => (
+            {availableReports.map((report) => (
               <div key={report.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 md:p-4 border rounded-lg gap-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
@@ -200,8 +244,8 @@ const Reports = ({ customers, partners, products, users }: ReportsProps) => {
       <CustomReportDialog
         open={isCustomReportOpen}
         onOpenChange={setIsCustomReportOpen}
-        customers={customers}
-        partners={partners}
+        customers={filteredCustomers}
+        partners={filteredPartners}
         products={products}
         users={users}
       />
