@@ -42,7 +42,8 @@ const Index = () => {
     handleProductBulkStatusChange,
     handleProductUpdate,
     handleUserAdd,
-    handleUserUpdate
+    handleUserUpdate,
+    handleUserBulkStatusChange
   } = useDataManager();
 
   useEffect(() => {
@@ -164,6 +165,7 @@ const Index = () => {
               onPartnerAdd={handlePartnerAdd}
               onUserAdd={handleUserAdd}
               onUserUpdate={handleUserUpdate}
+              onUserBulkStatusChange={handleUserBulkStatusChange}
             />
           </div>
         </div>
@@ -206,6 +208,7 @@ const Index = () => {
           onPartnerAdd={handlePartnerAdd}
           onUserAdd={handleUserAdd}
           onUserUpdate={handleUserUpdate}
+          onUserBulkStatusChange={handleUserBulkStatusChange}
         />
       </div>
     );
@@ -259,6 +262,7 @@ const Index = () => {
               onPartnerAdd={handlePartnerAdd}
               onUserAdd={handleUserAdd}
               onUserUpdate={handleUserUpdate}
+              onUserBulkStatusChange={handleUserBulkStatusChange}
             />
           </main>
         </SidebarInset>

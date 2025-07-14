@@ -17,10 +17,14 @@ export type Database = {
       profiles: {
         Row: {
           created_at: string
+          department: string | null
           email: string
           first_name: string | null
           id: string
+          last_login: string | null
           last_name: string | null
+          phone: string | null
+          reporting_to: string | null
           role: string
           status: string
           updated_at: string
@@ -28,10 +32,14 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          department?: string | null
           email: string
           first_name?: string | null
           id?: string
+          last_login?: string | null
           last_name?: string | null
+          phone?: string | null
+          reporting_to?: string | null
           role?: string
           status?: string
           updated_at?: string
@@ -39,16 +47,28 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          department?: string | null
           email?: string
           first_name?: string | null
           id?: string
+          last_login?: string | null
           last_name?: string | null
+          phone?: string | null
+          reporting_to?: string | null
           role?: string
           status?: string
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_reporting_to_fkey"
+            columns: ["reporting_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
     }
     Views: {

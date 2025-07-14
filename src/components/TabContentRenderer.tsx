@@ -48,8 +48,9 @@ interface TabContentRendererProps {
   onProductStatusChange: (productId: string, newStatus: 'active' | 'inactive') => void;
   onProductBulkStatusChange: (productIds: string[], newStatus: 'active' | 'inactive') => void;
   onProductUpdate: (productId: string, updates: Partial<Product>) => void;
-  onUserAdd?: (user: User) => void;
-  onUserUpdate?: (userId: string, updates: Partial<User>) => void;
+  onUserAdd?: (user: Omit<User, 'id' | 'createdAt'>) => Promise<void>;
+  onUserUpdate?: (userId: string, updates: Partial<User>) => Promise<void>;
+  onUserBulkStatusChange?: (userIds: string[], status: 'active' | 'inactive') => Promise<void>;
 }
 
 const TabContentRenderer = ({
@@ -85,7 +86,8 @@ const TabContentRenderer = ({
   onProductUpdate,
   onPartnerAdd,
   onUserAdd,
-  onUserUpdate
+  onUserUpdate,
+  onUserBulkStatusChange
 }: TabContentRendererProps) => {
   // Wrapper functions to match CustomerTable's expected signatures
   const handleStatusChange = (customerId: string, newStatus: 'active' | 'inactive' | 'pending') => {
@@ -96,33 +98,46 @@ const TabContentRenderer = ({
     onBulkAction(customerIds, action);
   };
 
-  const handleUserUpdate = (userId: string, updates: Partial<User>) => {
+  const handleUserUpdate = async (userId: string, updates: Partial<User>) => {
     if (onUserUpdate) {
-      onUserUpdate(userId, updates);
+      try {
+        await onUserUpdate(userId, updates);
+      } catch (error) {
+        console.error('Error updating user:', error);
+      }
     } else {
       console.log('Updating user:', userId, updates);
     }
   };
 
-  const handleUserStatusChange = (userId: string, newStatus: 'active' | 'inactive') => {
-    handleUserUpdate(userId, { status: newStatus });
+  const handleUserStatusChange = async (userId: string, newStatus: 'active' | 'inactive') => {
+    await handleUserUpdate(userId, { status: newStatus });
   };
 
-  const handleUserBulkStatusChange = (userIds: string[], newStatus: 'active' | 'inactive') => {
-    userIds.forEach(userId => handleUserUpdate(userId, { status: newStatus }));
-  };
-
-  const handleUserAdd = (userData: Omit<User, 'id' | 'createdAt'>) => {
-    const newUser: User = {
-      ...userData,
-      id: Date.now().toString(),
-      createdAt: new Date(),
-    };
-    
-    if (onUserAdd) {
-      onUserAdd(newUser);
+  const handleUserBulkStatusChange = async (userIds: string[], newStatus: 'active' | 'inactive') => {
+    if (onUserBulkStatusChange) {
+      try {
+        await onUserBulkStatusChange(userIds, newStatus);
+      } catch (error) {
+        console.error('Error bulk updating users:', error);
+      }
     } else {
-      console.log('Adding new user:', newUser);
+      // Fallback to individual updates
+      for (const userId of userIds) {
+        await handleUserUpdate(userId, { status: newStatus });
+      }
+    }
+  };
+
+  const handleUserAdd = async (userData: Omit<User, 'id' | 'createdAt'>) => {
+    if (onUserAdd) {
+      try {
+        await onUserAdd(userData);
+      } catch (error) {
+        console.error('Error adding user:', error);
+      }
+    } else {
+      console.log('Adding new user:', userData);
     }
   };
 

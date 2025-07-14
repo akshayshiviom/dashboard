@@ -15,10 +15,10 @@ import AdminPasswordResetDialog from './AdminPasswordResetDialog';
 
 interface UserHierarchyTableProps {
   users: User[];
-  onStatusChange?: (userId: string, newStatus: 'active' | 'inactive') => void;
-  onBulkStatusChange?: (userIds: string[], newStatus: 'active' | 'inactive') => void;
-  onUserUpdate?: (userId: string, updates: Partial<User>) => void;
-  onUserAdd?: (user: Omit<User, 'id' | 'createdAt'>) => void;
+  onStatusChange?: (userId: string, newStatus: 'active' | 'inactive') => Promise<void>;
+  onBulkStatusChange?: (userIds: string[], newStatus: 'active' | 'inactive') => Promise<void>;
+  onUserUpdate?: (userId: string, updates: Partial<User>) => Promise<void>;
+  onUserAdd?: (user: Omit<User, 'id' | 'createdAt'>) => Promise<void>;
 }
 
 interface EditingUser {

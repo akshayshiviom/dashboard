@@ -1,16 +1,18 @@
 
 import { useState } from 'react';
 import { mockCustomers, mockPartners, mockProducts } from '@/utils/mockData';
-import { mockUsers } from '@/utils/mockUsers';
 import { mockRenewals } from '@/utils/mockRenewals';
 import { Customer, Partner, Product, User, Renewal } from '@/types';
+import { useUserManagement } from '@/hooks/useUserManagement';
 
 export const useDataManager = () => {
   const [customers, setCustomers] = useState<Customer[]>(mockCustomers);
   const [partners, setPartners] = useState<Partner[]>(mockPartners);
   const [products, setProducts] = useState<Product[]>(mockProducts);
-  const [users, setUsers] = useState<User[]>(mockUsers);
   const [renewals] = useState<Renewal[]>(mockRenewals);
+  
+  // Use Supabase for user management
+  const { users, addUser, updateUser, bulkUpdateStatus } = useUserManagement();
 
   const handleCustomerAdd = (customer: Customer) => {
     setCustomers([...customers, customer]);
@@ -110,14 +112,16 @@ export const useDataManager = () => {
     ));
   };
 
-  const handleUserAdd = (user: User) => {
-    setUsers([...users, user]);
+  const handleUserAdd = async (userData: Omit<User, 'id' | 'createdAt'>) => {
+    await addUser(userData);
   };
 
-  const handleUserUpdate = (userId: string, updates: Partial<User>) => {
-    setUsers(prev => prev.map(user => 
-      user.id === userId ? { ...user, ...updates } : user
-    ));
+  const handleUserUpdate = async (userId: string, updates: Partial<User>) => {
+    await updateUser(userId, updates);
+  };
+
+  const handleUserBulkStatusChange = async (userIds: string[], status: 'active' | 'inactive') => {
+    return await bulkUpdateStatus(userIds, status);
   };
 
   return {
@@ -138,6 +142,7 @@ export const useDataManager = () => {
     handleProductBulkStatusChange,
     handleProductUpdate,
     handleUserAdd,
-    handleUserUpdate
+    handleUserUpdate,
+    handleUserBulkStatusChange
   };
 };
