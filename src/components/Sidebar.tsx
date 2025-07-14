@@ -60,7 +60,7 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
       label: 'Settings', 
       icon: Settings,
       subItems: [
-        { id: 'user-hierarchy', label: 'User Hierarchy', icon: UserCheck },
+        ...(isAdmin ? [{ id: 'user-hierarchy', label: 'User Hierarchy', icon: UserCheck }] : []),
         { id: 'email-templates', label: 'Email Templates', icon: Mail },
         { id: 'import-data', label: 'Import Data', icon: Upload },
       ]

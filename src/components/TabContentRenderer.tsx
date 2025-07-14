@@ -15,6 +15,7 @@ import CustomerManagement from '@/components/CustomerManagement';
 import PartnerOnboarding from '@/components/PartnerOnboarding';
 import { Customer, Partner, Product, User, Renewal, DashboardStats as StatsType } from '@/types';
 import { Dashboard } from './DashboardManager';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface TabContentRendererProps {
   activeTab: string;
@@ -89,6 +90,7 @@ const TabContentRenderer = ({
   onUserUpdate,
   onUserBulkStatusChange
 }: TabContentRendererProps) => {
+  const { isAdmin } = useAuth();
   // Wrapper functions to match CustomerTable's expected signatures
   const handleStatusChange = (customerId: string, newStatus: 'active' | 'inactive' | 'pending') => {
     onCustomerUpdate(customerId, { status: newStatus });
@@ -230,6 +232,16 @@ const TabContentRenderer = ({
     case 'renewals':
       return <Renewals renewals={renewals} customers={customers} partners={partners} products={products} />;
     case 'user-hierarchy':
+      if (!isAdmin) {
+        return (
+          <div className="space-y-6">
+            <div className="text-center py-8">
+              <h3 className="text-xl font-semibold text-muted-foreground mb-2">Access Denied</h3>
+              <p className="text-muted-foreground">You don't have permission to access user hierarchy management.</p>
+            </div>
+          </div>
+        );
+      }
       return (
         <div className="space-y-6">
           <UserHierarchyTable 

@@ -39,6 +39,18 @@ const UserHierarchyTable = ({ users, onStatusChange, onBulkStatusChange, onUserU
   
   const { isAdmin } = useAuth();
 
+  // Additional security check
+  if (!isAdmin) {
+    return (
+      <div className="space-y-6">
+        <div className="text-center py-8">
+          <h3 className="text-xl font-semibold text-muted-foreground mb-2">Access Denied</h3>
+          <p className="text-muted-foreground">You don't have permission to access user hierarchy management.</p>
+        </div>
+      </div>
+    );
+  }
+
   const roles = ['admin', 'manager', 'assistant-manager', 'team-leader', 'fsr', 'bde'];
 
   const getRoleColor = (role: string) => {
