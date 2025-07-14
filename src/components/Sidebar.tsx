@@ -55,16 +55,16 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
     },
     { id: 'renewals', label: 'Renewals', icon: RefreshCw },
     { id: 'reports', label: 'Reports', icon: FileText },
-    { 
+    ...(isAdmin ? [{
       id: 'settings', 
       label: 'Settings', 
       icon: Settings,
       subItems: [
-        ...(isAdmin ? [{ id: 'user-hierarchy', label: 'User Hierarchy', icon: UserCheck }] : []),
+        { id: 'user-hierarchy', label: 'User Hierarchy', icon: UserCheck },
         { id: 'email-templates', label: 'Email Templates', icon: Mail },
         { id: 'import-data', label: 'Import Data', icon: Upload },
       ]
-    },
+    }] : []),
   ];
 
   return (
