@@ -30,8 +30,8 @@ const TaskManagement = ({ customers, partners, users, currentUserId }: TaskManag
     description: '',
     priority: 'medium' as Task['priority'],
     type: 'other' as Task['type'],
-    customerId: '',
-    partnerId: '',
+    customerId: 'none',
+    partnerId: 'none',
     dueDate: ''
   });
 
@@ -182,8 +182,8 @@ const TaskManagement = ({ customers, partners, users, currentUserId }: TaskManag
       description: '',
       priority: 'medium',
       type: 'other',
-      customerId: '',
-      partnerId: '',
+      customerId: 'none',
+      partnerId: 'none',
       dueDate: ''
     });
   };
@@ -396,12 +396,12 @@ const TaskManagement = ({ customers, partners, users, currentUserId }: TaskManag
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="customer">Customer (Optional)</Label>
-                  <Select value={newTask.customerId} onValueChange={(value) => setNewTask({...newTask, customerId: value})}>
+                  <Select value={newTask.customerId} onValueChange={(value) => setNewTask({...newTask, customerId: value === 'none' ? '' : value})}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select customer" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">No Customer</SelectItem>
+                      <SelectItem value="none">No Customer</SelectItem>
                       {customers.map((customer) => (
                         <SelectItem key={customer.id} value={customer.id}>
                           {customer.name} - {customer.company}
@@ -412,12 +412,12 @@ const TaskManagement = ({ customers, partners, users, currentUserId }: TaskManag
                 </div>
                 <div>
                   <Label htmlFor="partner">Partner (Optional)</Label>
-                  <Select value={newTask.partnerId} onValueChange={(value) => setNewTask({...newTask, partnerId: value})}>
+                  <Select value={newTask.partnerId} onValueChange={(value) => setNewTask({...newTask, partnerId: value === 'none' ? '' : value})}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select partner" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">No Partner</SelectItem>
+                      <SelectItem value="none">No Partner</SelectItem>
                       {partners.map((partner) => (
                         <SelectItem key={partner.id} value={partner.id}>
                           {partner.name} - {partner.company}
