@@ -6,9 +6,10 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
-import { Search, UserPlus, Filter, CheckCircle, Clock, AlertCircle, Eye } from 'lucide-react';
-import { Partner, User } from '@/types';
+import { Search, UserPlus, Filter, CheckCircle, Clock, AlertCircle, Eye, Users, FileText, Handshake, Shield, PenTool, Trophy } from 'lucide-react';
+import { Partner, User, OnboardingStage, PartnerOnboardingData } from '@/types';
 import AddPartnerForm from '@/components/AddPartnerForm';
+import PartnerOnboardingDetail from '@/components/PartnerOnboardingDetail';
 
 interface PartnerOnboardingProps {
   partners: Partner[];
@@ -16,40 +17,62 @@ interface PartnerOnboardingProps {
   onPartnerAdd?: (partner: Partner) => void;
 }
 
-interface OnboardingStep {
-  id: string;
-  name: string;
-  completed: boolean;
-  required: boolean;
-}
-
-interface OnboardingPartner extends Partner {
-  onboardingStatus: 'pending' | 'in-progress' | 'completed' | 'blocked';
-  onboardingProgress: number;
-  steps: OnboardingStep[];
-  assignedTo?: string;
-  lastActivity: Date;
+interface EnhancedPartner extends Partner {
+  onboarding: PartnerOnboardingData;
 }
 
 const PartnerOnboarding = ({ partners, users, onPartnerAdd }: PartnerOnboardingProps) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [stageFilter, setStageFilter] = useState('all');
   const [showAddForm, setShowAddForm] = useState(false);
+  const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null);
 
-  // Mock onboarding data - in real app this would come from API
-  const onboardingPartners: OnboardingPartner[] = partners.map(partner => ({
+  const stageConfig = {
+    'outreach': { title: 'Outreach', icon: Users, color: 'bg-blue-500' },
+    'product-overview': { title: 'Product Overview', icon: FileText, color: 'bg-purple-500' },
+    'partner-program': { title: 'Partner Program', icon: Handshake, color: 'bg-green-500' },
+    'kyc': { title: 'KYC', icon: Shield, color: 'bg-yellow-500' },
+    'agreement': { title: 'Agreement', icon: PenTool, color: 'bg-orange-500' },
+    'onboarded': { title: 'Onboarded', icon: Trophy, color: 'bg-emerald-500' }
+  };
+
+  // Generate mock onboarding data with 6-stage system
+  const generateMockOnboardingData = (partner: Partner): PartnerOnboardingData => {
+    const stages: OnboardingStage[] = ['outreach', 'product-overview', 'partner-program', 'kyc', 'agreement', 'onboarded'];
+    const currentStageIndex = Math.floor(Math.random() * stages.length);
+    const currentStage = stages[currentStageIndex];
+    const progress = Math.min(90, (currentStageIndex + 1) * 16 + Math.floor(Math.random() * 20));
+    
+    return {
+      currentStage,
+      overallProgress: progress,
+      startedAt: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000),
+      expectedCompletionDate: new Date(Date.now() + Math.random() * 20 * 24 * 60 * 60 * 1000),
+      lastActivity: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000),
+      stages: Object.fromEntries(
+        stages.map((stage, index) => [
+          stage,
+          {
+            stage,
+            status: index < currentStageIndex ? 'completed' : 
+                   index === currentStageIndex ? (Math.random() > 0.3 ? 'in-progress' : 'blocked') : 'pending',
+            startedAt: index <= currentStageIndex ? new Date(Date.now() - (stages.length - index) * 3 * 24 * 60 * 60 * 1000) : undefined,
+            completedAt: index < currentStageIndex ? new Date(Date.now() - (stages.length - index - 1) * 3 * 24 * 60 * 60 * 1000) : undefined,
+            assignedTo: ['John Doe', 'Jane Smith', 'Mike Johnson', 'Sarah Wilson'][Math.floor(Math.random() * 4)],
+            tasks: [
+              { id: `${stage}-1`, title: `${stageConfig[stage].title} Task 1`, completed: index < currentStageIndex, required: true },
+              { id: `${stage}-2`, title: `${stageConfig[stage].title} Task 2`, completed: index < currentStageIndex, required: true },
+              { id: `${stage}-3`, title: `${stageConfig[stage].title} Task 3`, completed: false, required: false }
+            ]
+          }
+        ])
+      ) as Record<OnboardingStage, any>
+    };
+  };
+
+  const enhancedPartners: EnhancedPartner[] = partners.map(partner => ({
     ...partner,
-    onboardingStatus: ['pending', 'in-progress', 'completed', 'blocked'][Math.floor(Math.random() * 4)] as any,
-    onboardingProgress: Math.floor(Math.random() * 100),
-    lastActivity: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000),
-    assignedTo: 'John Doe',
-    steps: [
-      { id: '1', name: 'Document Verification', completed: true, required: true },
-      { id: '2', name: 'Agreement Signing', completed: true, required: true },
-      { id: '3', name: 'System Setup', completed: false, required: true },
-      { id: '4', name: 'Training Completion', completed: false, required: true },
-      { id: '5', name: 'First Sale', completed: false, required: false },
-    ]
+    onboarding: partner.onboarding || generateMockOnboardingData(partner)
   }));
 
   const handleAddPartner = (partner: Partner) => {
@@ -57,6 +80,17 @@ const PartnerOnboarding = ({ partners, users, onPartnerAdd }: PartnerOnboardingP
       onPartnerAdd(partner);
     }
     setShowAddForm(false);
+  };
+
+  const getStageIcon = (stage: OnboardingStage) => {
+    const config = stageConfig[stage];
+    const IconComponent = config.icon;
+    return <IconComponent className="h-4 w-4" />;
+  };
+
+  const getStageStatus = (partner: EnhancedPartner) => {
+    const currentStageData = partner.onboarding.stages[partner.onboarding.currentStage];
+    return currentStageData.status;
   };
 
   const getStatusIcon = (status: string) => {
@@ -85,36 +119,50 @@ const PartnerOnboarding = ({ partners, users, onPartnerAdd }: PartnerOnboardingP
     }
   };
 
-  const filteredPartners = onboardingPartners.filter(partner => {
+  const filteredPartners = enhancedPartners.filter(partner => {
     const matchesSearch = partner.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         partner.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || partner.onboardingStatus === statusFilter;
+                         partner.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         partner.company.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStage = stageFilter === 'all' || partner.onboarding.currentStage === stageFilter;
     
-    return matchesSearch && matchesStatus;
+    return matchesSearch && matchesStage;
   });
 
   const statsData = [
     {
       title: 'Total Partners',
-      value: onboardingPartners.length,
+      value: enhancedPartners.length,
       color: 'text-blue-600'
     },
     {
       title: 'In Progress',
-      value: onboardingPartners.filter(p => p.onboardingStatus === 'in-progress').length,
+      value: enhancedPartners.filter(p => getStageStatus(p) === 'in-progress').length,
       color: 'text-yellow-600'
     },
     {
       title: 'Completed',
-      value: onboardingPartners.filter(p => p.onboardingStatus === 'completed').length,
+      value: enhancedPartners.filter(p => p.onboarding.currentStage === 'onboarded').length,
       color: 'text-green-600'
     },
     {
       title: 'Blocked',
-      value: onboardingPartners.filter(p => p.onboardingStatus === 'blocked').length,
+      value: enhancedPartners.filter(p => getStageStatus(p) === 'blocked').length,
       color: 'text-red-600'
     }
   ];
+
+  const avgProgress = enhancedPartners.length > 0 
+    ? Math.round(enhancedPartners.reduce((sum, p) => sum + p.onboarding.overallProgress, 0) / enhancedPartners.length)
+    : 0;
+
+  if (selectedPartner) {
+    return (
+      <PartnerOnboardingDetail
+        partner={selectedPartner}
+        onBack={() => setSelectedPartner(null)}
+      />
+    );
+  }
 
   if (showAddForm) {
     return (
@@ -145,7 +193,7 @@ const PartnerOnboarding = ({ partners, users, onPartnerAdd }: PartnerOnboardingP
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         {statsData.map((stat) => (
           <Card key={stat.title}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -156,6 +204,15 @@ const PartnerOnboarding = ({ partners, users, onPartnerAdd }: PartnerOnboardingP
             </CardContent>
           </Card>
         ))}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Avg Progress</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-purple-600">{avgProgress}%</div>
+            <Progress value={avgProgress} className="mt-2" />
+          </CardContent>
+        </Card>
       </div>
 
       <Card>
@@ -170,16 +227,18 @@ const PartnerOnboarding = ({ partners, users, onPartnerAdd }: PartnerOnboardingP
                 className="pl-8"
               />
             </div>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[150px]">
-                <SelectValue placeholder="Status" />
+            <Select value={stageFilter} onValueChange={setStageFilter}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Stage" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="in-progress">In Progress</SelectItem>
-                <SelectItem value="completed">Completed</SelectItem>
-                <SelectItem value="blocked">Blocked</SelectItem>
+                <SelectItem value="all">All Stages</SelectItem>
+                <SelectItem value="outreach">Outreach</SelectItem>
+                <SelectItem value="product-overview">Product Overview</SelectItem>
+                <SelectItem value="partner-program">Partner Program</SelectItem>
+                <SelectItem value="kyc">KYC</SelectItem>
+                <SelectItem value="agreement">Agreement</SelectItem>
+                <SelectItem value="onboarded">Onboarded</SelectItem>
               </SelectContent>
             </Select>
             <Button variant="outline" size="icon">
@@ -192,45 +251,76 @@ const PartnerOnboarding = ({ partners, users, onPartnerAdd }: PartnerOnboardingP
             <TableHeader>
               <TableRow>
                 <TableHead>Partner</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>Current Stage</TableHead>
+                <TableHead>Progress</TableHead>
                 <TableHead>Assigned To</TableHead>
                 <TableHead>Last Activity</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredPartners.map((partner) => (
-                <TableRow key={partner.id}>
-                  <TableCell>
-                    <div>
-                      <div className="font-medium">{partner.name}</div>
-                      <div className="text-sm text-muted-foreground">{partner.email}</div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center space-x-2">
-                      {getStatusIcon(partner.onboardingStatus)}
-                      <Badge 
-                        variant="outline" 
-                        className={`${getStatusColor(partner.onboardingStatus)} text-white border-0`}
+              {filteredPartners.map((partner) => {
+                const currentStageData = partner.onboarding.stages[partner.onboarding.currentStage];
+                const stageConfig = {
+                  'outreach': { title: 'Outreach', icon: Users },
+                  'product-overview': { title: 'Product Overview', icon: FileText },
+                  'partner-program': { title: 'Partner Program', icon: Handshake },
+                  'kyc': { title: 'KYC', icon: Shield },
+                  'agreement': { title: 'Agreement', icon: PenTool },
+                  'onboarded': { title: 'Onboarded', icon: Trophy }
+                };
+                
+                return (
+                  <TableRow key={partner.id} className="cursor-pointer hover:bg-muted/50">
+                    <TableCell>
+                      <div>
+                        <div className="font-medium">{partner.name}</div>
+                        <div className="text-sm text-muted-foreground">{partner.company}</div>
+                        <div className="text-xs text-muted-foreground">{partner.email}</div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center space-x-2">
+                        {getStageIcon(partner.onboarding.currentStage)}
+                        <div>
+                          <div className="font-medium text-sm">
+                            {stageConfig[partner.onboarding.currentStage].title}
+                          </div>
+                          <Badge 
+                            variant="outline" 
+                            className={`text-xs ${getStatusColor(currentStageData.status)} text-white border-0`}
+                          >
+                            {currentStageData.status.replace('-', ' ')}
+                          </Badge>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="space-y-1">
+                        <div className="text-sm font-medium">{partner.onboarding.overallProgress}%</div>
+                        <Progress value={partner.onboarding.overallProgress} className="w-16 h-2" />
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="text-sm">{currentStageData.assignedTo || 'Unassigned'}</div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="text-sm">
+                        {partner.onboarding.lastActivity.toLocaleDateString()}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => setSelectedPartner(partner)}
                       >
-                        {partner.onboardingStatus.replace('-', ' ')}
-                      </Badge>
-                    </div>
-                  </TableCell>
-                  <TableCell>{partner.assignedTo}</TableCell>
-                  <TableCell>
-                    <div className="text-sm">
-                      {partner.lastActivity.toLocaleDateString()}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Button variant="ghost" size="sm">
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </CardContent>

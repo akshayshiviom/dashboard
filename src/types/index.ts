@@ -31,6 +31,39 @@ export interface Partner {
   paymentTerms: 'net-15' | 'net-30' | 'net-45' | 'net-60' | 'net-90' | 'annual-in-advance' | 'monthly' | 'quarterly' | 'half-yearly';
   assignedUserIds?: string[]; // Changed from single assignedEmployeeId to array
   zone?: 'north' | 'east' | 'west' | 'south';
+  onboarding?: PartnerOnboardingData;
+}
+
+export type OnboardingStage = 'outreach' | 'product-overview' | 'partner-program' | 'kyc' | 'agreement' | 'onboarded';
+
+export interface OnboardingStageData {
+  stage: OnboardingStage;
+  status: 'pending' | 'in-progress' | 'completed' | 'blocked';
+  startedAt?: Date;
+  completedAt?: Date;
+  assignedTo?: string;
+  notes?: string;
+  documents?: string[];
+  tasks: OnboardingTask[];
+}
+
+export interface OnboardingTask {
+  id: string;
+  title: string;
+  description?: string;
+  completed: boolean;
+  required: boolean;
+  completedAt?: Date;
+  assignedTo?: string;
+}
+
+export interface PartnerOnboardingData {
+  currentStage: OnboardingStage;
+  overallProgress: number;
+  startedAt: Date;
+  expectedCompletionDate?: Date;
+  lastActivity: Date;
+  stages: Record<OnboardingStage, OnboardingStageData>;
 }
 
 export interface ProductPlan {
