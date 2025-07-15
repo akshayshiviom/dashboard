@@ -282,7 +282,6 @@ const PartnerOnboarding = ({ partners, users, onPartnerAdd }: PartnerOnboardingP
                 <TableHead>Progress</TableHead>
                 <TableHead>Assigned To</TableHead>
                 <TableHead>Last Activity</TableHead>
-                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -339,9 +338,6 @@ const PartnerOnboarding = ({ partners, users, onPartnerAdd }: PartnerOnboardingP
                       <div className="text-sm">
                         {partner.onboarding.lastActivity.toLocaleDateString()}
                       </div>
-                    </TableCell>
-                    <TableCell>
-                      <Eye className="h-4 w-4 text-muted-foreground" />
                     </TableCell>
                   </TableRow>
                 );
