@@ -32,7 +32,8 @@ const TaskManagement = ({ customers, partners, users, currentUserId }: TaskManag
     type: 'other' as Task['type'],
     customerId: 'none',
     partnerId: 'none',
-    dueDate: ''
+    dueDate: '',
+    assignedTo: ''
   });
 
   // Mock task data - in real app this would come from API/database
@@ -152,7 +153,13 @@ const TaskManagement = ({ customers, partners, users, currentUserId }: TaskManag
     return user ? user.name : 'Unknown User';
   };
 
-  const filteredTasks = mockTasks.filter(task => {
+  // Filter tasks to show only user-relevant tasks
+  const userRelevantTasks = mockTasks.filter(task => {
+    if (!currentUserId) return false;
+    return task.assignedTo === currentUserId || task.assignedBy === currentUserId;
+  });
+
+  const filteredTasks = userRelevantTasks.filter(task => {
     const matchesSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          task.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          getCustomerName(task.customerId).toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -166,16 +173,20 @@ const TaskManagement = ({ customers, partners, users, currentUserId }: TaskManag
   });
 
   const stats = {
-    total: mockTasks.length,
-    pending: mockTasks.filter(t => t.status === 'pending').length,
-    inProgress: mockTasks.filter(t => t.status === 'in-progress').length,
-    completed: mockTasks.filter(t => t.status === 'completed').length,
-    overdue: mockTasks.filter(t => t.status === 'overdue').length
+    total: userRelevantTasks.length,
+    pending: userRelevantTasks.filter(t => t.status === 'pending').length,
+    inProgress: userRelevantTasks.filter(t => t.status === 'in-progress').length,
+    completed: userRelevantTasks.filter(t => t.status === 'completed').length,
+    overdue: userRelevantTasks.filter(t => t.status === 'overdue').length
   };
 
   const handleCreateTask = () => {
     // In real app, this would save to database
-    console.log('Creating task:', newTask);
+    const taskWithAssignedBy = {
+      ...newTask,
+      assignedBy: currentUserId || 'unknown'
+    };
+    console.log('Creating task:', taskWithAssignedBy);
     setShowCreateDialog(false);
     setNewTask({
       title: '',
@@ -184,7 +195,8 @@ const TaskManagement = ({ customers, partners, users, currentUserId }: TaskManag
       type: 'other',
       customerId: 'none',
       partnerId: 'none',
-      dueDate: ''
+      dueDate: '',
+      assignedTo: ''
     });
   };
 
@@ -447,14 +459,31 @@ const TaskManagement = ({ customers, partners, users, currentUserId }: TaskManag
                   </Select>
                 </div>
               </div>
-              <div>
-                <Label htmlFor="dueDate">Due Date</Label>
-                <Input 
-                  id="dueDate"
-                  type="date"
-                  value={newTask.dueDate}
-                  onChange={(e) => setNewTask({...newTask, dueDate: e.target.value})}
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="assignedTo">Assign To</Label>
+                  <Select value={newTask.assignedTo} onValueChange={(value) => setNewTask({...newTask, assignedTo: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select user" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {users.map((user) => (
+                        <SelectItem key={user.id} value={user.id}>
+                          {user.name} - {user.email}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="dueDate">Due Date</Label>
+                  <Input 
+                    id="dueDate"
+                    type="date"
+                    value={newTask.dueDate}
+                    onChange={(e) => setNewTask({...newTask, dueDate: e.target.value})}
+                  />
+                </div>
               </div>
               <Button className="w-full" onClick={handleCreateTask}>
                 Create Task
@@ -581,6 +610,7 @@ const TaskManagement = ({ customers, partners, users, currentUserId }: TaskManag
                 <TableHead>Priority</TableHead>
                 <TableHead>Associated With</TableHead>
                 <TableHead>Due Date</TableHead>
+                <TableHead>Direction</TableHead>
                 <TableHead>Assigned By</TableHead>
                 <TableHead>Type</TableHead>
               </TableRow>
@@ -649,6 +679,19 @@ const TaskManagement = ({ customers, partners, users, currentUserId }: TaskManag
                         </span>
                       </div>
                     )}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center space-x-2">
+                      {task.assignedTo === currentUserId ? (
+                        <Badge variant="outline" className="text-xs bg-blue-100 text-blue-700 border-blue-300">
+                          Assigned to me
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="text-xs bg-green-100 text-green-700 border-green-300">
+                          I assigned
+                        </Badge>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell>
                     <div className="text-sm">{getUserName(task.assignedBy)}</div>
