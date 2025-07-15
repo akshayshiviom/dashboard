@@ -57,21 +57,21 @@ const DashboardStats = ({ stats }: DashboardStatsProps) => {
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Main KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {statCards.map((stat) => {
           const Icon = stat.icon;
           return (
             <Card key={stat.title} className="transition-all hover:shadow-lg">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
+                <CardTitle className="text-xs font-medium text-muted-foreground">
                   {stat.title}
                 </CardTitle>
-                <Icon className={`h-4 w-4 ${stat.color}`} />
+                <Icon className={`h-3 w-3 ${stat.color}`} />
               </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stat.value}</div>
+              <CardContent className="pt-1">
+                <div className="text-xl font-bold">{stat.value}</div>
               </CardContent>
             </Card>
           );

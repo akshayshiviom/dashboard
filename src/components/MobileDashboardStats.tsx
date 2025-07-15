@@ -69,22 +69,22 @@ const MobileDashboardStats = ({ stats }: MobileDashboardStatsProps) => {
   const taskCompletionRate = stats.totalTasks > 0 ? (stats.completedTasks / stats.totalTasks) * 100 : 0;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {/* Main KPI Cards */}
-      <div className="grid grid-cols-2 gap-3 p-4">
+      <div className="grid grid-cols-2 gap-2 p-3">
         {statCards.map((stat) => {
           const Icon = stat.icon;
           return (
             <Card key={stat.title} className="transition-all hover:shadow-md">
-              <CardContent className="p-3">
+              <CardContent className="p-2">
                 <div className="flex items-center justify-between space-x-2">
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-medium text-muted-foreground truncate">
                       {stat.title}
                     </p>
-                    <p className="text-lg font-bold truncate">{stat.value}</p>
+                    <p className="text-base font-bold truncate">{stat.value}</p>
                   </div>
-                  <Icon className={`h-5 w-5 ${stat.color} flex-shrink-0`} />
+                  <Icon className={`h-4 w-4 ${stat.color} flex-shrink-0`} />
                 </div>
               </CardContent>
             </Card>
@@ -93,21 +93,21 @@ const MobileDashboardStats = ({ stats }: MobileDashboardStatsProps) => {
       </div>
 
       {/* Mobile-optimized Additional Metrics */}
-      <div className="px-4 space-y-4">
+      <div className="px-3 space-y-3">
         {/* Revenue Breakdown */}
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm flex items-center gap-2">
-              <DollarSign className="h-4 w-4 text-green-600" />
+          <CardHeader className="pb-1">
+            <CardTitle className="text-xs flex items-center gap-2">
+              <DollarSign className="h-3 w-3 text-green-600" />
               Revenue Breakdown
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="flex justify-between text-sm">
+          <CardContent className="space-y-1 pt-1">
+            <div className="flex justify-between text-xs">
               <span className="text-muted-foreground">New</span>
               <span>₹{stats.newRevenue.toLocaleString('en-IN')}</span>
             </div>
-            <div className="flex justify-between text-sm">
+            <div className="flex justify-between text-xs">
               <span className="text-muted-foreground">Renewal</span>
               <span>₹{stats.renewalRevenue.toLocaleString('en-IN')}</span>
             </div>
@@ -116,28 +116,28 @@ const MobileDashboardStats = ({ stats }: MobileDashboardStatsProps) => {
 
         {/* Tasks & Alerts */}
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-blue-600" />
+          <CardHeader className="pb-1">
+            <CardTitle className="text-xs flex items-center gap-2">
+              <CheckCircle className="h-3 w-3 text-blue-600" />
               Tasks & Alerts
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-2 pt-1">
             <div className="space-y-1">
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-xs">
                 <span>Completion</span>
                 <span>{taskCompletionRate.toFixed(0)}%</span>
               </div>
               <Progress value={taskCompletionRate} className="h-1" />
             </div>
-            <div className="flex gap-2 flex-wrap">
+            <div className="flex gap-1 flex-wrap">
               {stats.overdueTasks > 0 && (
-                <Badge variant="destructive" className="text-xs">
+                <Badge variant="destructive" className="text-xs px-1 py-0">
                   {stats.overdueTasks} Overdue
                 </Badge>
               )}
               {stats.renewalsAtRisk > 0 && (
-                <Badge variant="secondary" className="text-xs">
+                <Badge variant="secondary" className="text-xs px-1 py-0">
                   {stats.renewalsAtRisk} At Risk
                 </Badge>
               )}
@@ -147,22 +147,22 @@ const MobileDashboardStats = ({ stats }: MobileDashboardStatsProps) => {
 
         {/* Quick Stats */}
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm flex items-center gap-2">
-              <BarChart3 className="h-4 w-4 text-orange-600" />
+          <CardHeader className="pb-1">
+            <CardTitle className="text-xs flex items-center gap-2">
+              <BarChart3 className="h-3 w-3 text-orange-600" />
               Quick Stats
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="flex justify-between text-sm">
+          <CardContent className="space-y-1 pt-1">
+            <div className="flex justify-between text-xs">
               <span className="text-muted-foreground">Conversion Rate</span>
               <span>{stats.conversionRate.toFixed(1)}%</span>
             </div>
-            <div className="flex justify-between text-sm">
+            <div className="flex justify-between text-xs">
               <span className="text-muted-foreground">Upcoming Renewals</span>
               <span>{stats.upcomingRenewals}</span>
             </div>
-            <div className="flex justify-between text-sm">
+            <div className="flex justify-between text-xs">
               <span className="text-muted-foreground">Partners Onboarding</span>
               <span>{stats.partnerOnboardingInProgress}</span>
             </div>
