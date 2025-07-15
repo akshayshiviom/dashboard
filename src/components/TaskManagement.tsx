@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Search, Filter, Plus, Calendar, Clock, AlertCircle, CheckCircle, User, Building, Users, ArrowLeft, Edit } from 'lucide-react';
 import { Task, Customer, Partner, User as UserType } from '@/types';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface TaskManagementProps {
   customers: Customer[];
@@ -19,6 +20,7 @@ interface TaskManagementProps {
 }
 
 const TaskManagement = ({ customers, partners, users, currentUserId }: TaskManagementProps) => {
+  const { isAdmin } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
@@ -153,9 +155,12 @@ const TaskManagement = ({ customers, partners, users, currentUserId }: TaskManag
     return user ? user.name : 'Unknown User';
   };
 
-  // Filter tasks to show only user-relevant tasks
+  // Filter tasks based on user role and permissions
   const userRelevantTasks = mockTasks.filter(task => {
     if (!currentUserId) return false;
+    // Admin users can see all tasks
+    if (isAdmin) return true;
+    // Regular users can only see tasks assigned to them or assigned by them
     return task.assignedTo === currentUserId || task.assignedBy === currentUserId;
   });
 
@@ -337,7 +342,7 @@ const TaskManagement = ({ customers, partners, users, currentUserId }: TaskManag
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Task Management</h2>
           <p className="text-muted-foreground">
-            Manage your assigned tasks and track progress
+            {isAdmin ? 'Manage all tasks across the organization' : 'Manage your assigned tasks and track progress'}
           </p>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
