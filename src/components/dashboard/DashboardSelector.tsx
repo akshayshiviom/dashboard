@@ -31,6 +31,7 @@ interface DashboardSelectorProps {
   activeDashboard: string;
   onDashboardChange: (dashboardId: string) => void;
   onCreateDashboard: (name: string, description?: string) => void;
+  onCreateAndCustomize: (name: string, description?: string) => void;
   onDeleteDashboard: (dashboardId: string) => void;
   onEditClick: () => void;
 }
@@ -40,6 +41,7 @@ const DashboardSelector = ({
   activeDashboard,
   onDashboardChange,
   onCreateDashboard,
+  onCreateAndCustomize,
   onDeleteDashboard,
   onEditClick
 }: DashboardSelectorProps) => {
@@ -50,6 +52,15 @@ const DashboardSelector = ({
   const handleCreateDashboard = () => {
     if (newDashboardName.trim()) {
       onCreateDashboard(newDashboardName.trim(), newDashboardDescription.trim() || undefined);
+      setNewDashboardName('');
+      setNewDashboardDescription('');
+      setIsCreatingDashboard(false);
+    }
+  };
+
+  const handleCreateAndCustomize = () => {
+    if (newDashboardName.trim()) {
+      onCreateAndCustomize(newDashboardName.trim(), newDashboardDescription.trim() || undefined);
       setNewDashboardName('');
       setNewDashboardDescription('');
       setIsCreatingDashboard(false);
@@ -130,11 +141,14 @@ const DashboardSelector = ({
             className="w-full px-3 py-2 border rounded-md"
           />
           <div className="flex gap-2">
-            <Button onClick={handleCreateDashboard} size="sm">
-              Create
+            <Button onClick={handleCreateAndCustomize} size="sm">
+              Create & Customize
+            </Button>
+            <Button onClick={handleCreateDashboard} size="sm" variant="outline">
+              Create with Defaults
             </Button>
             <Button 
-              variant="outline" 
+              variant="ghost" 
               size="sm"
               onClick={() => {
                 setIsCreatingDashboard(false);

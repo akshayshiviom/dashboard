@@ -37,6 +37,7 @@ interface TabContentRendererProps {
   onCustomDateChange: (dateRange: { from: Date; to: Date }) => void;
   onDashboardChange: (dashboardId: string) => void;
   onCreateDashboard: (name: string, description?: string) => void;
+  onCreateAndCustomize: (name: string, description?: string) => void;
   onUpdateDashboard: (dashboardId: string, updates: Partial<Dashboard>) => void;
   onDeleteDashboard: (dashboardId: string) => void;
   onCustomerAdd: (customer: Customer) => void;
@@ -74,6 +75,7 @@ const TabContentRenderer = ({
   onCustomDateChange,
   onDashboardChange,
   onCreateDashboard,
+  onCreateAndCustomize,
   onUpdateDashboard,
   onDeleteDashboard,
   onCustomerAdd,
@@ -157,6 +159,7 @@ const TabContentRenderer = ({
             activeDashboard={activeDashboard}
             onDashboardChange={onDashboardChange}
             onCreateDashboard={onCreateDashboard}
+            onCreateAndCustomize={onCreateAndCustomize}
             onUpdateDashboard={onUpdateDashboard}
             onDeleteDashboard={onDeleteDashboard}
             customers={customers}

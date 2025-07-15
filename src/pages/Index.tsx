@@ -106,6 +106,16 @@ const Index = () => {
     DashboardManager.createDashboard(name, setDashboards, description);
   };
 
+  const handleCreateAndCustomize = (name: string, description?: string) => {
+    DashboardManager.createDashboard(name, setDashboards, description);
+    // Find the newly created dashboard and set it as active
+    const newDashboard = dashboards.find(d => d.name === name);
+    if (newDashboard) {
+      setActiveDashboard(newDashboard.id);
+    }
+    // The dashboard edit dialog will be opened in the DashboardFilters component
+  };
+
   const handleUpdateDashboard = (dashboardId: string, updates: Partial<Dashboard>) => {
     DashboardManager.updateDashboard(dashboardId, updates, setDashboards);
   };
@@ -150,6 +160,7 @@ const Index = () => {
               onCustomDateChange={setCustomDateRange}
               onDashboardChange={setActiveDashboard}
               onCreateDashboard={handleCreateDashboard}
+              onCreateAndCustomize={handleCreateAndCustomize}
               onUpdateDashboard={handleUpdateDashboard}
               onDeleteDashboard={handleDeleteDashboard}
               onCustomerAdd={handleCustomerAdd}
@@ -193,6 +204,7 @@ const Index = () => {
           onCustomDateChange={setCustomDateRange}
           onDashboardChange={setActiveDashboard}
           onCreateDashboard={handleCreateDashboard}
+          onCreateAndCustomize={handleCreateAndCustomize}
           onUpdateDashboard={handleUpdateDashboard}
           onDeleteDashboard={handleDeleteDashboard}
           onCustomerAdd={handleCustomerAdd}
@@ -247,6 +259,7 @@ const Index = () => {
               onCustomDateChange={setCustomDateRange}
               onDashboardChange={setActiveDashboard}
               onCreateDashboard={handleCreateDashboard}
+              onCreateAndCustomize={handleCreateAndCustomize}
               onUpdateDashboard={handleUpdateDashboard}
               onDeleteDashboard={handleDeleteDashboard}
               onCustomerAdd={handleCustomerAdd}

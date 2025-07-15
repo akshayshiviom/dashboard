@@ -41,6 +41,7 @@ interface DashboardFiltersProps {
   activeDashboard: string;
   onDashboardChange: (dashboardId: string) => void;
   onCreateDashboard: (name: string, description?: string) => void;
+  onCreateAndCustomize: (name: string, description?: string) => void;
   onUpdateDashboard: (dashboardId: string, updates: Partial<Dashboard>) => void;
   onDeleteDashboard: (dashboardId: string) => void;
   customers: Customer[];
@@ -57,6 +58,7 @@ const DashboardFilters = ({
   activeDashboard,
   onDashboardChange,
   onCreateDashboard,
+  onCreateAndCustomize,
   onUpdateDashboard,
   onDeleteDashboard,
   customers,
@@ -72,6 +74,12 @@ const DashboardFilters = ({
     setIsEditingDashboard(false);
   };
 
+  const handleCreateAndCustomize = (name: string, description?: string) => {
+    onCreateAndCustomize(name, description);
+    // Auto-open edit dialog after creating the dashboard
+    setTimeout(() => setIsEditingDashboard(true), 100);
+  };
+
   return (
     <>
       <Card className="mb-6">
@@ -82,6 +90,7 @@ const DashboardFilters = ({
               activeDashboard={activeDashboard}
               onDashboardChange={onDashboardChange}
               onCreateDashboard={onCreateDashboard}
+              onCreateAndCustomize={handleCreateAndCustomize}
               onDeleteDashboard={onDeleteDashboard}
               onEditClick={() => setIsEditingDashboard(true)}
             />

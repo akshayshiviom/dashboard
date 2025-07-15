@@ -133,7 +133,7 @@ const DashboardEditDialog = ({ dashboard, onSave, onCancel, customers, partners,
                   checked={formData.widgets.showStats}
                   onCheckedChange={(checked) => handleWidgetChange('showStats', checked as boolean)}
                 />
-                <Label htmlFor="show-stats">Dashboard Statistics</Label>
+                <Label htmlFor="show-stats">Dashboard Statistics (KPIs: Total Customers, Active Partners, Total Value, Active Customers)</Label>
               </div>
               <div className="flex items-center space-x-2">
                 <Checkbox
