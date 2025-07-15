@@ -46,6 +46,7 @@ const PartnerOnboarding = ({ partners, users, onPartnerAdd }: PartnerOnboardingP
     return {
       currentStage,
       overallProgress: progress,
+      completionPercentage: progress,
       startedAt: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000),
       expectedCompletionDate: new Date(Date.now() + Math.random() * 20 * 24 * 60 * 60 * 1000),
       lastActivity: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000),

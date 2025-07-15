@@ -60,6 +60,7 @@ export interface OnboardingTask {
 export interface PartnerOnboardingData {
   currentStage: OnboardingStage;
   overallProgress: number;
+  completionPercentage: number;
   startedAt: Date;
   expectedCompletionDate?: Date;
   lastActivity: Date;
@@ -158,11 +159,29 @@ export interface Task {
   priority: 'low' | 'medium' | 'high' | 'urgent';
   dueDate?: Date;
   createdAt: Date;
-  updatedAt: Date;
+  updatedAt?: Date;
   assignedTo: string; // User ID
-  assignedBy: string; // User ID
+  assignedBy?: string; // User ID
   customerId?: string; // Associated customer
   partnerId?: string; // Associated partner
-  type: 'follow-up' | 'meeting' | 'document-review' | 'approval' | 'negotiation' | 'onboarding' | 'support' | 'other';
+  type: 'customer-outreach' | 'partner-onboarding' | 'renewal-follow-up' | 'training' | 'technical-support' | 'follow-up' | 'meeting' | 'document-review' | 'approval' | 'negotiation' | 'onboarding' | 'support' | 'other';
   notes?: string;
+  tags?: string[];
+  estimatedHours?: number;
+  actualHours?: number;
+  completedAt?: Date;
+}
+
+export interface Notification {
+  id: string;
+  type: 'task' | 'renewal' | 'partner-onboarding' | 'customer-activity' | 'system' | 'escalation';
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  title: string;
+  message: string;
+  read: boolean;
+  createdAt: Date;
+  relatedId?: string; // ID of related task, customer, partner, etc.
+  relatedType?: 'task' | 'customer' | 'partner' | 'renewal' | 'product';
+  actionUrl?: string; // URL to navigate to when clicked
+  metadata?: Record<string, any>;
 }

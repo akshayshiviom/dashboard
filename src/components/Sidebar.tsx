@@ -1,9 +1,13 @@
-
 import { LayoutDashboard, Users, Tag, Plus, Package, UserCheck, FileText, RefreshCw, Settings, Mail, ChevronDown, Upload, Building, UserPlus, LogOut, CheckSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
+import NotificationCenter from '@/components/NotificationCenter';
+import { mockTasks } from '@/utils/mockTasks';
+import { mockRenewals } from '@/utils/mockRenewals';
+import { mockCustomers, mockPartners } from '@/utils/mockData';
+import { useSearchParams } from 'react-router-dom';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,9 +22,37 @@ interface SidebarProps {
 
 const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
   const { profile, signOut, isAdmin } = useAuth();
+  const [, setSearchParams] = useSearchParams();
 
   const handleSignOut = async () => {
     await signOut();
+  };
+
+  const handleNotificationClick = (notification: any) => {
+    if (notification.actionUrl) {
+      // Parse the URL to extract tab and other params
+      const url = new URL(notification.actionUrl, window.location.origin);
+      const tab = url.searchParams.get('tab');
+      const taskId = url.searchParams.get('taskId');
+      const customerId = url.searchParams.get('customerId');
+      const partnerId = url.searchParams.get('partnerId');
+      const renewalId = url.searchParams.get('renewalId');
+      
+      // Update search params
+      const params = new URLSearchParams();
+      if (tab) params.set('tab', tab);
+      if (taskId) params.set('taskId', taskId);
+      if (customerId) params.set('customerId', customerId);
+      if (partnerId) params.set('partnerId', partnerId);
+      if (renewalId) params.set('renewalId', renewalId);
+      
+      setSearchParams(params);
+      
+      // Change tab if needed
+      if (tab && tab !== activeTab) {
+        onTabChange(tab);
+      }
+    }
   };
 
   const menuItems = [
@@ -72,7 +104,18 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
     <div className="w-64 bg-card border-r border-border h-screen p-6 flex flex-col">
       <div className="mb-8">
         <div className="flex items-center justify-between mb-2">
-          <h1 className="text-2xl font-bold text-foreground">Shiviom Dashboard</h1>
+          <div className="flex items-center space-x-2">
+            <h1 className="text-xl font-bold text-foreground">Shiviom</h1>
+            <NotificationCenter
+              tasks={mockTasks}
+              renewals={mockRenewals}
+              customers={mockCustomers}
+              partners={mockPartners}
+              userRole={profile?.role || 'user'}
+              userId={profile?.user_id || ''}
+              onNotificationClick={handleNotificationClick}
+            />
+          </div>
           {profile && (
             <Badge variant="outline" className="text-xs">
               {profile.role}
