@@ -242,14 +242,24 @@ const PartnerOnboardingDetail = ({ partner, onBack }: PartnerOnboardingDetailPro
                   <div className="space-y-3 mt-6">
                     <div className="p-3 bg-muted rounded-lg">
                       <div className="flex justify-between items-start mb-2">
-                        <span className="font-medium text-sm">John Doe</span>
+                        <div className="flex items-center space-x-2">
+                          <span className="font-medium text-sm">John Doe</span>
+                          <Badge variant="outline" className="text-xs bg-yellow-500 text-white border-0">
+                            KYC
+                          </Badge>
+                        </div>
                         <span className="text-xs text-muted-foreground">2 days ago</span>
                       </div>
                       <p className="text-sm">Partner showed strong interest in our enterprise features. Moving to KYC stage.</p>
                     </div>
                     <div className="p-3 bg-muted rounded-lg">
                       <div className="flex justify-between items-start mb-2">
-                        <span className="font-medium text-sm">Jane Smith</span>
+                        <div className="flex items-center space-x-2">
+                          <span className="font-medium text-sm">Jane Smith</span>
+                          <Badge variant="outline" className="text-xs bg-purple-500 text-white border-0">
+                            Product Overview
+                          </Badge>
+                        </div>
                         <span className="text-xs text-muted-foreground">5 days ago</span>
                       </div>
                       <p className="text-sm">Product demo went well. They have specific requirements for API integration.</p>
