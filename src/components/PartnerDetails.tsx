@@ -3,7 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ArrowLeft, CheckCircle, XCircle, User, Calendar, CreditCard, Package, Building } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ArrowLeft, CheckCircle, XCircle, User, Calendar, CreditCard, Package, Building, Filter } from 'lucide-react';
 import { Partner, Customer, Product, User as UserType } from '../types';
 
 interface PartnerDetailsProps {
@@ -15,8 +16,24 @@ interface PartnerDetailsProps {
 }
 
 const PartnerDetails = ({ partner, customers, products, users, onBack }: PartnerDetailsProps) => {
+  const [processFilter, setProcessFilter] = useState<string>('all');
   const partnerCustomers = customers.filter(c => c.partnerId === partner.id);
   const assignedUsers = users.filter(u => partner.assignedUserIds?.includes(u.id));
+
+  // Filter customers by process stage
+  const filteredCustomers = partnerCustomers.filter(customer => {
+    if (processFilter === 'all') return true;
+    if (processFilter === 'prospects') return ['prospect', 'demo', 'poc', 'negotiating'].includes(customer.process);
+    if (processFilter === 'purchased') return ['won', 'deployment'].includes(customer.process);
+    if (processFilter === 'lost') return customer.process === 'lost';
+    return true;
+  });
+
+  // Calculate statistics
+  const prospects = partnerCustomers.filter(c => ['prospect', 'demo', 'poc', 'negotiating'].includes(c.process));
+  const purchased = partnerCustomers.filter(c => ['won', 'deployment'].includes(c.process));
+  const lost = partnerCustomers.filter(c => c.process === 'lost');
+  const conversionRate = partnerCustomers.length > 0 ? Math.round((purchased.length / partnerCustomers.length) * 100) : 0;
 
   const getProductName = (productId: string) => {
     return products.find(p => p.id === productId)?.name || 'Unknown Product';
@@ -99,6 +116,32 @@ const PartnerDetails = ({ partner, customers, products, users, onBack }: Partner
     }
   };
 
+  const getProcessStageColor = (process: string) => {
+    switch (process) {
+      case 'prospect': return 'bg-yellow-100 text-yellow-800';
+      case 'demo': return 'bg-blue-100 text-blue-800';
+      case 'poc': return 'bg-indigo-100 text-indigo-800';
+      case 'negotiating': return 'bg-orange-100 text-orange-800';
+      case 'won': return 'bg-green-100 text-green-800';
+      case 'deployment': return 'bg-emerald-100 text-emerald-800';
+      case 'lost': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getProcessStageLabel = (process: string) => {
+    switch (process) {
+      case 'prospect': return 'Prospect';
+      case 'demo': return 'Demo';
+      case 'poc': return 'POC';
+      case 'negotiating': return 'Negotiating';
+      case 'won': return 'Won';
+      case 'deployment': return 'Deployment';
+      case 'lost': return 'Lost';
+      default: return process;
+    }
+  };
+
   const getAssignedUserNames = (userIds?: string[]) => {
     if (!userIds || userIds.length === 0) return 'Unassigned';
     return userIds
@@ -125,7 +168,7 @@ const PartnerDetails = ({ partner, customers, products, users, onBack }: Partner
       </div>
 
       {/* Partner Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-4">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-2">
@@ -196,6 +239,32 @@ const PartnerDetails = ({ partner, customers, products, users, onBack }: Partner
             </div>
           </CardContent>
         </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2">
+              <User size={20} className="text-blue-600" />
+              <div>
+                <p className="text-sm text-muted-foreground">Active Prospects</p>
+                <p className="font-medium">{prospects.length}</p>
+                <p className="text-xs text-muted-foreground">In pipeline</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2">
+              <CheckCircle size={20} className="text-green-600" />
+              <div>
+                <p className="text-sm text-muted-foreground">Purchased</p>
+                <p className="font-medium">{purchased.length}</p>
+                <p className="text-xs text-muted-foreground">{conversionRate}% conversion</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Product Types */}
@@ -217,7 +286,23 @@ const PartnerDetails = ({ partner, customers, products, users, onBack }: Partner
       {/* Partner's Customers */}
       <Card>
         <CardHeader>
-          <CardTitle>Partner's Customers ({partnerCustomers.length})</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle>
+              Partner's Customers ({filteredCustomers.length} of {partnerCustomers.length})
+            </CardTitle>
+            <Select value={processFilter} onValueChange={setProcessFilter}>
+              <SelectTrigger className="w-[200px]">
+                <Filter className="h-4 w-4 mr-2" />
+                <SelectValue placeholder="Filter by Process" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Customers</SelectItem>
+                <SelectItem value="prospects">Prospects ({prospects.length})</SelectItem>
+                <SelectItem value="purchased">Purchased ({purchased.length})</SelectItem>
+                <SelectItem value="lost">Lost ({lost.length})</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </CardHeader>
         <CardContent>
           <Table>
@@ -225,6 +310,7 @@ const PartnerDetails = ({ partner, customers, products, users, onBack }: Partner
               <TableRow>
                 <TableHead>Customer Name</TableHead>
                 <TableHead>Company</TableHead>
+                <TableHead>Process Stage</TableHead>
                 <TableHead>Products</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Value</TableHead>
@@ -232,10 +318,15 @@ const PartnerDetails = ({ partner, customers, products, users, onBack }: Partner
               </TableRow>
             </TableHeader>
             <TableBody>
-              {partnerCustomers.map((customer) => (
+              {filteredCustomers.map((customer) => (
                 <TableRow key={customer.id}>
                   <TableCell className="font-medium">{customer.name}</TableCell>
                   <TableCell>{customer.company}</TableCell>
+                  <TableCell>
+                    <Badge className={getProcessStageColor(customer.process)}>
+                      {getProcessStageLabel(customer.process)}
+                    </Badge>
+                  </TableCell>
                   <TableCell>
                     <div className="flex flex-wrap gap-1">
                       {customer.productIds?.map((productId) => (
