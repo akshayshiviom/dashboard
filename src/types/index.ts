@@ -98,6 +98,29 @@ export interface DashboardStats {
   totalProducts: number;
   totalValue: number;
   activeCustomers: number;
+  // Revenue breakdown
+  newRevenue: number;
+  renewalRevenue: number;
+  // Task metrics
+  totalTasks: number;
+  overdueTasks: number;
+  completedTasks: number;
+  highPriorityTasks: number;
+  // Partner metrics
+  activePartnersCount: number;
+  partnerOnboardingInProgress: number;
+  // Customer process metrics
+  customersPipeline: number;
+  customersWon: number;
+  customersLost: number;
+  conversionRate: number;
+  // Renewal metrics
+  upcomingRenewals: number;
+  renewalsAtRisk: number;
+  renewalSuccessRate: number;
+  // Performance metrics
+  averageDealSize: number;
+  monthlyGrowthRate: number;
 }
 
 export interface User {

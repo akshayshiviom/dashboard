@@ -1,6 +1,15 @@
 
-import { Card, CardContent } from '@/components/ui/card';
-import { Users, Tag, DollarSign, TrendingUp } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { 
+  Users, 
+  Tag, 
+  DollarSign, 
+  TrendingUp, 
+  CheckCircle, 
+  BarChart3
+} from 'lucide-react';
 import { DashboardStats as StatsType } from '../types';
 
 interface MobileDashboardStatsProps {
@@ -57,26 +66,109 @@ const MobileDashboardStats = ({ stats }: MobileDashboardStatsProps) => {
     },
   ];
 
+  const taskCompletionRate = stats.totalTasks > 0 ? (stats.completedTasks / stats.totalTasks) * 100 : 0;
+
   return (
-    <div className="grid grid-cols-2 gap-3 p-4">
-      {statCards.map((stat) => {
-        const Icon = stat.icon;
-        return (
-          <Card key={stat.title} className="transition-all hover:shadow-md">
-            <CardContent className="p-3">
-              <div className="flex items-center justify-between space-x-2">
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium text-muted-foreground truncate">
-                    {stat.title}
-                  </p>
-                  <p className="text-lg font-bold truncate">{stat.value}</p>
+    <div className="space-y-4">
+      {/* Main KPI Cards */}
+      <div className="grid grid-cols-2 gap-3 p-4">
+        {statCards.map((stat) => {
+          const Icon = stat.icon;
+          return (
+            <Card key={stat.title} className="transition-all hover:shadow-md">
+              <CardContent className="p-3">
+                <div className="flex items-center justify-between space-x-2">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium text-muted-foreground truncate">
+                      {stat.title}
+                    </p>
+                    <p className="text-lg font-bold truncate">{stat.value}</p>
+                  </div>
+                  <Icon className={`h-5 w-5 ${stat.color} flex-shrink-0`} />
                 </div>
-                <Icon className={`h-5 w-5 ${stat.color} flex-shrink-0`} />
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+
+      {/* Mobile-optimized Additional Metrics */}
+      <div className="px-4 space-y-4">
+        {/* Revenue Breakdown */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm flex items-center gap-2">
+              <DollarSign className="h-4 w-4 text-green-600" />
+              Revenue Breakdown
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">New</span>
+              <span>₹{stats.newRevenue.toLocaleString('en-IN')}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Renewal</span>
+              <span>₹{stats.renewalRevenue.toLocaleString('en-IN')}</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Tasks & Alerts */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm flex items-center gap-2">
+              <CheckCircle className="h-4 w-4 text-blue-600" />
+              Tasks & Alerts
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="space-y-1">
+              <div className="flex justify-between text-sm">
+                <span>Completion</span>
+                <span>{taskCompletionRate.toFixed(0)}%</span>
               </div>
-            </CardContent>
-          </Card>
-        );
-      })}
+              <Progress value={taskCompletionRate} className="h-1" />
+            </div>
+            <div className="flex gap-2 flex-wrap">
+              {stats.overdueTasks > 0 && (
+                <Badge variant="destructive" className="text-xs">
+                  {stats.overdueTasks} Overdue
+                </Badge>
+              )}
+              {stats.renewalsAtRisk > 0 && (
+                <Badge variant="secondary" className="text-xs">
+                  {stats.renewalsAtRisk} At Risk
+                </Badge>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Quick Stats */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm flex items-center gap-2">
+              <BarChart3 className="h-4 w-4 text-orange-600" />
+              Quick Stats
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Conversion Rate</span>
+              <span>{stats.conversionRate.toFixed(1)}%</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Upcoming Renewals</span>
+              <span>{stats.upcomingRenewals}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Partners Onboarding</span>
+              <span>{stats.partnerOnboardingInProgress}</span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
