@@ -448,7 +448,7 @@ const TaskManagement = ({ customers, partners, users, currentUserId }: TaskManag
                 </div>
               </div>
               <div>
-                <Label htmlFor="dueDate">Due Date (Optional)</Label>
+                <Label htmlFor="dueDate">Due Date</Label>
                 <Input 
                   id="dueDate"
                   type="date"
