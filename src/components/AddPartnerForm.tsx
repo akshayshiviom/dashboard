@@ -58,6 +58,8 @@ const AddPartnerForm = ({ users, onPartnerAdd, onCancel }: AddPartnerFormProps) 
         zone: data.zone,
         assignedUserIds: assignedUserIds.length > 0 ? assignedUserIds : undefined,
         customersCount: 0,
+        newRevenue: 0,
+        renewalRevenue: 0,
         totalValue: 0,
         status: 'active',
         createdAt: new Date(),

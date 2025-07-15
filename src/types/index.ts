@@ -22,6 +22,8 @@ export interface Partner {
   specialization: string;
   identity: 'web-app-developer' | 'system-integrator' | 'managed-service-provider' | 'digital-marketer' | 'cyber-security' | 'cloud-hosting' | 'web-hosting' | 'hardware' | 'cloud-service-provider' | 'microsoft-partner' | 'aws-partner' | 'it-consulting' | 'freelance';
   customersCount: number;
+  newRevenue: number;
+  renewalRevenue: number;
   totalValue: number;
   status: 'active' | 'inactive';
   createdAt: Date;

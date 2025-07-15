@@ -146,7 +146,9 @@ const PartnerTable = ({ partners, customers, products, users, onStatusChange, on
                 <TableHead>Product Types</TableHead>
                 <TableHead>Assigned Employee</TableHead>
                 <TableHead>Customers</TableHead>
-                <TableHead>Revenue</TableHead>
+                <TableHead>New Revenue</TableHead>
+                <TableHead>Renewal Revenue</TableHead>
+                <TableHead>Total Revenue</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>

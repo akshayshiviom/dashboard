@@ -183,6 +183,8 @@ const PartnerTableRow = ({
         {getAssignedUserNames(partner.assignedUserIds)}
       </TableCell>
       <TableCell>{partner.customersCount}</TableCell>
+      <TableCell>${partner.newRevenue.toLocaleString()}</TableCell>
+      <TableCell>${partner.renewalRevenue.toLocaleString()}</TableCell>
       <TableCell>${partner.totalValue.toLocaleString()}</TableCell>
       <TableCell>
         <Badge className={getStatusColor(partner.status)}>
