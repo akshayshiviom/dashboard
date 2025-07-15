@@ -298,7 +298,11 @@ const PartnerOnboarding = ({ partners, users, onPartnerAdd }: PartnerOnboardingP
                 };
                 
                 return (
-                  <TableRow key={partner.id} className="cursor-pointer hover:bg-muted/50">
+                  <TableRow 
+                    key={partner.id} 
+                    className="cursor-pointer hover:bg-muted/50"
+                    onClick={() => setSelectedPartner(partner)}
+                  >
                     <TableCell>
                       <div>
                         <div className="font-medium">{partner.name}</div>
@@ -337,13 +341,7 @@ const PartnerOnboarding = ({ partners, users, onPartnerAdd }: PartnerOnboardingP
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => setSelectedPartner(partner)}
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
+                      <Eye className="h-4 w-4 text-muted-foreground" />
                     </TableCell>
                   </TableRow>
                 );
