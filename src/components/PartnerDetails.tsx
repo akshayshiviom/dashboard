@@ -16,17 +16,14 @@ interface PartnerDetailsProps {
 }
 
 const PartnerDetails = ({ partner, customers, products, users, onBack }: PartnerDetailsProps) => {
-  const [processFilter, setProcessFilter] = useState<string>('all');
+  const [processFilter, setProcessFilter] = useState<string[]>(['all']);
   const partnerCustomers = customers.filter(c => c.partnerId === partner.id);
   const assignedUsers = users.filter(u => partner.assignedUserIds?.includes(u.id));
 
   // Filter customers by process stage
   const filteredCustomers = partnerCustomers.filter(customer => {
-    if (processFilter === 'all') return true;
-    if (processFilter === 'prospects') return ['prospect', 'demo', 'poc', 'negotiating'].includes(customer.process);
-    if (processFilter === 'purchased') return ['won', 'deployment'].includes(customer.process);
-    if (processFilter === 'lost') return customer.process === 'lost';
-    return true;
+    if (processFilter.includes('all')) return true;
+    return processFilter.includes(customer.process);
   });
 
   // Calculate statistics
@@ -34,6 +31,54 @@ const PartnerDetails = ({ partner, customers, products, users, onBack }: Partner
   const purchased = partnerCustomers.filter(c => ['won', 'deployment'].includes(c.process));
   const lost = partnerCustomers.filter(c => c.process === 'lost');
   const conversionRate = partnerCustomers.length > 0 ? Math.round((purchased.length / partnerCustomers.length) * 100) : 0;
+
+  // Individual stage counts for detailed filtering
+  const stageCounts = {
+    prospect: partnerCustomers.filter(c => c.process === 'prospect').length,
+    demo: partnerCustomers.filter(c => c.process === 'demo').length,
+    poc: partnerCustomers.filter(c => c.process === 'poc').length,
+    negotiating: partnerCustomers.filter(c => c.process === 'negotiating').length,
+    won: partnerCustomers.filter(c => c.process === 'won').length,
+    deployment: partnerCustomers.filter(c => c.process === 'deployment').length,
+    lost: partnerCustomers.filter(c => c.process === 'lost').length,
+  };
+
+  // Quick filter functions
+  const setQuickFilter = (filterType: string) => {
+    switch (filterType) {
+      case 'all':
+        setProcessFilter(['all']);
+        break;
+      case 'prospects':
+        setProcessFilter(['prospect', 'demo', 'poc', 'negotiating']);
+        break;
+      case 'purchased':
+        setProcessFilter(['won', 'deployment']);
+        break;
+      case 'lost':
+        setProcessFilter(['lost']);
+        break;
+      case 'active-pipeline':
+        setProcessFilter(['prospect', 'demo', 'poc', 'negotiating']);
+        break;
+      default:
+        setProcessFilter([filterType]);
+    }
+  };
+
+  const toggleStageFilter = (stage: string) => {
+    if (processFilter.includes('all')) {
+      setProcessFilter([stage]);
+      return;
+    }
+    
+    if (processFilter.includes(stage)) {
+      const newFilter = processFilter.filter(f => f !== stage);
+      setProcessFilter(newFilter.length === 0 ? ['all'] : newFilter);
+    } else {
+      setProcessFilter([...processFilter, stage]);
+    }
+  };
 
   const getProductName = (productId: string) => {
     return products.find(p => p.id === productId)?.name || 'Unknown Product';
@@ -286,22 +331,92 @@ const PartnerDetails = ({ partner, customers, products, users, onBack }: Partner
       {/* Partner's Customers */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>
-              Partner's Customers ({filteredCustomers.length} of {partnerCustomers.length})
-            </CardTitle>
-            <Select value={processFilter} onValueChange={setProcessFilter}>
-              <SelectTrigger className="w-[200px]">
-                <Filter className="h-4 w-4 mr-2" />
-                <SelectValue placeholder="Filter by Process" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Customers</SelectItem>
-                <SelectItem value="prospects">Prospects ({prospects.length})</SelectItem>
-                <SelectItem value="purchased">Purchased ({purchased.length})</SelectItem>
-                <SelectItem value="lost">Lost ({lost.length})</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="flex flex-col space-y-4">
+            <div className="flex items-center justify-between">
+              <CardTitle>
+                Partner's Customers ({filteredCustomers.length} of {partnerCustomers.length})
+              </CardTitle>
+            </div>
+            
+            {/* Quick Filter Buttons */}
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant={processFilter.includes('all') ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setQuickFilter('all')}
+              >
+                All ({partnerCustomers.length})
+              </Button>
+              <Button
+                variant={processFilter.length === 4 && processFilter.includes('prospect') && processFilter.includes('demo') && processFilter.includes('poc') && processFilter.includes('negotiating') ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setQuickFilter('prospects')}
+              >
+                All Prospects ({prospects.length})
+              </Button>
+              <Button
+                variant={processFilter.length === 2 && processFilter.includes('won') && processFilter.includes('deployment') ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setQuickFilter('purchased')}
+              >
+                Purchased ({purchased.length})
+              </Button>
+              <Button
+                variant={processFilter.length === 1 && processFilter.includes('lost') ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setQuickFilter('lost')}
+              >
+                Lost ({lost.length})
+              </Button>
+              <Button
+                variant={processFilter.length === 4 && processFilter.includes('prospect') && processFilter.includes('demo') && processFilter.includes('poc') && processFilter.includes('negotiating') ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setQuickFilter('active-pipeline')}
+              >
+                Active Pipeline ({prospects.length})
+              </Button>
+            </div>
+
+            {/* Individual Stage Filters */}
+            <div className="flex flex-wrap gap-2">
+              <span className="text-sm font-medium text-muted-foreground self-center">Individual Stages:</span>
+              {Object.entries(stageCounts).map(([stage, count]) => (
+                <Button
+                  key={stage}
+                  variant={processFilter.includes(stage) && !processFilter.includes('all') ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => toggleStageFilter(stage)}
+                  className="gap-1"
+                >
+                  <Badge className={getProcessStageColor(stage)} variant="secondary">
+                    {getProcessStageLabel(stage)}
+                  </Badge>
+                  ({count})
+                </Button>
+              ))}
+            </div>
+
+            {/* Active Filter Display */}
+            {!processFilter.includes('all') && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <span>Active filters:</span>
+                <div className="flex gap-1">
+                  {processFilter.map(stage => (
+                    <Badge key={stage} className={getProcessStageColor(stage)} variant="secondary">
+                      {getProcessStageLabel(stage)}
+                    </Badge>
+                  ))}
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setProcessFilter(['all'])}
+                  className="text-xs"
+                >
+                  Clear all
+                </Button>
+              </div>
+            )}
           </div>
         </CardHeader>
         <CardContent>
