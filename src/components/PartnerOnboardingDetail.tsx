@@ -148,27 +148,6 @@ const PartnerOnboardingDetail = ({ partner, onBack }: PartnerOnboardingDetailPro
               </div>
             </CardContent>
           </Card>
-
-          {/* Quick Actions */}
-          <Card className="mt-4">
-            <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <Button variant="outline" className="w-full justify-start">
-                Schedule Meeting
-              </Button>
-              <Button variant="outline" className="w-full justify-start">
-                Send Email
-              </Button>
-              <Button variant="outline" className="w-full justify-start">
-                Upload Document
-              </Button>
-              <Button variant="outline" className="w-full justify-start">
-                Update Stage
-              </Button>
-            </CardContent>
-          </Card>
         </div>
 
         {/* Main Content */}
