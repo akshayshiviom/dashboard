@@ -132,22 +132,44 @@ const PartnerOnboarding = ({ partners, users, onPartnerAdd }: PartnerOnboardingP
     {
       title: 'Total Partners',
       value: enhancedPartners.length,
-      color: 'text-blue-600'
+      color: 'text-blue-600',
+      icon: Users
     },
     {
-      title: 'In Progress',
-      value: enhancedPartners.filter(p => getStageStatus(p) === 'in-progress').length,
-      color: 'text-yellow-600'
+      title: 'Outreach',
+      value: enhancedPartners.filter(p => p.onboarding.currentStage === 'outreach').length,
+      color: 'text-blue-600',
+      icon: Users
     },
     {
-      title: 'Completed',
+      title: 'Product Overview',
+      value: enhancedPartners.filter(p => p.onboarding.currentStage === 'product-overview').length,
+      color: 'text-purple-600',
+      icon: FileText
+    },
+    {
+      title: 'Partner Program',
+      value: enhancedPartners.filter(p => p.onboarding.currentStage === 'partner-program').length,
+      color: 'text-green-600',
+      icon: Handshake
+    },
+    {
+      title: 'KYC',
+      value: enhancedPartners.filter(p => p.onboarding.currentStage === 'kyc').length,
+      color: 'text-yellow-600',
+      icon: Shield
+    },
+    {
+      title: 'Agreement',
+      value: enhancedPartners.filter(p => p.onboarding.currentStage === 'agreement').length,
+      color: 'text-orange-600',
+      icon: PenTool
+    },
+    {
+      title: 'Onboarded',
       value: enhancedPartners.filter(p => p.onboarding.currentStage === 'onboarded').length,
-      color: 'text-green-600'
-    },
-    {
-      title: 'Blocked',
-      value: enhancedPartners.filter(p => getStageStatus(p) === 'blocked').length,
-      color: 'text-red-600'
+      color: 'text-emerald-600',
+      icon: Trophy
     }
   ];
 
@@ -193,20 +215,25 @@ const PartnerOnboarding = ({ partners, users, onPartnerAdd }: PartnerOnboardingP
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        {statsData.map((stat) => (
-          <Card key={stat.title}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className={`text-2xl font-bold ${stat.color}`}>{stat.value}</div>
-            </CardContent>
-          </Card>
-        ))}
+      <div className="grid grid-cols-1 md:grid-cols-4 xl:grid-cols-8 gap-4">
+        {statsData.map((stat) => {
+          const IconComponent = stat.icon;
+          return (
+            <Card key={stat.title}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
+                <IconComponent className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className={`text-2xl font-bold ${stat.color}`}>{stat.value}</div>
+              </CardContent>
+            </Card>
+          );
+        })}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Avg Progress</CardTitle>
+            <CheckCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-purple-600">{avgProgress}%</div>
