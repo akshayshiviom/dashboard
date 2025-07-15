@@ -123,11 +123,15 @@ const PartnerTableRow = ({
   };
 
   return (
-    <TableRow className="hover:bg-muted/50">
+    <TableRow 
+      className="hover:bg-muted/50 cursor-pointer transition-colors"
+      onClick={() => onViewDetails(partner)}
+    >
       <TableCell>
-        <Checkbox 
+        <Checkbox
           checked={isSelected}
           onCheckedChange={() => onSelect(partner.id)}
+          onClick={(e) => e.stopPropagation()}
         />
       </TableCell>
       <TableCell className="font-medium">{partner.name}</TableCell>
@@ -192,21 +196,11 @@ const PartnerTableRow = ({
         </Badge>
       </TableCell>
       <TableCell>
-        <div className="flex items-center gap-2">
-          <Switch
-            checked={partner.status === 'active'}
-            onCheckedChange={() => onStatusToggle(partner.id, partner.status)}
-          />
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onViewDetails(partner)}
-            className="gap-2"
-          >
-            <Eye size={14} />
-            View Details
-          </Button>
-        </div>
+        <Switch
+          checked={partner.status === 'active'}
+          onCheckedChange={() => onStatusToggle(partner.id, partner.status)}
+          onClick={(e) => e.stopPropagation()}
+        />
       </TableCell>
     </TableRow>
   );
