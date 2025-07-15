@@ -277,8 +277,9 @@ const PartnerOnboarding = ({ partners, users, onPartnerAdd }: PartnerOnboardingP
               />
             </div>
             <Select value={stageFilter} onValueChange={setStageFilter}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Stage" />
+              <SelectTrigger className="w-[200px]">
+                <Filter className="h-4 w-4 mr-2" />
+                <SelectValue placeholder="Filter by Stage" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Stages</SelectItem>
@@ -290,9 +291,6 @@ const PartnerOnboarding = ({ partners, users, onPartnerAdd }: PartnerOnboardingP
                 <SelectItem value="onboarded">Onboarded</SelectItem>
               </SelectContent>
             </Select>
-            <Button variant="outline" size="icon">
-              <Filter className="h-4 w-4" />
-            </Button>
           </div>
         </CardHeader>
         <CardContent>
