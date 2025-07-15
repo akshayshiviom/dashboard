@@ -7,7 +7,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
-import { Search, Filter, Plus, Calendar, Clock, AlertCircle, CheckCircle, User, Building, Users } from 'lucide-react';
+import { Label } from '@/components/ui/label';
+import { Search, Filter, Plus, Calendar, Clock, AlertCircle, CheckCircle, User, Building, Users, ArrowLeft, Edit } from 'lucide-react';
 import { Task, Customer, Partner, User as UserType } from '@/types';
 
 interface TaskManagementProps {
@@ -23,6 +24,16 @@ const TaskManagement = ({ customers, partners, users, currentUserId }: TaskManag
   const [priorityFilter, setPriorityFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [newTask, setNewTask] = useState({
+    title: '',
+    description: '',
+    priority: 'medium' as Task['priority'],
+    type: 'other' as Task['type'],
+    customerId: '',
+    partnerId: '',
+    dueDate: ''
+  });
 
   // Mock task data - in real app this would come from API/database
   const mockTasks: Task[] = [
@@ -162,6 +173,152 @@ const TaskManagement = ({ customers, partners, users, currentUserId }: TaskManag
     overdue: mockTasks.filter(t => t.status === 'overdue').length
   };
 
+  const handleCreateTask = () => {
+    // In real app, this would save to database
+    console.log('Creating task:', newTask);
+    setShowCreateDialog(false);
+    setNewTask({
+      title: '',
+      description: '',
+      priority: 'medium',
+      type: 'other',
+      customerId: '',
+      partnerId: '',
+      dueDate: ''
+    });
+  };
+
+  if (selectedTask) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center space-x-4">
+          <Button variant="outline" size="sm" onClick={() => setSelectedTask(null)}>
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Tasks
+          </Button>
+          <div>
+            <h2 className="text-2xl font-bold">{selectedTask.title}</h2>
+            <p className="text-muted-foreground">Task Details</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Task Information */}
+          <div className="lg:col-span-1">
+            <Card>
+              <CardHeader>
+                <CardTitle>Task Details</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label className="text-sm font-medium">Status</Label>
+                  <div className="flex items-center space-x-2 mt-1">
+                    {getStatusIcon(selectedTask.status)}
+                    <Badge 
+                      variant="outline" 
+                      className={`text-xs ${getStatusColor(selectedTask.status)} text-white border-0`}
+                    >
+                      {selectedTask.status.replace('-', ' ')}
+                    </Badge>
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Priority</Label>
+                  <div className="mt-1">
+                    <Badge 
+                      variant="outline" 
+                      className={`text-xs ${getPriorityColor(selectedTask.priority)} text-white border-0`}
+                    >
+                      {selectedTask.priority}
+                    </Badge>
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Type</Label>
+                  <div className="mt-1">
+                    <Badge variant="secondary" className="text-xs">
+                      {selectedTask.type.replace('-', ' ')}
+                    </Badge>
+                  </div>
+                </div>
+                {selectedTask.dueDate && (
+                  <div>
+                    <Label className="text-sm font-medium">Due Date</Label>
+                    <div className="flex items-center space-x-1 mt-1">
+                      <Calendar className="h-3 w-3 text-muted-foreground" />
+                      <span className="text-sm">{selectedTask.dueDate.toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                )}
+                <div>
+                  <Label className="text-sm font-medium">Assigned By</Label>
+                  <div className="text-sm mt-1">{getUserName(selectedTask.assignedBy)}</div>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Created</Label>
+                  <div className="text-sm mt-1">{selectedTask.createdAt.toLocaleDateString()}</div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Associated Records */}
+            <Card className="mt-4">
+              <CardHeader>
+                <CardTitle>Associated With</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {selectedTask.customerId && (
+                  <div className="flex items-center space-x-2">
+                    <Building className="h-4 w-4 text-muted-foreground" />
+                    <div>
+                      <div className="font-medium text-sm">Customer</div>
+                      <div className="text-sm text-muted-foreground">{getCustomerName(selectedTask.customerId)}</div>
+                    </div>
+                  </div>
+                )}
+                {selectedTask.partnerId && (
+                  <div className="flex items-center space-x-2">
+                    <Users className="h-4 w-4 text-muted-foreground" />
+                    <div>
+                      <div className="font-medium text-sm">Partner</div>
+                      <div className="text-sm text-muted-foreground">{getPartnerName(selectedTask.partnerId)}</div>
+                    </div>
+                  </div>
+                )}
+                {!selectedTask.customerId && !selectedTask.partnerId && (
+                  <div className="text-sm text-muted-foreground">No associated records</div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Main Content */}
+          <div className="lg:col-span-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>Description</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm">{selectedTask.description || 'No description provided'}</p>
+              </CardContent>
+            </Card>
+
+            {selectedTask.notes && (
+              <Card className="mt-4">
+                <CardHeader>
+                  <CardTitle>Notes</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm">{selectedTask.notes}</p>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -178,40 +335,110 @@ const TaskManagement = ({ customers, partners, users, currentUserId }: TaskManag
               Create Task
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>Create New Task</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
-              <Input placeholder="Task title" />
-              <Textarea placeholder="Task description" rows={3} />
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select priority" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="low">Low</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
-                  <SelectItem value="urgent">Urgent</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="follow-up">Follow-up</SelectItem>
-                  <SelectItem value="meeting">Meeting</SelectItem>
-                  <SelectItem value="document-review">Document Review</SelectItem>
-                  <SelectItem value="approval">Approval</SelectItem>
-                  <SelectItem value="negotiation">Negotiation</SelectItem>
-                  <SelectItem value="onboarding">Onboarding</SelectItem>
-                  <SelectItem value="support">Support</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
-                </SelectContent>
-              </Select>
-              <Button className="w-full">Create Task</Button>
+              <div>
+                <Label htmlFor="title">Task Title</Label>
+                <Input 
+                  id="title"
+                  placeholder="Enter task title"
+                  value={newTask.title}
+                  onChange={(e) => setNewTask({...newTask, title: e.target.value})}
+                />
+              </div>
+              <div>
+                <Label htmlFor="description">Description</Label>
+                <Textarea 
+                  id="description"
+                  placeholder="Enter task description"
+                  rows={3}
+                  value={newTask.description}
+                  onChange={(e) => setNewTask({...newTask, description: e.target.value})}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="priority">Priority</Label>
+                  <Select value={newTask.priority} onValueChange={(value: Task['priority']) => setNewTask({...newTask, priority: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select priority" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="low">Low</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="high">High</SelectItem>
+                      <SelectItem value="urgent">Urgent</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="type">Task Type</Label>
+                  <Select value={newTask.type} onValueChange={(value: Task['type']) => setNewTask({...newTask, type: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="follow-up">Follow-up</SelectItem>
+                      <SelectItem value="meeting">Meeting</SelectItem>
+                      <SelectItem value="document-review">Document Review</SelectItem>
+                      <SelectItem value="approval">Approval</SelectItem>
+                      <SelectItem value="negotiation">Negotiation</SelectItem>
+                      <SelectItem value="onboarding">Onboarding</SelectItem>
+                      <SelectItem value="support">Support</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="customer">Customer (Optional)</Label>
+                  <Select value={newTask.customerId} onValueChange={(value) => setNewTask({...newTask, customerId: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select customer" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">No Customer</SelectItem>
+                      {customers.map((customer) => (
+                        <SelectItem key={customer.id} value={customer.id}>
+                          {customer.name} - {customer.company}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="partner">Partner (Optional)</Label>
+                  <Select value={newTask.partnerId} onValueChange={(value) => setNewTask({...newTask, partnerId: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select partner" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">No Partner</SelectItem>
+                      {partners.map((partner) => (
+                        <SelectItem key={partner.id} value={partner.id}>
+                          {partner.name} - {partner.company}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="dueDate">Due Date (Optional)</Label>
+                <Input 
+                  id="dueDate"
+                  type="date"
+                  value={newTask.dueDate}
+                  onChange={(e) => setNewTask({...newTask, dueDate: e.target.value})}
+                />
+              </div>
+              <Button className="w-full" onClick={handleCreateTask}>
+                Create Task
+              </Button>
             </div>
           </DialogContent>
         </Dialog>
@@ -340,7 +567,11 @@ const TaskManagement = ({ customers, partners, users, currentUserId }: TaskManag
             </TableHeader>
             <TableBody>
               {filteredTasks.map((task) => (
-                <TableRow key={task.id} className="cursor-pointer hover:bg-muted/50">
+                <TableRow 
+                  key={task.id} 
+                  className="cursor-pointer hover:bg-muted/50"
+                  onClick={() => setSelectedTask(task)}
+                >
                   <TableCell>
                     <div className="space-y-1">
                       <div className="font-medium">{task.title}</div>
@@ -371,18 +602,21 @@ const TaskManagement = ({ customers, partners, users, currentUserId }: TaskManag
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center space-x-2">
+                    <div className="space-y-1">
                       {task.customerId && (
                         <div className="flex items-center space-x-1">
-                          <Building className="h-3 w-3 text-muted-foreground" />
-                          <span className="text-sm">{getCustomerName(task.customerId)}</span>
+                          <Building className="h-3 w-3 text-blue-500" />
+                          <span className="text-sm font-medium">{getCustomerName(task.customerId)}</span>
                         </div>
                       )}
                       {task.partnerId && (
                         <div className="flex items-center space-x-1">
-                          <Users className="h-3 w-3 text-muted-foreground" />
-                          <span className="text-sm">{getPartnerName(task.partnerId)}</span>
+                          <Users className="h-3 w-3 text-green-500" />
+                          <span className="text-sm font-medium">{getPartnerName(task.partnerId)}</span>
                         </div>
+                      )}
+                      {!task.customerId && !task.partnerId && (
+                        <span className="text-sm text-muted-foreground">No associations</span>
                       )}
                     </div>
                   </TableCell>
