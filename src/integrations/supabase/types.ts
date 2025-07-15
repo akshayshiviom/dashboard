@@ -14,6 +14,87 @@ export type Database = {
   }
   public: {
     Tables: {
+      partner_stage_changes: {
+        Row: {
+          changed_at: string
+          changed_by: string
+          created_at: string
+          from_stage: string
+          id: string
+          partner_id: string
+          reason: string | null
+          to_stage: string
+        }
+        Insert: {
+          changed_at?: string
+          changed_by: string
+          created_at?: string
+          from_stage: string
+          id?: string
+          partner_id: string
+          reason?: string | null
+          to_stage: string
+        }
+        Update: {
+          changed_at?: string
+          changed_by?: string
+          created_at?: string
+          from_stage?: string
+          id?: string
+          partner_id?: string
+          reason?: string | null
+          to_stage?: string
+        }
+        Relationships: []
+      }
+      partner_stage_reversal_requests: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          comments: string | null
+          created_at: string
+          from_stage: string
+          id: string
+          partner_id: string
+          reason: string
+          requested_at: string
+          requested_by: string
+          status: string
+          to_stage: string
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          comments?: string | null
+          created_at?: string
+          from_stage: string
+          id?: string
+          partner_id: string
+          reason: string
+          requested_at?: string
+          requested_by: string
+          status?: string
+          to_stage: string
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          comments?: string | null
+          created_at?: string
+          from_stage?: string
+          id?: string
+          partner_id?: string
+          reason?: string
+          requested_at?: string
+          requested_by?: string
+          status?: string
+          to_stage?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string

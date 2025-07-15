@@ -210,3 +210,30 @@ export interface Notification {
   actionUrl?: string; // URL to navigate to when clicked
   metadata?: Record<string, any>;
 }
+
+export interface PartnerStageChange {
+  id: string;
+  partnerId: string;
+  fromStage: OnboardingStage;
+  toStage: OnboardingStage;
+  changedBy: string;
+  changedAt: Date;
+  reason?: string;
+  createdAt: Date;
+}
+
+export interface PartnerStageReversalRequest {
+  id: string;
+  partnerId: string;
+  fromStage: OnboardingStage;
+  toStage: OnboardingStage;
+  requestedBy: string;
+  requestedAt: Date;
+  approvedBy?: string;
+  approvedAt?: Date;
+  status: 'pending' | 'approved' | 'denied';
+  reason: string;
+  comments?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}

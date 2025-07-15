@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,6 +10,7 @@ import { Search, UserPlus, Filter, CheckCircle, Clock, AlertCircle, Eye, Users, 
 import { Partner, User, OnboardingStage, PartnerOnboardingData } from '@/types';
 import AddPartnerForm from '@/components/AddPartnerForm';
 import PartnerOnboardingDetail from '@/components/PartnerOnboardingDetail';
+import { PartnerStageEditForm } from '@/components/PartnerStageEditForm';
 
 interface PartnerOnboardingProps {
   partners: Partner[];
@@ -26,6 +27,7 @@ const PartnerOnboarding = ({ partners, users, onPartnerAdd }: PartnerOnboardingP
   const [stageFilter, setStageFilter] = useState('all');
   const [showAddForm, setShowAddForm] = useState(false);
   const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null);
+  const [partnersData, setPartnersData] = useState<EnhancedPartner[]>([]);
 
   const stageConfig = {
     'outreach': { title: 'Outreach', icon: Users, color: 'bg-blue-500' },
@@ -76,6 +78,25 @@ const PartnerOnboarding = ({ partners, users, onPartnerAdd }: PartnerOnboardingP
     onboarding: partner.onboarding || generateMockOnboardingData(partner)
   }));
 
+  // Initialize partnersData on component mount
+  useEffect(() => {
+    const enhanced = partners.map(partner => ({
+      ...partner,
+      onboarding: partner.onboarding || generateMockOnboardingData(partner)
+    }));
+    setPartnersData(enhanced);
+  }, [partners]);
+
+  const handlePartnerUpdate = (updatedPartner: Partner) => {
+    setPartnersData(prev => 
+      prev.map(p => 
+        p.id === updatedPartner.id 
+          ? { ...updatedPartner, onboarding: updatedPartner.onboarding || generateMockOnboardingData(updatedPartner) }
+          : p
+      )
+    );
+  };
+
   const handleAddPartner = (partner: Partner) => {
     if (onPartnerAdd) {
       onPartnerAdd(partner);
@@ -120,7 +141,7 @@ const PartnerOnboarding = ({ partners, users, onPartnerAdd }: PartnerOnboardingP
     }
   };
 
-  const filteredPartners = enhancedPartners.filter(partner => {
+  const filteredPartners = partnersData.filter(partner => {
     const matchesSearch = partner.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          partner.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          partner.company.toLowerCase().includes(searchTerm.toLowerCase());
@@ -283,6 +304,7 @@ const PartnerOnboarding = ({ partners, users, onPartnerAdd }: PartnerOnboardingP
                 <TableHead>Progress</TableHead>
                 <TableHead>Assigned To</TableHead>
                 <TableHead>Last Activity</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -339,6 +361,12 @@ const PartnerOnboarding = ({ partners, users, onPartnerAdd }: PartnerOnboardingP
                       <div className="text-sm">
                         {partner.onboarding.lastActivity.toLocaleDateString()}
                       </div>
+                    </TableCell>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
+                      <PartnerStageEditForm
+                        partner={partner}
+                        onUpdate={handlePartnerUpdate}
+                      />
                     </TableCell>
                   </TableRow>
                 );
