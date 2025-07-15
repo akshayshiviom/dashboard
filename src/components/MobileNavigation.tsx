@@ -16,7 +16,8 @@ import {
   Settings,
   Upload,
   Mail,
-  Building
+  Building,
+  CheckSquare
 } from 'lucide-react';
 
 interface MobileNavigationProps {
@@ -35,6 +36,7 @@ const MobileNavigation = ({ activeTab, onTabChange, onClose }: MobileNavigationP
     { id: 'partners', label: 'Partners', icon: Building2 },
     { id: 'products', label: 'Products', icon: Package },
     { id: 'add-product', label: 'Add Product', icon: PackagePlus },
+    { id: 'tasks', label: 'Task Management', icon: CheckSquare },
     { id: 'renewals', label: 'Renewals', icon: Calendar },
     { id: 'user-hierarchy', label: 'Team', icon: Users2 },
     { id: 'reports', label: 'Reports', icon: FileBarChart },
@@ -59,7 +61,7 @@ const MobileNavigation = ({ activeTab, onTabChange, onClose }: MobileNavigationP
           
           return (
             <div key={item.id}>
-              {(index === 1 || index === 5 || index === 9 || index === 11) && (
+              {(index === 1 || index === 5 || index === 10 || index === 12) && (
                 <Separator className="my-2" />
               )}
               <Button

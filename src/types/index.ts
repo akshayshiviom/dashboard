@@ -149,3 +149,20 @@ export interface Dashboard {
     productIds?: string[];
   };
 }
+
+export interface Task {
+  id: string;
+  title: string;
+  description?: string;
+  status: 'pending' | 'in-progress' | 'completed' | 'overdue';
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  dueDate?: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  assignedTo: string; // User ID
+  assignedBy: string; // User ID
+  customerId?: string; // Associated customer
+  partnerId?: string; // Associated partner
+  type: 'follow-up' | 'meeting' | 'document-review' | 'approval' | 'negotiation' | 'onboarding' | 'support' | 'other';
+  notes?: string;
+}

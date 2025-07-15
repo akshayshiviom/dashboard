@@ -1,5 +1,5 @@
 
-import { LayoutDashboard, Users, Tag, Plus, Package, UserCheck, FileText, RefreshCw, Settings, Mail, ChevronDown, Upload, Building, UserPlus, LogOut } from 'lucide-react';
+import { LayoutDashboard, Users, Tag, Plus, Package, UserCheck, FileText, RefreshCw, Settings, Mail, ChevronDown, Upload, Building, UserPlus, LogOut, CheckSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -53,6 +53,7 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
         ...(isAdmin ? [{ id: 'add-product', label: 'Add Product', icon: Plus }] : []),
       ]
     },
+    { id: 'tasks', label: 'Task Management', icon: CheckSquare },
     { id: 'renewals', label: 'Renewals', icon: RefreshCw },
     { id: 'reports', label: 'Reports', icon: FileText },
     ...(isAdmin ? [{

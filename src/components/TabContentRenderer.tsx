@@ -13,6 +13,7 @@ import Settings from '@/components/Settings';
 import ImportData from '@/components/ImportData';
 import CustomerManagement from '@/components/CustomerManagement';
 import PartnerOnboarding from '@/components/PartnerOnboarding';
+import TaskManagement from '@/components/TaskManagement';
 import { Customer, Partner, Product, User, Renewal, DashboardStats as StatsType } from '@/types';
 import { Dashboard } from './DashboardManager';
 import { useAuth } from '@/contexts/AuthContext';
@@ -90,7 +91,7 @@ const TabContentRenderer = ({
   onUserUpdate,
   onUserBulkStatusChange
 }: TabContentRendererProps) => {
-  const { isAdmin } = useAuth();
+  const { isAdmin, profile } = useAuth();
   // Wrapper functions to match CustomerTable's expected signatures
   const handleStatusChange = (customerId: string, newStatus: 'active' | 'inactive' | 'pending') => {
     onCustomerUpdate(customerId, { status: newStatus });
@@ -193,6 +194,8 @@ const TabContentRenderer = ({
       );
     case 'partner-onboarding':
       return <PartnerOnboarding partners={partners} users={users} onPartnerAdd={onPartnerAdd} />;
+    case 'tasks':
+      return <TaskManagement customers={customers} partners={partners} users={users} currentUserId={profile?.user_id} />;
     case 'customers':
       return (
         <div className="space-y-6">
