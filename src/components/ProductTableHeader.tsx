@@ -1,7 +1,8 @@
 
 import { CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Search } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Search, Plus } from 'lucide-react';
 import { Product } from '../types';
 import BulkImportDialog from './BulkImportDialog';
 import ProductTableFilters from './ProductTableFilters';
@@ -17,6 +18,7 @@ interface ProductTableHeaderProps {
   onStatusFilter: (status: string) => void;
   onCategoryFilter: (category: string) => void;
   onBulkImport?: (products: Product[]) => void;
+  onAddProduct?: () => void;
 }
 
 const ProductTableHeader = ({
@@ -29,7 +31,8 @@ const ProductTableHeader = ({
   onSearchChange,
   onStatusFilter,
   onCategoryFilter,
-  onBulkImport
+  onBulkImport,
+  onAddProduct
 }: ProductTableHeaderProps) => {
   return (
     <CardHeader>
@@ -38,6 +41,13 @@ const ProductTableHeader = ({
           Software Products Overview ({filteredProducts.length} of {products.length})
         </CardTitle>
         <div className="flex items-center gap-2">
+          {currentUserRole === 'admin' && onAddProduct && (
+            <Button onClick={onAddProduct} className="gap-2">
+              <Plus size={16} />
+              Add Product
+            </Button>
+          )}
+          
           {currentUserRole === 'admin' && onBulkImport && (
             <BulkImportDialog
               type="products"

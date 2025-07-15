@@ -226,7 +226,9 @@ const TabContentRenderer = ({
             onPriceUpdate={onProductPriceUpdate}
             onStatusChange={onProductStatusChange}
             onBulkStatusChange={onProductBulkStatusChange}
+            onBulkImport={onProductImport}
             onProductUpdate={onProductUpdate}
+            onAddProduct={() => window.location.hash = '?tab=add-product'}
           />
         </div>
       );

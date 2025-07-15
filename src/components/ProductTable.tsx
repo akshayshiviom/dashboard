@@ -6,6 +6,7 @@ import { Product } from '../types';
 import ProductTableHeader from './ProductTableHeader';
 import ProductTableRow from './ProductTableRow';
 import ProductDetail from './ProductDetail';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface ProductTableProps {
   products: Product[];
@@ -14,16 +15,18 @@ interface ProductTableProps {
   onBulkStatusChange?: (productIds: string[], newStatus: 'active' | 'inactive') => void;
   onBulkImport?: (products: Product[]) => void;
   onProductUpdate?: (productId: string, updates: Partial<Product>) => void;
+  onAddProduct?: () => void;
 }
 
-const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusChange, onBulkImport, onProductUpdate }: ProductTableProps) => {
+const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusChange, onBulkImport, onProductUpdate, onAddProduct }: ProductTableProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const { isAdmin, profile } = useAuth();
 
-  // Simulate current user role - in a real app, this would come from auth context
-  const currentUserRole = 'admin';
+  // Get current user role from auth context
+  const currentUserRole = profile?.role || 'user';
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
@@ -82,6 +85,7 @@ const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusCha
           onStatusFilter={setStatusFilter}
           onCategoryFilter={setCategoryFilter}
           onBulkImport={onBulkImport}
+          onAddProduct={onAddProduct}
         />
         <CardContent>
           <Table>
@@ -96,7 +100,7 @@ const ProductTable = ({ products, onPriceUpdate, onStatusChange, onBulkStatusCha
                 <TableHead>Status</TableHead>
                 <TableHead>Added</TableHead>
                 <TableHead>Last Edited</TableHead>
-                {currentUserRole === 'admin' && <TableHead>Status Toggle</TableHead>}
+                {isAdmin && <TableHead>Status Toggle</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
