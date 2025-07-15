@@ -395,24 +395,18 @@ const TaskManagement = ({ customers, partners, users, currentUserId }: TaskManag
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="customer">Customer (Optional)</Label>
-                  <Select value={newTask.customerId} onValueChange={(value) => setNewTask({...newTask, customerId: value === 'none' ? '' : value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select customer" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">No Customer</SelectItem>
-                      {customers.map((customer) => (
-                        <SelectItem key={customer.id} value={customer.id}>
-                          {customer.name} - {customer.company}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
                   <Label htmlFor="partner">Partner (Optional)</Label>
-                  <Select value={newTask.partnerId} onValueChange={(value) => setNewTask({...newTask, partnerId: value === 'none' ? '' : value})}>
+                  <Select 
+                    value={newTask.partnerId} 
+                    onValueChange={(value) => {
+                      const partnerId = value === 'none' ? '' : value;
+                      setNewTask({
+                        ...newTask, 
+                        partnerId, 
+                        customerId: 'none' // Reset customer when partner changes
+                      });
+                    }}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select partner" />
                     </SelectTrigger>
@@ -423,6 +417,32 @@ const TaskManagement = ({ customers, partners, users, currentUserId }: TaskManag
                           {partner.name} - {partner.company}
                         </SelectItem>
                       ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="customer">Customer (Optional)</Label>
+                  <Select 
+                    value={newTask.customerId} 
+                    onValueChange={(value) => setNewTask({...newTask, customerId: value === 'none' ? '' : value})}
+                    disabled={!newTask.partnerId || newTask.partnerId === 'none'}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={
+                        !newTask.partnerId || newTask.partnerId === 'none' 
+                          ? "Select partner first" 
+                          : "Select customer"
+                      } />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">No Customer</SelectItem>
+                      {customers
+                        .filter(customer => customer.partnerId === newTask.partnerId)
+                        .map((customer) => (
+                          <SelectItem key={customer.id} value={customer.id}>
+                            {customer.name} - {customer.company}
+                          </SelectItem>
+                        ))}
                     </SelectContent>
                   </Select>
                 </div>
