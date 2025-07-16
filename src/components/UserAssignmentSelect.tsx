@@ -1,10 +1,10 @@
-
 import { useState } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { X, Plus } from 'lucide-react';
 import { User } from '../types';
+import { useRoles } from '@/hooks/useRoles';
 
 interface UserAssignmentSelectProps {
   users: User[];
@@ -22,6 +22,7 @@ const UserAssignmentSelect = ({
   allowedRoles = ['fsr', 'team-leader', 'bde']
 }: UserAssignmentSelectProps) => {
   const [selectedUserId, setSelectedUserId] = useState('');
+  const { getRoleColor, getRoleDisplayName } = useRoles();
 
   const filteredUsers = users.filter(user => allowedRoles.includes(user.role));
   const availableUsers = filteredUsers.filter(user => !assignedUserIds.includes(user.id));
@@ -38,13 +39,13 @@ const UserAssignmentSelect = ({
     onAssignmentChange(assignedUserIds.filter(id => id !== userId));
   };
 
-  const getRoleBadgeColor = (role: string) => {
-    switch (role) {
-      case 'fsr': return 'bg-blue-100 text-blue-800';
-      case 'team-leader': return 'bg-green-100 text-green-800';
-      case 'bde': return 'bg-purple-100 text-purple-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
+  const getRoleBadgeStyle = (role: string) => {
+    const color = getRoleColor(role);
+    return {
+      backgroundColor: color + '20',
+      color: color,
+      borderColor: color + '40'
+    };
   };
 
   return (
@@ -53,8 +54,8 @@ const UserAssignmentSelect = ({
         {assignedUsers.map((user) => (
           <Badge key={user.id} variant="secondary" className="flex items-center gap-2">
             <span>{user.name}</span>
-            <Badge className={getRoleBadgeColor(user.role)} variant="outline">
-              {user.role.toUpperCase()}
+            <Badge style={getRoleBadgeStyle(user.role)} variant="outline">
+              {getRoleDisplayName(user.role)}
             </Badge>
             <Button
               variant="ghost"
@@ -79,8 +80,8 @@ const UserAssignmentSelect = ({
                 <SelectItem key={user.id} value={user.id}>
                   <div className="flex items-center gap-2">
                     <span>{user.name}</span>
-                    <Badge className={getRoleBadgeColor(user.role)} variant="outline">
-                      {user.role.toUpperCase()}
+                    <Badge style={getRoleBadgeStyle(user.role)} variant="outline">
+                      {getRoleDisplayName(user.role)}
                     </Badge>
                   </div>
                 </SelectItem>

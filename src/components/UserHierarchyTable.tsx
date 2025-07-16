@@ -10,8 +10,10 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { Users, Edit, UserPlus, Download, Filter, Settings2, Key } from 'lucide-react';
 import { User } from '../types';
 import { useAuth } from '@/contexts/AuthContext';
+import { useRoles } from '@/hooks/useRoles';
 import AddUserDialog from './AddUserDialog';
 import AdminPasswordResetDialog from './AdminPasswordResetDialog';
+import RoleManagementDialog from './RoleManagementDialog';
 
 interface UserHierarchyTableProps {
   users: User[];
@@ -38,6 +40,7 @@ const UserHierarchyTable = ({ users, onStatusChange, onBulkStatusChange, onUserU
   const [passwordResetUser, setPasswordResetUser] = useState<User | null>(null);
   
   const { isAdmin } = useAuth();
+  const { roles: availableRoles, getRoleColor, getRoleDisplayName, getActiveRoleNames } = useRoles();
 
   // Additional security check
   if (!isAdmin) {
@@ -51,30 +54,15 @@ const UserHierarchyTable = ({ users, onStatusChange, onBulkStatusChange, onUserU
     );
   }
 
-  const roles = ['admin', 'manager', 'assistant-manager', 'team-leader', 'fsr', 'bde'];
+  const roles = getActiveRoleNames();
 
-  const getRoleColor = (role: string) => {
-    const colors = {
-      admin: 'bg-red-100 text-red-800',
-      manager: 'bg-purple-100 text-purple-800',
-      'assistant-manager': 'bg-indigo-100 text-indigo-800',
-      'team-leader': 'bg-blue-100 text-blue-800',
-      fsr: 'bg-green-100 text-green-800',
-      bde: 'bg-yellow-100 text-yellow-800',
+  const getRoleBadgeStyle = (roleName: string) => {
+    const color = getRoleColor(roleName);
+    return {
+      backgroundColor: color,
+      color: 'white',
+      border: 'none'
     };
-    return colors[role as keyof typeof colors] || 'bg-gray-100 text-gray-800';
-  };
-
-  const getRoleDisplayName = (role: string) => {
-    const names = {
-      admin: 'Admin',
-      manager: 'Manager',
-      'assistant-manager': 'Assistant Manager',
-      'team-leader': 'Team Leader',
-      fsr: 'FSR',
-      bde: 'BDE',
-    };
-    return names[role as keyof typeof names] || role;
   };
 
   const getReportingToName = (reportingToId?: string) => {
@@ -186,6 +174,8 @@ const UserHierarchyTable = ({ users, onStatusChange, onBulkStatusChange, onUserU
               User Hierarchy ({displayUsers.length} users)
             </CardTitle>
             <div className="flex items-center gap-2">
+              <RoleManagementDialog />
+              
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm">
@@ -346,11 +336,11 @@ const UserHierarchyTable = ({ users, onStatusChange, onBulkStatusChange, onUserU
                           ))}
                         </SelectContent>
                       </Select>
-                    ) : (
-                      <Badge className={getRoleColor(user.role)}>
-                        {getRoleDisplayName(user.role)}
-                      </Badge>
-                    )}
+                     ) : (
+                       <Badge style={getRoleBadgeStyle(user.role)} variant="secondary">
+                         {getRoleDisplayName(user.role)}
+                       </Badge>
+                     )}
                   </TableCell>
                   {showHierarchy && (
                     <TableCell>

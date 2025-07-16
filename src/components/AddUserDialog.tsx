@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { UserPlus } from 'lucide-react';
 import { User } from '../types';
 import { useToast } from '@/components/ui/use-toast';
+import { useRoles } from '@/hooks/useRoles';
 
 interface AddUserDialogProps {
   users: User[];
@@ -26,20 +27,9 @@ const AddUserDialog = ({ users, onUserAdd }: AddUserDialogProps) => {
     status: 'active' as const
   });
   const { toast } = useToast();
+  const { getActiveRoleNames, getRoleDisplayName } = useRoles();
 
-  const roles: User['role'][] = ['admin', 'manager', 'assistant-manager', 'team-leader', 'fsr', 'bde'];
-
-  const getRoleDisplayName = (role: string) => {
-    const names = {
-      admin: 'Admin',
-      manager: 'Manager',
-      'assistant-manager': 'Assistant Manager',
-      'team-leader': 'Team Leader',
-      fsr: 'FSR',
-      bde: 'BDE',
-    };
-    return names[role as keyof typeof names] || role;
-  };
+  const roles = getActiveRoleNames();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
